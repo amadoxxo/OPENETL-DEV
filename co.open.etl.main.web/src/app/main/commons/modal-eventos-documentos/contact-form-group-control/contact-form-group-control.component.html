@@ -1,0 +1,67 @@
+<div fxLayout="column">
+    <div fxLayout="row" fxFlex="100">
+        <div fxFlex="50">
+            <h2><strong>{{titleGroup}}</strong></h2>
+        </div>
+        <div fxFlex="50" fxLayoutAlign="end center">
+            <button  mat-mini-fab color="warn" *ngIf="!ver" (click)="limpiarCamposGroup()">
+                <mat-icon>delete_sweep</mat-icon>
+            </button>
+        </div>
+        <input type="hidden" [formControl]="con_tipo">
+    </div>
+
+    <div fxLayout="row" fxFlex="100">
+        <mat-form-field fxFlex="38">
+            <mat-label class="control-label">Nombre</mat-label>
+            <input matInput type="text" maxlength="255"
+                   (change)="changeContactoGroup()" [formControl]="con_nombre" [readonly]="ver" #Nombre>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{Nombre.value?.length || 0}}/255</mat-hint>
+            <mat-error *ngIf="!ver && con_nombre && !con_nombre.valid">
+                Indique el nombre
+            </mat-error>
+        </mat-form-field>
+        <div fxFlex="2"></div>
+        <mat-form-field fxFlex="60">
+            <mat-label class="control-label">Dirección</mat-label>
+            <input matInput type="text" maxlength="255" (change)="changeContactoGroup()"
+                    [formControl]="con_direccion" [readonly]="ver" #Direccion>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{Direccion.value?.length || 0}}/255</mat-hint>
+            <mat-error *ngIf="!ver && con_direccion && !con_direccion.valid">
+                Indique la dirección
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxFlex="100">
+        <mat-form-field fxFlex="38">
+            <mat-label class="control-label">Teléfono</mat-label>
+            <input matInput type="text" class="form-control form-control-danger"
+                   maxlength="50" (change)="changeContactoGroup()" [formControl]="con_telefono" [readonly]="ver"
+                   #Telefono>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{Telefono.value?.length || 0}}/50</mat-hint>
+            <mat-error *ngIf="!ver && con_telefono && !con_telefono.valid">
+                Indique el teléfono
+            </mat-error>
+        </mat-form-field>
+        <div fxFlex="2"></div>
+        <mat-form-field fxFlex="60">
+            <mat-label class="control-label">Correo</mat-label>
+            <input matInput type="text" class="form-control form-control-danger"
+                   maxlength="255" (change)="changeContactoGroup()" [formControl]="con_correo" [readonly]="ver" #Correo>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{Correo.value?.length || 0}}/255</mat-hint>
+            <mat-error *ngIf="!ver && con_correo && !con_correo.valid">
+                El correo es inválido
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxFlex="100">
+        <mat-form-field fxFlex="100">
+            <mat-label class="control-label">Observaciones</mat-label>
+            <textarea matInput [formControl]="con_observaciones"
+                rows="3" cols="200" (change)="changeContactoGroup()"
+                [readonly]="ver" #Observaciones></textarea>
+        </mat-form-field>
+    </div>
+</div>

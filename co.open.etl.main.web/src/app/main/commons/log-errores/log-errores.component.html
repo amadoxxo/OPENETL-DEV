@@ -1,0 +1,96 @@
+<div id="log" fxLayout="column">
+    <div class="info">
+        <div class="entry">
+            <div fxLayout="row">
+                <h2 fxflex="100">Log de Errores</h2>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <label >
+                    <strong>Fecha de Cargue: </strong>
+                </label>
+                <span fxFlex="2">&nbsp;</span>
+                <mat-form-field fxFlex="20">
+                    <input matInput [matDatepicker]="dpFC" [(ngModel)]="fechaCargue" (click)="dpFC.open()"
+                        [max]="maxDate">
+                    <mat-datepicker-toggle matSuffix [for]="dpFC"></mat-datepicker-toggle>
+                    <mat-datepicker #dpFC disabled="false"></mat-datepicker>
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <mat-form-field fxFlex="20" *ngIf="tipoLog === 'RECEPCION'">
+                    <mat-select placeholder="Acción Log" [(ngModel)]="accionLog" (selectionChange)="pjjTipo = ''">
+                        <mat-option value="registro_documentos"> REGISTRO DOCUMENTOS </mat-option>
+                        <mat-option value="registro_eventos"> REGISTRO EVENTOS </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <!-- El siguiente campo aplica solamente para DHL Express -->
+                <mat-form-field fxFlex="15" *ngIf="accionLog == 'registro_documentos' && (ofeIdentificacion == '860502609' || ofeIdentificacion == '830076778' || ofeSeleccionado)">
+                    <mat-select placeholder="Tipo" [(ngModel)]="pjjTipo">
+                        <mat-option *ngFor="let tipo of listaLogs" [value]="tipo.value">
+                            {{tipo.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div fxFlex="15" fxLayoutAlign="end">
+                    <button mat-raised-button type="button" color="accent" [disabled]="!fechaCargue"
+                        (click)="searchDocumentos()">
+                        <mat-icon aria-label="Search" color="#ffffff">search</mat-icon> Consultar
+                    </button>
+                </div>
+                <div fxFlex="15" fxLayoutAlign="end">
+                    <button mat-raised-button type="button" class="green-900" [disabled]="!existeConsulta"
+                        (click)="descargarExcel()">
+                        <mat-icon aria-label="Search" color="#ffffff">cloud_download</mat-icon> Excel
+                    </button>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxFlex="50%">
+                    <mat-form-field fxFlex="50%">
+                        <mat-select placeholder="Número de registros a mostrar"
+                                (selectionChange)="paginar($event.value)" name="num_registros">
+                            <mat-option *ngFor="let item of paginationSize" [value]="item.value">
+                                {{item.label}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div fxFlex="50" fxLayoutAlign="end">
+                    <mat-form-field fxFlex="60">
+                        <input class="search" matInput [size]="100" type="text"
+                            placeholder="Búsqueda rápida" [(ngModel)]="buscar" (keyup.enter)="searchinline()" />
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <ngx-datatable
+            class="material striped"
+            [loadingIndicator]="loadingIndicator"
+            [rows]="rows"
+            [columnMode]="'force'"
+            [headerHeight]="50"
+            [footerHeight]="50"
+            rowHeight="auto"
+            [externalSorting]="true"
+            [externalPaging]="true"
+            [reorderable]="reorderable"
+            [selected]="selected"
+            [selectionType]="'checkbox'"
+            [messages]="messageDT"
+            [count]="totalElements"
+            [offset]="page"
+            [limit]="totalShow"
+            (page)='onPage($event)'
+            (sort)="onSort($event)"
+            (select)='onSelect($event)'
+            [scrollbarH]="true">
+
+            <ngx-datatable-column name="Fecha de Cargue" prop="fecha_creacion"></ngx-datatable-column>
+            <ngx-datatable-column *ngIf="tipoLog === 'ADQ'" [headerClass]="'centered'" name="Identificación" prop="adquirente"></ngx-datatable-column>
+            <ngx-datatable-column *ngIf="tipoLog === 'RECEPCION'" [headerClass]="'centered'" name="Usuario" prop="usuario_creacion_nombre"></ngx-datatable-column>
+            <ngx-datatable-column *ngIf="tipoLog === 'DOC' || tipoLog === 'RECEPCION' || tipoLog === 'DN' || tipoLog === 'DS'" [headerClass]="'centered'" name="Documento" prop="documento"></ngx-datatable-column>
+            <ngx-datatable-column name="Errores" prop="errores" [width]="500"></ngx-datatable-column>
+
+        </ngx-datatable>
+    </div>
+</div>

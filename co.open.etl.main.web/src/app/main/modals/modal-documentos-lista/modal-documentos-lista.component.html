@@ -1,0 +1,130 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>
+    Documento  # {{ documento.documento }}
+</h1>
+
+<mat-dialog-content>
+    <h5><strong>Resultado Transmisión</strong></h5>
+    <table class="table table-hover" id="documentos">
+        <tbody>
+            <tr *ngIf="documento.get_estado_documento?.est_mensaje_resultado && documento.get_estado_documento?.est_ejecucion === 'FINALIZADO'">
+                <td style="width:150px;">XML</td>
+                <td>{{ documento.get_estado_documento?.est_mensaje_resultado }}</td>
+            </tr>
+            <tr *ngIf="documento.get_estado_documento?.est_ejecucion === 'ENPROCESO'">
+                <td style="width:150px;">XML</td>
+                <td>Documento no ha sido procesado efectivamente en la creación del XML</td>
+            </tr>
+            <tr *ngIf="documento.get_estado_documento?.est_estado === 'FIRMA' && documento.get_estado_documento?.est_ejecucion === 'FINALIZADO'">
+                <td style="width:150px;">FIRMA</td>
+                <td>{{ documento.get_estado_documento?.est_mensaje_resultado }}</td>
+            </tr>
+            <tr *ngIf="documento.get_estado_documento?.est_estado === 'FIRMA' && documento.get_estado_documento?.est_ejecucion === 'ENPROCESO'">
+                <td style="width:150px;">XML</td>
+                <td>Documento no ha sido procesado efectivamente en el proceso de firma</td>
+            </tr>
+            <tr *ngIf="documento.get_estado_documento?.est_estado === 'DO' && documento.get_estado_documento?.est_ejecucion === 'FINALIZADO'">
+                <td style="width:150px;">FECHA WS DIAN</td>
+                <td>{{ documento.get_estado_documento?.est_inicio_proceso }}</td>
+            </tr>
+            <tr *ngIf="documento.get_estado_documento?.est_estado === 'DO' && documento.get_estado_documento?.est_mensaje_resultado && documento.get_estado_documento?.est_ejecucion === 'FINALIZADO'">
+                <td style="width:150px;">WS DIAN</td>
+                <td>{{ documento.get_estado_documento?.est_mensaje_resultado }}</td>
+            </tr>
+            <tr *ngIf="documento.get_estado_documento?.est_estado === 'DO' && documento.get_estado_documento?.est_ejecucion === 'ENPROCESO'">
+                <td style="width:150px;">XML</td>
+                <td>Documento no ha sido procesado efectivamente en la transmisión a la DIAN</td>
+            </tr>
+        </tbody>
+    </table>
+    <ng-container *ngIf="documento.get_estado_documento.est_ejecucion === 'FALLIDO'">
+        <hr>
+        <h5><strong>Resultado Verificación</strong></h5>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width="35%">Verificación</th>
+                    <th width="25%">Resultado Verificación</th>
+                    <th width="40%">Detalle Verificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let verificacion of verificacionFuncional">
+                    <tr>
+                        <td>
+                            {{ verificacion.VerificacionRealizada }}
+                        </td>
+                        <td class="text-center">
+                            <ng-container *ngIf="verificacion.ResultadoVeriFunc === 1; else Fallido">
+                                EXITOSO
+                            </ng-container>
+                            <ng-template #Fallido>
+                                FALLIDO
+                            </ng-template>
+                        </td>
+                        <td>
+                            {{ verificacion.DescripcionVeriFunc }}
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="showRawObject">
+                    <tr>
+                        <td [colSpan]="3">
+                            {{cdo_resultado_ws_crt_object}}
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </ng-container>
+    <ng-container *ngIf="documento.get_estado_documento.est_ejecucion === 'EXITOSO'">
+        <hr>
+        <h5><strong>Resultado Verificación</strong></h5>
+        <table class="table table-hover">
+            <tbody>
+                <tr>
+                    <td width="25%">Fecha Transacción</td>
+                    <td>{{ verificacionFuncional.FechaTransaccion}}</td>
+                </tr>
+                <tr>
+                    <td>Descripción Transacción</td>
+                    <td>{{ verificacionFuncional.DescripcionTransaccion}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><strong>DOCUMENTO RECIBIDO</strong></td>
+                </tr>
+                <tr>
+                    <td>Descripción Estado</td>
+                    <td>{{ verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.DescripcionEstado }}</td>
+                </tr>
+                <tr>
+                    <td>Emisor</td>
+                    <td>{{ verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.Emisor }}</td>
+                </tr>
+                <tr>
+                    <td>Número Documento</td>
+                    <td>{{ verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.NumeroDocumento }}</td>
+                </tr>
+                <tr>
+                    <td>Fecha Hora Emisión</td>
+                    <td>{{ verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.FechaHoraEmision }}</td>
+                </tr>
+                <tr *ngIf="verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.CUFE">
+                    <td>CUFE</td>
+                    <td>{{ verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.CUFE }}</td>
+                </tr>
+                <tr>
+                    <td>Código Estado Documento</td>
+                    <td>{{ verificacionFuncional.DocumentoRecibido?.DatosBasicosDocumento.EstadoDocumento }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-container>
+    <div style="height:5px;"></div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+</mat-dialog-actions>
+<br>

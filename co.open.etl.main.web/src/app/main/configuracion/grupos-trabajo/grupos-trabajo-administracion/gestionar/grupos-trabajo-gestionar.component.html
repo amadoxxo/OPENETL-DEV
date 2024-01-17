@@ -1,0 +1,73 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Agregar {{grupoTrabajoSingular}}</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Actualizar {{grupoTrabajoSingular}}</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver {{grupoTrabajoSingular}}</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+
+        <app-selector-ofe-precargado [ofe_id]="ofe_identificacion" [oferentes]="ofes" [ver]="action === 'view'" [label]="'OFE'"></app-selector-ofe-precargado>
+
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="49">
+                <input matInput #inputCodigo placeholder="Código" formControlName="gtr_codigo">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputCodigo.value?.length || 0}}/10</mat-hint>
+                <mat-error *ngIf="hasError('gtr_codigo', 'required')">
+                    {{formErrors.gtr_codigo.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('gtr_codigo', 'maxlength')">
+                    {{formErrors.gtr_codigo.maxLength}}
+                </mat-error>
+            </mat-form-field>
+            <span fxFlex="2">&nbsp;</span>
+            <mat-form-field fxFlex="49">
+                <input matInput #inputNombre placeholder="Nombre" formControlName="gtr_nombre">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputNombre.value?.length || 0}}/100</mat-hint>
+                <mat-error *ngIf="hasError('gtr_nombre', 'required')">
+                    {{formErrors.gtr_nombre.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('gtr_nombre', 'maxlength')">
+                    {{formErrors.gtr_nombre.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" *ngIf="aplicaNotificarCorreos">
+            <div fxFlex="100">
+                <app-notificaciones [correos]="gtr_correos_notificacion" [ver]="ver" [tipo]="'GTR'" [etiqueta]="'Enviar Notificación a: '"></app-notificaciones>
+            </div>
+        </div>
+        <br>
+        <div fxLayout="row wrap">
+            <div fxFlex="100" fxLayoutAlign="start start" class="mb-13">
+                <mat-checkbox class="label-checkbox-descripcion"
+                    (change)="gtr_por_defecto.setValue($event.checked ? 'SI' : 'NO')"
+                    [checked]="gtr_por_defecto.value === 'SI'"
+                    [disabled]="action === 'view'"
+                >{{grupoTrabajoSingular}} Por Defecto</mat-checkbox>
+            </div>
+        </div>
+
+        <span fxFlex="2">&nbsp;</span>
+        <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="action === 'edit' || action === 'view'" [modal]="true"></app-magic-fields>
+
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)" *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveGrupoTrabajo(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveGrupoTrabajo(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(false)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

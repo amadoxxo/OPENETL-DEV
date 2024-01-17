@@ -1,0 +1,28 @@
+<div fxFlex="100">
+   <ng-select [items]="proveedores$ | async"
+        #selectMunicipios
+        bindLabel="sft_identificador_nombre"
+        [loading]="proveedoresLoading"
+        [placeholder]=placeholder
+        typeToSearchText="Puede ingresar el nombre o identificador"
+        [closeOnSelect]="true"
+        notFoundText="No hay coincidencias"
+        loadingText="..."
+        [typeahead]="proveedoresInput$"
+        [formControl]="sft_id"
+        [(ngModel)]="selectedSftId"
+        appendTo="body">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.sft_identificador}}</strong> - {{item.sft_nombre}}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+    </ng-select>
+    <mat-error *ngIf="!sft_id.valid && sft_id.touched" style="color:red;" class="fh">
+        El Proveedor Tecnológico de Software es requerido!
+    </mat-error>
+</div>

@@ -1,0 +1,41 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>{{ nombreCombo }}</h1>
+
+<mat-dialog-content>
+    <div class="cab-documentos">
+        <b>Documento(s): {{ arrDocumentos.join(', ') }}</b>
+    </div>
+    <mat-divider class="bot-space"></mat-divider>
+    <form fxLayout="column" name="form" [formGroup]="form">
+        <!-- Combo-->
+        <div fxFlex="25" class="box-combo bot-space">
+            <mat-form-field [ngClass]="combo.value != '' ? 'w-94p' : 'w-100p'">
+                <mat-select [placeholder]="nombreCombo" formControlName="combo">
+                    <mat-form-field class="w-100p p-8p">
+                        <input #inputCombo matInput type="text" [placeholder]="'Buscar '+ nombreCombo+'...'" (keydown)="keyDownEvent($event)">
+                        <mat-icon matSuffix>search</mat-icon>
+                    </mat-form-field>
+                    <mat-option *ngFor="let registro of filtrarLista(inputCombo.value)" [value]="registro.id" (click)="setValorLista()">
+                        {{ registro.name }}
+                    </mat-option>
+                    <mat-option *ngIf="filtrarLista(inputCombo.value).length === 0 && inputCombo.value != ''" value="" (click)="setValorLista()">No hay coincidencias</mat-option>
+                </mat-select>
+                <mat-error>
+                    Debe seleccionar un {{ nombreCombo }}
+                </mat-error>
+            </mat-form-field>
+            <span class="cursor-pointer borrar-seleccion" *ngIf="combo.value != ''" mat-icon-button (click)="clearComboValue()" [matTooltip]="'Limpiar '+ nombreCombo">
+                <mat-icon class="iconSize mt-4">close</mat-icon>
+            </span>
+        </div>
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button cdkFocusInitial mat-raised-button color="accent" (click)="saveModal()" class="button-save" [disabled]="form.invalid">
+        <mat-icon color="#ffffff">save</mat-icon> Guardar
+    </button>
+    <button mat-raised-button color="warn" (click)="closeModal()" class="button-close">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+</mat-dialog-actions>

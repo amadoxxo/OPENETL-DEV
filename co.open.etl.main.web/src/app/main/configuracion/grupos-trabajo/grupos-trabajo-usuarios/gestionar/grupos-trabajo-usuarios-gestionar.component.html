@@ -1,0 +1,99 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Asociar Usuario</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver Asociación de Usuario</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Editar Asociación de Usuario</h1>
+
+ <mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="column" fxFlex="100">
+            <div fxLayout="row" fxFlex="100">
+                <mat-form-field fxFlex="100%">
+                    <mat-select placeholder="OFE" [formControl]="ofe_identificacion" (selectionChange)="changeOfe($event.value)">
+                        <mat-option *ngFor="let ofe of ofes;" [value]="ofe.ofe_identificacion">
+                            {{ofe.ofe_identificacion}} - {{ofe.ofe_razon_social}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxFlex="100">
+                <input type="hidden" formControlName="usu_id">
+                <mat-form-field fxFlex="100">
+                    <input matInput type="text" placeholder="Usuario" (change)="clearUsuario()" [matAutocomplete]="usu" formControlName='usu_identificacion_nombre' fxFlex>
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    <mat-error *ngIf="!usu_id.valid">
+                        {{formErrors.usu_id.required}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-autocomplete #usu="matAutocomplete">
+                    <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="30"></mat-spinner></mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let usuario of filteredUsuarios" [value]="usuario" (click)="setUsuario(usuario)">
+                            <span>{{usuario.usu_identificacion}} - {{usuario.usu_nombre}} </span>
+                        </mat-option>
+                        <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </div>
+
+            <div fxFlex="column" fxFlex="100">
+                <ng-select 
+                    [items]="gruposTrabajo$ | async" 
+                    style="padding-bottom:0px;"
+                    bindValue="gtr_id"
+                    bindLabel="gtr_codigo_nombre"
+                    [loading]="false"
+                    labelForId="labelGrupoTrabajo"
+                    [placeholder]="grupo_trabajo_singular"
+                    typeToSearchText="Puede ingresar el código o nombre"
+                    [closeOnSelect]="false"
+                    notFoundText="No hay coincidencias"
+                    loadingText="..."
+                    [typeahead]="gruposTrabajoInput$"
+                    [formControl]="gtr_id"
+                    appendTo="body"
+                    [(ngModel)]="selectedGtrId"
+                    (change)="onGrupoTrabajoSeleccionado($event)"
+                    [compareWith]="compareFn"
+                    [multiple]="true"
+                >
+                    <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div style="margin: 5px 0;" class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>{{ item.gtr_codigo }}</strong> - {{ item.gtr_nombre }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-select>
+            </div>
+            <br>
+            <div *ngIf="mostrarCamposTipoUsuario" fxLayout="row" fxFlex="100" class="mt-12">
+                <div fxFlex="30" fxFlex.md="100" fxFlex.sm="100" fxFlex.xs="100">
+                    <mat-checkbox color="primary" formControlName="gtu_usuario_gestor">
+                        Usuario Gestor
+                    </mat-checkbox>
+                </div>
+                <div fxFlex="30" fxFlex.md="100" fxFlex.sm="100" fxFlex.xs="100">
+                    <mat-checkbox color="primary" formControlName="gtu_usuario_validador">
+                        Usuario Validador
+                    </mat-checkbox>
+                </div>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveGrupoUsuario(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveGrupoUsuario(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+</mat-dialog-actions>
+<br> 

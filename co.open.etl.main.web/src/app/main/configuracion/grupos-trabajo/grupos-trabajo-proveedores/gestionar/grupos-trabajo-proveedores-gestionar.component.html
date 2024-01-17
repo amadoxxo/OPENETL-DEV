@@ -1,0 +1,79 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Asociar Proveedor</h1>
+
+ <mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="column" fxFlex="100">
+            <div fxLayout="row" fxFlex="100">
+                <mat-form-field fxFlex="100%">
+                    <mat-select placeholder="OFE" [formControl]="ofe_identificacion" (selectionChange)="changeOfe($event.value)">
+                        <mat-option *ngFor="let ofe of ofes;" [value]="ofe">
+                            {{ofe.ofe_identificacion}} - {{ofe.ofe_razon_social}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxLayout="row" fxFlex="100">
+                <input type="hidden" formControlName="pro_id">
+                <mat-form-field fxFlex="100">
+                    <input matInput type="text" placeholder="Proveedor" (change)="clearProveedor()" [matAutocomplete]="pro" formControlName='pro_identificacion_nombre' fxFlex>
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    <mat-error *ngIf="!pro_id.valid">
+                        {{formErrors.pro_id.required}}
+                    </mat-error>
+                </mat-form-field>
+                <mat-autocomplete #pro="matAutocomplete">
+                    <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="30"></mat-spinner></mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let proveedor of filteredProveedores" [value]="proveedor" (click)="setProveedor(proveedor)">
+                            <span>{{proveedor.pro_identificacion}} - {{proveedor.nombre_completo}} </span>
+                        </mat-option>
+                        <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                    </ng-container>
+                </mat-autocomplete>
+            </div>
+
+            <div fxFlex="column" fxFlex="100">
+                <ng-select 
+                    [items]="gruposTrabajo$ | async" 
+                    style="padding-bottom:0px;"
+                    bindValue="gtr_id"
+                    bindLabel="gtr_codigo_nombre"
+                    [loading]="false"
+                    labelForId="labelGrupoTrabajo"
+                    [placeholder]="grupo_trabajo_singular"
+                    typeToSearchText="Puede ingresar el código o nombre"
+                    [closeOnSelect]="false"
+                    notFoundText="No hay coincidencias"
+                    loadingText="..."
+                    [typeahead]="gruposTrabajoInput$"
+                    [formControl]="gtr_id"
+                    appendTo="body"
+                    [(ngModel)]="selectedGtrId"
+                    (change)="onGrupoTrabajoSeleccionado($event)"
+                    [multiple]="true"
+                >
+                    <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div style="margin: 5px 0;" class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>{{ item.gtr_codigo }}</strong> - {{ item.gtr_nombre }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-select>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveGrupoProveedor(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+</mat-dialog-actions>
+<br> 

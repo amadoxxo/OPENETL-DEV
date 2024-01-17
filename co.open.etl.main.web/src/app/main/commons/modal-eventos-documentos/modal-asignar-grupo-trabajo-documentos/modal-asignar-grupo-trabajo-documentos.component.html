@@ -1,0 +1,52 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title> {{ textosDinamicos }} </h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form" id="formAsignarGruposTrabajoDocumentos">
+        <div>
+            <p>{{ textosDinamicos }} para los siguientes documentos:</p>
+            <ul>
+                <li *ngFor="let documento of documentos">
+                    {{ documento }}
+                </li>
+            </ul>
+            <p>Por favor seleccione el (la) {{ _grupo_trabajo }} que aplicará para los documentos listados:</p>
+        </div>
+        <span fxFlex="2">&nbsp;</span>
+        <ng-container>
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <div fxFlex="100" fxLayout="column">
+                    <mat-label class="control-label">{{ _grupo_trabajo }}: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                    <ng-select class="custom"
+                        [items]="arrGruposTrabajoProveedor"
+                        bindLabel="gtr_nombre"
+                        bindValue="gtr_id"
+                        [dropdownPosition]="'top'"
+                        formControlName="gtr_id">
+                        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                            <div style="margin: 5px 0;" class="card">
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>{{ item.gtr_codigo }}</strong> - {{ item.gtr_nombre }}
+                                    </p>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <mat-error *ngIf="hasError('gtr_id', 'required') && gtr_id.touched">
+                        {{formErrors.gtr_id.required}}
+                    </mat-error>
+                </div>
+            </div>
+        </ng-container>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="asignarGrupoTrabajoDocumentos()">
+        <mat-icon color="#ffffff">check_box</mat-icon> Asignar {{ _grupo_trabajo }} a los Documentos
+    </button>
+</mat-dialog-actions>
+<br>

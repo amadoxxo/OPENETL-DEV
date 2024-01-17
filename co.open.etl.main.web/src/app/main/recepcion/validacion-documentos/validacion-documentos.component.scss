@@ -1,0 +1,8 @@
+.ng-select.gruposTrabajoUsuario ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option, .ng-select.estadoValidacion ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    line-height: 2.5em !important;
+    min-height: 2.5em !important;
+}
+
+.ng-select.gruposTrabajoUsuario ::ng-deep .ng-dropdown-panel, .ng-select.estadosValidacion ::ng-deep .ng-dropdown-panel {
+    width: auto !important;
+}

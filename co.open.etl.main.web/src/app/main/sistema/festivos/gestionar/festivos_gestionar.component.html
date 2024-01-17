@@ -1,0 +1,67 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Agregar Festivo</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Actualizar Festivo</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver Festivo</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputDes placeholder="Descripción" formControlName="fes_descripcion">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputDes.value?.length || 0}}/100</mat-hint>
+                <mat-error *ngIf="hasError('fes_descripcion', 'required')">
+                    {{formErrors.fes_descripcion.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('fes_descripcion', 'maxlength')">
+                    {{formErrors.fes_descripcion.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="40">
+                <input matInput [matDatepicker]="cdoFD"
+                       placeholder="Fecha del Festivo"
+                       formControlName="fes_fecha" 
+                    (click)="cdoFD.open()">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-datepicker-toggle matSuffix [for]="cdoFD"></mat-datepicker-toggle>
+                <mat-datepicker #cdoFD></mat-datepicker>
+                <mat-error *ngIf="!fes_fecha.valid">
+                    {{formErrors.fes_fecha.required}}
+                </mat-error>
+            </mat-form-field>
+            <span fxFlex="5">&nbsp;</span>
+            <div fxFlex="55">
+                <ng-container *ngIf="action === 'edit'">
+                    <label>Estado: <mat-icon matSuffix class="fi">star rate</mat-icon></label>
+                    <mat-radio-group formControlName="estado" style="margin-left: 15px">
+                        <mat-radio-button value="ACTIVO" style="margin-right: 15px">Activo </mat-radio-button>
+                        <mat-radio-button value="INACTIVO">Inactivo </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+            </div>
+        </div>
+        <span fxFlex="2" *ngIf="action === 'edit'">&nbsp;</span>
+        <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="action === 'edit' || action === 'view'" [modal]="true"></app-magic-fields>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)" *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveFestivo(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveFestivo(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(false)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

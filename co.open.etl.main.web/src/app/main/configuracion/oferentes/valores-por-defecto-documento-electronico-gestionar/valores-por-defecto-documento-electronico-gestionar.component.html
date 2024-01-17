@@ -1,0 +1,109 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Actualizar {{ valorPorDefecto.descripcion }}</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver {{ valorPorDefecto.descripcion }}</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <ng-container *ngIf="valorPorDefecto.tabla">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <input type="hidden" formControlName="valor">
+                <mat-form-field fxFlex="100">
+                    <input matInput type="text" placeholder="Buscar" [matAutocomplete]="des" formControlName='descripcion' fxFlex>
+                    <mat-icon matSuffix class="fi" *ngIf="required">star rate</mat-icon>
+                    <mat-error *ngIf="hasError('descripcion', 'required') && required">
+                            {{ formErrors.descripcion.required }}
+                    </mat-error>
+                </mat-form-field>
+                <mat-autocomplete #des="matAutocomplete">
+                    <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="30"></mat-spinner></mat-option>
+                    <ng-container *ngIf="!isLoading && valorPorDefecto.tabla !== 'etl_resoluciones_facturacion' && valorPorDefecto.tabla !== 'etl_forma_generacion_transmision'">
+                        <mat-option *ngFor="let resultado of resultadosAutocomplete" [value]="resultado" (click)="setValor(resultado)">
+                            <span>{{ resultado.codigo }} - {{ resultado.descripcion }}</span>
+                        </mat-option>
+                        <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                    </ng-container>
+                    <ng-container *ngIf="!isLoading && valorPorDefecto.tabla === 'etl_resoluciones_facturacion'">
+                        <mat-option *ngFor="let resultado of resultadosAutocomplete" [value]="resultado" (click)="setValor(resultado)">
+                            <span><span *ngIf="resultado.rfa_prefijo">{{ resultado.rfa_prefijo }} - </span>{{ resultado.rfa_resolucion }}</span>
+                        </mat-option>
+                        <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                    </ng-container>
+                    <ng-container *ngIf="!isLoading && valorPorDefecto.tabla === 'etl_forma_generacion_transmision'">
+                        <mat-option *ngFor="let resultado of resultadosAutocomplete" [value]="resultado" (click)="setValor(resultado)">
+                            <span><span *ngIf="resultado.fgt_codigo">{{ resultado.fgt_codigo }} - </span>{{ resultado.fgt_descripcion }}</span>
+                        </mat-option>
+                        <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                    </ng-container>
+                </mat-autocomplete>    
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="valorPorDefecto.opciones">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <ng-select
+                    class="custom"
+                    [items]="arrItems"
+                    placeholder="Seleccione el valor del Dato Común {{ required ? '*' : '' }}"
+                    [closeOnSelect]="true"
+                    formControlName="valor"
+                    appendTo="body"
+                    fxFlex="100%"
+                >
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    {{ item }}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-select>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <mat-error *ngIf="hasError('valor', 'required') && required">
+                    {{ formErrors.valor.required }}
+                </mat-error>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!valorPorDefecto.opciones && !valorPorDefecto.tabla">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <mat-form-field fxFlex="100">
+                    <input type="hidden" formControlName="descripcion" value="">
+                    <input matInput #valorDatoComun placeholder="Valor por defecto en documento electrónico" formControlName="valor" [required]="required">
+                    <mat-icon matSuffix class="fi" *ngIf="required">star rate</mat-icon>
+                    <mat-error *ngIf="hasError('valor', 'required') && required">
+                        {{ formErrors.valor.required }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </ng-container>
+
+        <span fxFlex="2" *ngIf="action === 'edit'">&nbsp;</span>
+
+        <div *ngIf="valorPorDefecto.editable">
+            <mat-label class="control-label">Editable: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+            <mat-radio-group formControlName="editable" style="margin-left: 25px" disabled="{{ action !== 'edit' ? true : false }}">
+                <mat-radio-button value="SI" style="margin-right: 15px" (click)="validaInputField('SI')"> SI </mat-radio-button>
+                <mat-radio-button value="NO" (click)="validaInputField('NO')"> NO </mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <span fxFlex="2" *ngIf="action === 'edit'">&nbsp;</span>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(true)"
+        *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveItem(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(true)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

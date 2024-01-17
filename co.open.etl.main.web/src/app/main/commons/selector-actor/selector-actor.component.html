@@ -1,0 +1,31 @@
+<div fxFlex="row" fxFlex="100" fxLayoutGap="15px">
+    <div fxFlex="column" fxFlex="100">
+        <ng-select class="custom" [items]="actores" style="padding-bottom:0px;"
+            #selectActores
+            bindValue="act_id"
+            bindLabel="act_identificacion_act_razon_social"
+            placeholder="Actor"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            appendTo="body"
+            [formControl]="act_id"
+            [(ngModel)]="selectedActId"
+            (clear)="clear()"
+            (change)="onActorSeleccionado($event)"
+            (clear)="onActorSeleccionado($event)"
+        >
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>({{item.act_identificacion}})</strong> - {{item.act_razon_social}}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+        </ng-select>
+        <mat-error *ngIf="!act_id.valid && act_id.touched" style="color:red;" class="fh">
+            Seleccione el Actor!
+        </mat-error>
+    </div>
+</div>

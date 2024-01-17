@@ -1,0 +1,13 @@
+#log {
+    .info {
+        .entry {
+            padding: 5px 24px 40px;
+            background-color: white;
+            .search {
+                .mat-input-wrapper {
+                    width: 400px !important;
+                }
+            }
+        }
+    }
+}

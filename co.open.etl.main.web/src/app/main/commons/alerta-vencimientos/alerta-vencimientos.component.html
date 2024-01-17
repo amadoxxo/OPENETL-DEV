@@ -1,0 +1,27 @@
+
+<!-- Vencimiento Certificados  -->
+<div class="box-vencimientos" *ngFor="let vencimiento of arrListaVencimientos">
+    <div class="p-24 ml-15 mr-15 box-vencimientos" fxFlex="100">
+        <div *ngIf="vencimiento.alerta === 'VERDE'" class="message-box success" [innerHTML]="vencimiento.message">
+        </div>
+        <div *ngIf="vencimiento.alerta === 'NARANJA'" class="message-box warning" [innerHTML]="vencimiento.message">
+        </div>
+        <div *ngIf="vencimiento.alerta === 'ROJA'" class="message-box error" [innerHTML]="vencimiento.message">
+        </div>
+    </div>
+</div>
+
+<!-- Control Consecutivo y Vigencia de Resolución  -->
+<div class="box-vencimientos" *ngFor="let vencimientoResolucion of arrListaDiasVencidos">
+    <div class="p-24 ml-15 mr-15 box-vencimientos" fxFlex="100">
+        <div class="message-box error" [innerHTML]="vencimientoResolucion.message">
+        </div>
+    </div>
+</div>
+
+<div class="box-vencimientos" *ngFor="let vencimientoResolucion of arrListaConsecutivoVencidos">
+    <div class="p-24 ml-15 mr-15 box-vencimientos" fxFlex="100">
+        <div class="message-box error" [innerHTML]="vencimientoResolucion.message">
+        </div>
+    </div>
+</div>

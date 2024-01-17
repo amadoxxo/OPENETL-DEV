@@ -1,0 +1,35 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Cambiar Clave de Usuario</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <span><strong>Nombre: </strong>{{usu_nombre}}</span>&nbsp;&nbsp; / &nbsp;&nbsp; <span><strong>Email: </strong>{{usu_email}}</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #InputClave type="password" placeholder="Nueva Clave de Acceso" formControlName="password" maxlength="200">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint>Min. 6 caracteres</mat-hint>
+                <mat-error *ngIf="hasError('password', 'required')">
+                    {{formErrors.password.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('password', 'minlength')">
+                    {{formErrors.password.minLength}}
+                </mat-error>
+                <mat-error *ngIf="hasError('password', 'maxlength')">
+                    {{formErrors.password.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="changePassword(form.value)">
+        <mat-icon color="#ffffff">check_box</mat-icon> Cambiar
+    </button>
+</mat-dialog-actions>
+<br>

@@ -1,0 +1,101 @@
+<form fxLayout="column" name="form" [formGroup]="form">
+    <app-selector-par-receptor-emisor [origen]="'gestion-documentos'" [ofe_id]="ofe_id" [pro_id]="gdo_id" [oferentes]="arrOfes" [selector_multiple_receptor]="true" (ofeSeleccionado)="ofeHasChanged($event)"></app-selector-par-receptor-emisor>
+    <span fxFlex="2">&nbsp;</span>
+    <div fxLayout="row" fxLayoutGap="8px">
+
+        <!-- Filtro Tipo de Documento -->
+        <div fxFlex="18" style="display: ruby !important;">
+            <mat-form-field [ngClass]="gdo_clasificacion.value != '' ? 'w-92p' : 'w-100p'">
+                <mat-select placeholder="Tipo de Documento" formControlName="gdo_clasificacion" style="padding-bottom: 8px !important;">
+                    <mat-option *ngFor="let opcion of arrTipoDoc" [value]="opcion.id">
+                        {{ opcion.id }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <span class="cursor-pointer" *ngIf="gdo_clasificacion.value != ''" mat-icon-button (click)="clearComboValue('gdo_clasificacion')" matTooltip="Limpiar Tipo de Documento">
+                <mat-icon class="iconSize mt-4">close</mat-icon>
+            </span>
+        </div>
+
+        <!-- Filtro Prefijo -->
+        <mat-form-field fxFlex="14" style="padding-top: 6px;" [floatLabel]="'always'">
+            <input matInput placeholder="Prefijo" maxlength="5" [formControl]="rfa_prefijo">
+        </mat-form-field>
+
+        <!-- Filtro Consecutivo-->
+        <mat-form-field fxFlex="20" style="padding-top: 6px;" [floatLabel]="'always'">
+            <input matInput placeholder="Consecutivo" maxlength="20" [formControl]="gdo_consecutivo">
+        </mat-form-field>
+
+        <!-- Filtro Fechas Desde y Hasta-->
+        <app-selector-par-fechas fxFlex="48"
+            [labelDesde]="'Fecha Documento (Desde)'"
+            [labelHasta]="'Fecha Documento (Hasta)'"
+            [fecha_desde]="gdo_fecha_desde"
+            [fecha_hasta]="gdo_fecha_hasta"
+            [req]="true">
+        </app-selector-par-fechas>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="start end" fxLayoutGap="8px">
+        <!-- Filtro Estado Gestion-->
+        <mat-form-field fxFlex="25" *ngIf="arrEstadoGestion[etapa]">
+            <mat-select placeholder="Estado Gestión" formControlName="estado_gestion" multiple>
+                <button mat-flat-button type="button" (click)="multiSelect(true, 'estado_gestion')">Seleccionar Todos</button>
+                <button mat-flat-button type="button" (click)="multiSelect(false, 'estado_gestion')">Limpiar Todos</button>
+                <mat-option *ngFor="let opcion of arrEstadoGestion[etapa]" [value]="opcion.id">
+                    {{ opcion.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Filtro Etapas -->
+        <mat-form-field fxFlex="25" *ngIf="origen === 'reportes'">
+            <mat-select placeholder="Etapa" formControlName="filtro_etapas" multiple>
+                <button mat-flat-button type="button" (click)="multiSelect(true, 'filtro_etapas')">Seleccionar Todos</button>
+                <button mat-flat-button type="button" (click)="multiSelect(false, 'filtro_etapas')">Limpiar Todos</button>
+                <mat-option *ngFor="let opcion of arrFiltroEtapas" [value]="opcion.id">
+                    {{ opcion.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Centro de Operación -->
+        <div fxFlex="25" *ngIf="arrFiltroOperacion.includes(etapa)" style="display: ruby !important;">
+            <mat-form-field [ngClass]="centro_operacion.value != '' ? 'w-92p' : 'w-100p'">
+                <mat-select placeholder="Centro Operación" formControlName="centro_operacion">
+                    <mat-form-field class="w-100p" style="padding: 8px !important;">
+                        <input #inputCop matInput type="text" placeholder="Buscar Centro Operacion..." (keydown)="keyDownEvent($event)">
+                        <mat-icon matSuffix>search</mat-icon>
+                    </mat-form-field>
+                    <mat-option *ngFor="let registro of filtrarCombos(inputCop.value, 'centro_operacion')" [value]="registro.id" (click)="setComboValue('centro_operacion')">
+                        {{ registro.name }}
+                    </mat-option>
+                    <mat-option *ngIf="filtrarCombos(inputCop.value, 'centro_operacion').length === 0 && inputCop.value != ''" value="" (click)="setComboValue('centro_operacion')">No hay coincidencias</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <span class="cursor-pointer" *ngIf="centro_operacion.value != ''" mat-icon-button (click)="clearComboValue('centro_operacion')" matTooltip="Limpiar Centro Operación">
+                <mat-icon class="iconSize mt-4">close</mat-icon>
+            </span>
+        </div>
+
+        <!-- Centro de Costo -->
+        <div fxFlex="25" *ngIf="arrFiltroCosto.includes(etapa)" style="display: ruby !important;">
+            <mat-form-field [ngClass]="centro_costo.value != '' ? 'w-92p' : 'w-100p'">
+                <mat-select placeholder="Centro Costo" formControlName="centro_costo">
+                    <mat-form-field class="w-100p" style="padding: 8px !important;">
+                        <input #inputCco matInput type="text" placeholder="Buscar Centro Costo..." (keydown)="keyDownEvent($event)">
+                        <mat-icon matSuffix>search</mat-icon>
+                    </mat-form-field>
+                    <mat-option *ngFor="let registro of filtrarCombos(inputCco.value, 'centro_costo')" [value]="registro.id" (click)="setComboValue('centro_costo')">
+                        {{ registro.name }}
+                    </mat-option>
+                    <mat-option *ngIf="filtrarCombos(inputCco.value, 'centro_costo').length === 0 && inputCco.value != ''" value="" (click)="setComboValue('centro_costo')">No hay coincidencias</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <span class="cursor-pointer" *ngIf="centro_costo.value != ''" mat-icon-button (click)="clearComboValue('centro_costo')" matTooltip="Limpiar Centro Costo">
+                <mat-icon class="iconSize mt-4">close</mat-icon>
+            </span>
+        </div>
+    </div>
+</form>

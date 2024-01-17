@@ -1,0 +1,374 @@
+<div id="trabajadores" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Documento Soporte de Pago de Nómina Electrónica</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Trabajadores</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <br>
+            <form [formGroup]="form">
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-sm="column">
+                                <div fxFlex="49%"
+                                    fxFlex.lt-md="49%"
+                                    fxFlex.lt-sm="100%"
+                                >
+                                    <ng-select [items]="tiposDocumento"
+                                            bindLabel="tdo_codigo_descripion"
+                                            bindValue="tdo_codigo"
+                                            labelForId="labelTipoDoc"
+                                            placeholder="Tipo de Documento"
+                                            notFoundText="No hay coincidencias"
+                                            loadingText="..."
+                                            appendTo="body"
+                                            [formControl]="tdo_codigo"
+                                            (change)="cambiarTdo($event)"
+                                            [searchFn]="customSearchFnTdo"
+                                            [readonly]="ver"
+                                            style="padding-top:6px;">
+                                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                                                <div style="margin: 5px 0;" class="card">
+                                                    <div class="card-body">
+                                                        <p class="card-text">
+                                                            <strong>{{item.tdo_codigo}}</strong> - {{item.tdo_descripcion}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                    </ng-select>
+                                    <mat-error *ngIf="!ver && !tdo_codigo.valid">
+                                        {{formErrors.tdo_codigo.required}}
+                                    </mat-error>
+                                </div>
+
+                                <mat-form-field fxFlex="50%" fxFlex.lt-md="50%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <mat-label class="control-label">Identificación</mat-label>
+                                    <input matInput type="text" [formControl]="tra_identificacion" [maxlength]="maxlengthIdentificacion"
+                                        #IdentificacionInput [pattern]="regexIdentificacion" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{ IdentificacionInput.value?.length || 0 }}/{{ maxlengthIdentificacion }}</mat-hint>
+                                    <mat-error *ngIf="!ver && !tra_identificacion.valid">
+                                        {{formErrors.tra_identificacion.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-md="column" fxLayout.lt-sm="column">
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="50%" fxFlex.lt-sm="100%">
+                                    <mat-label>Primer Apellido</mat-label>
+                                    <input matInput type="text" [formControl]="tra_primer_apellido" #PrimerApellido maxlength="60" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{PrimerApellido.value?.length || 0}}/60</mat-hint>
+                                    <mat-error *ngIf="!ver && !tra_primer_apellido.valid">
+                                        {{formErrors.tra_primer_apellido.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="24%" fxFlex.lt-md="49%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <mat-label>Segundo Apellido</mat-label>
+                                    <input matInput type="text" [formControl]="tra_segundo_apellido" #SegudoApellido maxlength="60" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{SegudoApellido.value?.length || 0}}/60</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="50%" fxFlex.lt-sm="100%">
+                                    <mat-label>Primer Nombre</mat-label>
+                                    <input matInput type="text" [formControl]="tra_primer_nombre" #PrimerNombre maxlength="60" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{PrimerNombre.value?.length || 0}}/60</mat-hint>
+                                    <mat-error *ngIf="!ver && !tra_primer_nombre.valid">
+                                        {{formErrors.tra_primer_nombre.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="24%" fxFlex.lt-md="49%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <mat-label>Otros Nombres</mat-label>
+                                    <input matInput type="text" [formControl]="tra_otros_nombres" #OtrosNombres maxlength="60" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{OtrosNombres.value?.length || 0}}/60</mat-hint>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosEmpleador">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">EMPLEADOR</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosEmpleador.valid && !ver">
+                                <span style="color: red">El Empleador es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <div fxLayout="column" fxFlex="100">
+                            <input type="hidden" formControlName="emp_id">
+                            <mat-form-field fxFlex="40">
+                                <input matInput type="text" placeholder="Buscar Empleador" (change)="clearEmpleador()" [matAutocomplete]="emp" formControlName='emp_identificacion' fxFlex [readonly]="ver">
+                                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                <mat-error *ngIf="!ver && !emp_identificacion.valid">
+                                    {{formErrors.emp_identificacion.required}}
+                                </mat-error>
+                            </mat-form-field>
+                            <mat-autocomplete #emp="matAutocomplete">
+                                <mat-option *ngIf="isLoading" class="is-loading"><mat-spinner diameter="30"></mat-spinner></mat-option>
+                                <ng-container *ngIf="!isLoading">
+                                    <mat-option *ngFor="let empleador of filteredEmpleadores" [value]="empleador" (click)="setEmpId(empleador)">
+                                        <span>{{empleador.emp_identificacion}} - {{empleador.nombre_completo}}</span>
+                                    </mat-option>
+                                    <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="domicilio">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">LUGAR DE TRABAJO</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!domicilio.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open #direccionFiscal [pai_id]="pai_id" [dep_id]="dep_id" [mun_id]="mun_id"
+                                            [direccion]="tra_direccion" [telefono]="tra_telefono" [longitudTelefono]="50" [codigo_postal]="cpo_id"
+                                            [sololectura]="false" [ver]="ver" [tipoUbicacion]="'fiscal'" [tipo]="'DN'">
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionTrabajador">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN TRABAJADOR</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!informacionTrabajador.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-sm="column">
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="25%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <mat-label>Código Trabajador</mat-label>
+                                    <input matInput type="text" [formControl]="tra_codigo" #CodigoTrabajador maxlength="100" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{CodigoTrabajador.value?.length || 0}}/100</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="25%" fxFlex.lt-sm="100%">
+                                    <input matInput [matDatepicker]="dpFCI" (click)="dpFCI.open()" placeholder="Fecha Ingreso" [formControl]="tra_fecha_ingreso" [readonly]="ver"/>
+                                        <mat-icon  matSuffix class="fi">star rate</mat-icon>
+                                        <mat-datepicker-toggle matSuffix [for]="dpFCI" ></mat-datepicker-toggle>
+                                        <mat-datepicker #dpFCI [disabled]="ver"></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="25%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <input matInput [matDatepicker]="dpFCR" (click)="dpFCR.open()" placeholder="Fecha Retiro" [formControl]="tra_fecha_retiro" [readonly]="ver"/>
+                                        <mat-datepicker-toggle matSuffix [for]="dpFCR" ></mat-datepicker-toggle>
+                                        <mat-datepicker #dpFCR [disabled]="ver"></mat-datepicker>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="24%" fxFlex.lt-md="25%" fxFlex.lt-sm="100%">
+                                    <mat-label>Sueldo</mat-label>
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <input matInput type="text" [formControl]="tra_sueldo" [readonly]="ver">
+                                    <mat-error *ngIf="!ver && !tra_sueldo.valid">
+                                        {{formErrors.tra_sueldo.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-sm="column" class="mb-16">
+                                <div fxFlex="33%" fxFlex.lt-md="33%" fxFlex.lt-sm="100%">
+                                    <ng-select [items]="tiposContrato"
+                                            bindLabel="ntc_codigo_descripion"
+                                            bindValue="ntc_codigo"
+                                            labelForId="labelTipoCon"
+                                            placeholder="Tipo de Contrato"
+                                            notFoundText="No hay coincidencias"
+                                            loadingText="..."
+                                            appendTo="body"
+                                            [formControl]="ntc_codigo"
+                                            [searchFn]="customSearchFnNtc"
+                                            [readonly]="ver"
+                                            style="padding-top:6px;">
+                                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                                                <div style="margin: 5px 0;" class="card">
+                                                    <div class="card-body">
+                                                        <p class="card-text">
+                                                            <strong>{{item.ntc_codigo}}</strong> - {{item.ntc_descripcion}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                    </ng-select>
+                                    <mat-error *ngIf="!ver && !ntc_codigo.valid">
+                                        {{formErrors.ntc_codigo.required}}
+                                    </mat-error>
+                                </div>
+                                <div fxFlex="33%" fxFlex.lt-md="33%" fxFlex.lt-sm="100%">
+                                    <ng-select [items]="tiposTrabajador"
+                                            bindLabel="ntt_codigo_descripion"
+                                            bindValue="ntt_codigo"
+                                            labelForId="labelTipoTra"
+                                            placeholder="Tipo de Trabajador"
+                                            notFoundText="No hay coincidencias"
+                                            loadingText="..."
+                                            appendTo="body"
+                                            [formControl]="ntt_codigo"
+                                            [searchFn]="customSearchFnNtt"
+                                            [readonly]="ver"
+                                            style="padding-top:6px;">
+                                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                                                <div style="margin: 5px 0;" class="card">
+                                                    <div class="card-body">
+                                                        <p class="card-text">
+                                                            <strong>{{item.ntt_codigo}}</strong> - {{item.ntt_descripcion}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                    </ng-select>
+                                    <mat-error *ngIf="!ver && !ntt_codigo.valid">
+                                        {{formErrors.ntt_codigo.required}}
+                                    </mat-error>
+                                </div>
+                                <div fxFlex="33%" fxFlex.lt-md="33%" fxFlex.lt-sm="100%">
+                                    <ng-select [items]="subtiposTrabajador"
+                                            bindLabel="nst_codigo_descripion"
+                                            bindValue="nst_codigo"
+                                            labelForId="labelSubtipoTra"
+                                            placeholder="Subtipo de Trabajador"
+                                            notFoundText="No hay coincidencias"
+                                            loadingText="..."
+                                            appendTo="body"
+                                            [formControl]="nst_codigo"
+                                            [searchFn]="customSearchFnNst"
+                                            [readonly]="ver"
+                                            style="padding-top:6px;">
+                                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                                                <div style="margin: 5px 0;" class="card">
+                                                    <div class="card-body">
+                                                        <p class="card-text">
+                                                            <strong>{{item.nst_codigo}}</strong> - {{item.nst_descripcion}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                    </ng-select>
+                                    <mat-error *ngIf="!ver && !nst_codigo.valid">
+                                        {{formErrors.nst_codigo.required}}
+                                    </mat-error>
+                                </div>
+                            </div>
+                            <br>
+                            <div fxLayout="row" class="mb-16">
+                                <mat-label class="control-label" style="margin-right: 43px">Trabajador de alto riesgo de pensión: </mat-label>
+                                <mat-radio-group [formControl]="tra_alto_riesgo" [disabled]="ver">
+                                    <mat-radio-button value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                    <mat-radio-button value="NO"> NO </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                            <br>
+                            <div fxLayout="row">
+                                <mat-label class="control-label" style="margin-right: 20px">Salario Integral: </mat-label>
+                                <mat-radio-group [formControl]="tra_salario_integral" [disabled]="ver">
+                                    <mat-radio-button value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                    <mat-radio-button value="NO"> NO </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                            <br>
+                            <div fxLayout="row"> 
+                                <mat-error *ngIf="!ver && !tra_salario_integral.valid">
+                                    {{formErrors.tra_salario_integral.required}}
+                                </mat-error>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionBancaria">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN BANCARIA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!informacionBancaria.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-sm="column">
+                                <mat-form-field fxFlex="33%" fxFlex.lt-md="33%" fxFlex.lt-sm="100%">
+                                    <mat-select placeholder="Tipo de Cuenta" formControlName="tra_tipo_cuenta" [disabled]="ver">
+                                        <mat-option value="AHORRO">
+                                            AHORRO
+                                        </mat-option>
+                                        <mat-option value="CORRIENTE">
+                                            CORRIENTE
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="33%" fxFlex.lt-md="33%" fxFlex.lt-sm="100%">
+                                    <mat-label>Entidad Bancaria</mat-label>
+                                    <input matInput type="text" [formControl]="tra_entidad_bancaria" #EntidadBancaria maxlength="255" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{EntidadBancaria.value?.length || 0}}/255</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="33%" fxFlex.lt-md="33%" fxFlex.lt-sm="100%">
+                                    <mat-label>Numero de Cuenta</mat-label>
+                                    <input matInput type="text" [formControl]="tra_numero_cuenta" #NumeroCuenta maxlength="100" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{NumeroCuenta.value?.length || 0}}/100</mat-hint>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <br><br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" *ngIf="!ver" [disabled]="!form.valid"
+                            (click)="resourceTrabajador(form.value)">
+                        <mat-icon color="#ffffff">check_box</mat-icon>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>

@@ -1,0 +1,17 @@
+.fh {
+    font-size: 12px;
+  }
+  
+.fi {
+  font-size: 9px;
+  color: red;
+}
+
+.fiw {
+  font-size: 9px;
+  color: whitesmoke;
+}
+
+.custom ::ng-deep .ng-placeholder::after{
+    content: url('data:image/svg+xml;%20charset=utf8,%20%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20enable-background%3D%22new%200%200%2024%2024%22%20height%3D%2212px%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2212px%22%20fill%3D%22%23FF0000%22%3E%3Cg%3E%3Cpath%20d%3D%22M0%2C0h24v24H0V0z%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M0%2C0h24v24H0V0z%22%20fill%3D%22none%22%2F%3E%3C%2Fg%3E%3Cg%3E%3Cpath%20d%3D%22M12%2C17.27L18.18%2C21l-1.64-7.03L22%2C9.24l-7.19-0.61L12%2C2L9.19%2C8.63L2%2C9.24l5.46%2C4.73L5.82%2C21L12%2C17.27z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+}

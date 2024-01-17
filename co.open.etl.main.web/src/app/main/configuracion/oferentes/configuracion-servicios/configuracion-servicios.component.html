@@ -1,0 +1,605 @@
+<div id="configuracion-servicios" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">OFEs</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración Servicios</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">Configuración Servicios</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Content -->
+     <div class="p-24">
+        <div class="entry">
+            <form [formGroup]="formulario">
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">OFE</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div fxLayout="row">
+                            <mat-form-field fxFlex="100" style="margin-top: 20px" [floatLabel]="'always'">
+                                <input matInput type="text" value="{{ _ofe_identificacion }} - {{ _razon_social }}" placeholder="Emisior" readonly="true">
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <!-- SERVICIOS CONTRATADOS -->
+                    <mat-expansion-panel [formGroup]="serviciosContratados">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">SERVICIOS CONTRATADOS</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="30" class="control-label">Emisión: </mat-label>
+                            <mat-radio-group fxFlex="70" [formControl]="ofe_emision">
+                                <mat-radio-button value="SI" class="mr-16" (change)="muestraOpcionesRelacionadasEmision = true"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (change)="muestraOpcionesRelacionadasEmision = false"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-label fxFlex="30" class="control-label">Recepción: </mat-label>
+                            <mat-radio-group fxFlex="70" [formControl]="ofe_recepcion">
+                                <mat-radio-button value="SI" class="mr-16" (change)="muestraOpcionesRelacionadasRecepcion = true"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (change)="muestraOpcionesRelacionadasRecepcion = false; actualizaRecepcionTransmisionErp();"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-label fxFlex="30" class="control-label">Documento Soporte: </mat-label>
+                            <mat-radio-group fxFlex="70" [formControl]="ofe_documento_soporte">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-label fxFlex="30" class="control-label">Evento Apertura Notificación Emisión: </mat-label>
+                            <mat-radio-group fxFlex="70" [formControl]="ofe_evento_notificacion_open">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-label fxFlex="30" class="control-label">Evento Click Notificación Emisión: </mat-label>
+                            <mat-radio-group fxFlex="70" [formControl]="ofe_evento_notificacion_click">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-form-field fxFlex="30" style="margin-top: 20px">
+                                <mat-label class="control-label">Prioridad Proceso de Agendamiento</mat-label>
+                                <input matInput type="text" [formControl]="ofe_prioridad_agendamiento">
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <!-- CONFIGURACION SERVIDOR DE CORREOS DE NOTIFICACIÓN -->
+                    <mat-expansion-panel [formGroup]="configuracionAmazonSes">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONFIGURACION SERVIDOR DE CORREOS DE NOTIFICACIÓN</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <input type="hidden" [formControl]="ofe_envio_notificacion_amazon_ses" value="camposAwsSes('NO');">
+                        <!-- <div fxLayout="row" class="mb-16">
+                            <mat-label class="control-label" class="mr-16">Activar envío de correo por plataforma de emails: </mat-label>
+                            <mat-radio-group [formControl]="ofe_envio_notificacion_amazon_ses">
+                                <mat-radio-button value="SI" class="mr-16" (click)="camposAwsSes('SI');"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="camposAwsSes('NO');"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" *ngIf="propiedadOcultar === 'SI' ">
+                            <mat-form-field fxFlex="50">
+                                <mat-label class="control-label">Access Key:</mat-label>
+                                <input matInput type="text" [formControl]="aws_access_key_id">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="48">
+                                <mat-label class="control-label">Secret Key:</mat-label>
+                                <input matInput type="text" [formControl]="aws_secret_access_key">
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="propiedadOcultar === 'SI' ">
+                            <mat-form-field fxFlex="40">
+                                <mat-label class="control-label">Email Remitente Configurado:</mat-label>
+                                <input matInput type="text" [formControl]="aws_from_email">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="24">
+                                <mat-label class="control-label">Región:</mat-label>
+                                <input matInput type="text" [formControl]="aws_region">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="33">
+                                <mat-label class="control-label">Set de Configuración:</mat-label>
+                                <input matInput type="text" [formControl]="aws_ses_configuration_set">
+                            </mat-form-field>
+                        </div> -->
+                        <div fxLayout="row" *ngIf="propiedadOcultar === 'NO' ">
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Driver:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_driver">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Host:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_host">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Puerto:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_puerto">
+                                <mat-error *ngIf="smtp_puerto.invalid">
+                                    El puerto es inválido
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="propiedadOcultar === 'NO' ">
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Encriptación:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_encriptacion">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Usuario:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_usuario">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Password:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_password">
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="propiedadOcultar === 'NO' ">
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Email:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_email">
+                                <mat-error *ngIf="smtp_email.invalid">
+                                    El correo es inválido
+                                </mat-error>
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="30">
+                                <mat-label class="control-label">Nombre:</mat-label>
+                                <input matInput type="text" [formControl]="smtp_nombre">
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <!-- EMISIÓN - EVENTOS DIAN -->
+                    <mat-expansion-panel [formGroup]="emisionEventosDian" *ngIf="muestraOpcionesRelacionadasEmision">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">EMISIÓN - EVENTOS DIAN</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Aceptación Tácita: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="emision_aceptaciont">
+                                <mat-radio-button value="SI" class="mr-16" (click)="marcarOpcionesEmisionEventosDian('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="marcarOpcionesEmisionEventosDian('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Consultar Acuse de Recibo: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="emision_acuse_recibo">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Consultar Constancia Recibo Bien y/o Servicio: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="emision_recibo_bien">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Consultar Aceptación Expresa: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="emision_aceptacion">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Consultar Rechazo o Reclamo: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="emision_rechazo">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-form-field fxFlex="50" [floatLabel]="'always'">
+                                <mat-label style="color:rgb(131, 129, 129) !important">Inicio Consulta Eventos DIAN</mat-label>
+                                <input matInput [matDatepicker]="emisionInicioConsultaEventosDian"
+                                    [formControl]="emision_fecha_inicio_consulta_eventos_dian" 
+                                    (click)="emisionInicioConsultaEventosDian.open()">
+                                <mat-icon *ngIf="emisionEventosDian.controls['emision_aceptaciont'].value == 'SI'" matSuffix class="fi">star rate</mat-icon>
+                                <mat-datepicker-toggle matSuffix [for]="emisionInicioConsultaEventosDian"></mat-datepicker-toggle>
+                                <mat-datepicker #emisionInicioConsultaEventosDian></mat-datepicker>
+                                <mat-error *ngIf="emisionEventosDian.controls['emision_aceptaciont'].value == 'SI' && !emision_fecha_inicio_consulta_eventos_dian.valid">
+                                    Seleccione la Fecha...
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <!-- RECEPCIÓN - EVENTOS DIAN -->
+                    <mat-expansion-panel [formGroup]="recepcionEventosDian" *ngIf="muestraOpcionesRelacionadasRecepcion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">RECEPCIÓN - EVENTOS DIAN</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Consulta Estado Documento Electrónico en la DIAN: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="recepcion_get_status">
+                                <mat-radio-button value="SI" class="mr-16"  (click)="marcarOpcionesRecepcionEventosDian('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="marcarOpcionesRecepcionEventosDian('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Acuse de Recibo: </mat-label>
+                            <mat-radio-group fxFlex="15" [formControl]="recepcion_acuse_recibo">
+                                <mat-radio-button value="SI" class="mr-16" (click)="changeAcuseRecibo('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="changeAcuseRecibo('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                            <mat-label *ngIf="recepcion_acuse_recibo.value == 'SI'" fxFlex="20" class="control-label pl-24 pr-8" fxLayoutAlign="start">Generación Automática:</mat-label>
+                            <mat-radio-group *ngIf="recepcion_acuse_recibo.value == 'SI'" fxFlex="15" [formControl]="recepcion_generacion_automatica_acuse_recibo" fxLayoutAlign="start">
+                                <mat-radio-button value="SI" class="mr-16" (click)="changeGeneracionAutomaticaAcuseRecibo('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="changeGeneracionAutomaticaAcuseRecibo('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Constancia Recibo Bien y/o Servicio: </mat-label>
+                            <mat-radio-group fxFlex="15" [formControl]="recepcion_recibo_bien">
+                                <mat-radio-button value="SI" class="mr-16" (click)="changeReciboBien('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="changeReciboBien('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                            <mat-label *ngIf="recepcion_recibo_bien.value == 'SI'" fxFlex="20" class="control-label pl-24 pr-8" fxLayoutAlign="start" >Generación Automática:</mat-label>
+                            <mat-radio-group *ngIf="recepcion_recibo_bien.value == 'SI'" fxFlex="15" [formControl]="recepcion_generacion_automatica_recibo_bien" fxLayoutAlign="start">
+                                <mat-radio-button value="SI" class="mr-16" (click)="changeGeneracionAutomaticaReciboBien('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="changeGeneracionAutomaticaReciboBien('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Aceptación Expresa: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="recepcion_aceptacion">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Rechazo o Reclamo: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="recepcion_rechazo">
+                                <mat-radio-button value="SI" class="mr-16"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label fxFlex="40" class="control-label">Aceptación Tácita: </mat-label>
+                            <mat-radio-group fxFlex="60" [formControl]="recepcion_aceptaciont">
+                                <mat-radio-button value="SI" class="mr-16" (click)="mostrarRecepcionInicioConsultaEventosDian('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (click)="mostrarRecepcionInicioConsultaEventosDian('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-form-field fxFlex="50" [floatLabel]="'always'">
+                                <mat-label style="color:rgb(131, 129, 129) !important">Inicio Consulta Evento Aceptación Tácita</mat-label>
+                                <input matInput [matDatepicker]="recepcionInicioConsultaEventosDian"
+                                    [formControl]="recepcion_fecha_inicio_consulta_eventos_dian" 
+                                    (click)="recepcionInicioConsultaEventosDian.open()">
+                                <mat-icon *ngIf="recepcionEventosDian.controls['recepcion_aceptaciont'].value == 'SI'" matSuffix class="fi">star rate</mat-icon>
+                                <mat-datepicker-toggle matSuffix [for]="recepcionInicioConsultaEventosDian"></mat-datepicker-toggle>
+                                <mat-datepicker #recepcionInicioConsultaEventosDian></mat-datepicker>
+                                <mat-error *ngIf="recepcionEventosDian.controls['recepcion_aceptaciont'].value == 'SI' && !recepcion_fecha_inicio_consulta_eventos_dian.valid">
+                                    Seleccione la Fecha...
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <app-datos-evento-dian #infoEventosDian
+                        [tiposDocumento]="tiposDocumento"
+                        [ver]="false"
+                        [tituloSeccion]="'RECEPCIÓN - INFORMACIÓN PARA EVENTOS DIAN'"
+                        [mostrarSeccion]="muestraOpcionesRelacionadasRecepcion && (aplicaGeneracionAutomaticaAcuseRecibo || aplicaGeneracionAutomaticaReciboBien)"
+                    ></app-datos-evento-dian>
+
+                    <!-- RECEPCIÓN - NOTIFICACIÓN EVENTOS DIAN -->
+                    <mat-expansion-panel [formGroup]="notificacionEventosDian" *ngIf="(serviciosContratados.get('ofe_emision').value === 'SI' || serviciosContratados.get('ofe_recepcion').value === 'SI')">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">RECEPCIÓN - NOTIFICACIÓN EVENTOS DIAN</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-label class="control-label mr-32">¿Hará uso de la Notificación Estándar?</mat-label>
+                            <mat-radio-group [formControl]="ofe_recepcion_correo_estandar">
+                                <mat-radio-button value="SI" class="mr-12"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <br>
+                        <div fxLayout="row">
+                            <div fxFlex="48">
+                                <p>La imagen debe estar en formato PNG y poseer unas dimensiones máximas de 200 píxeles de ancho x 150 píxeles de alto</p>
+                                <input type="hidden" name="fileHidden" [formControl]="ofe_recepcion_correo_estandar_logo"/>
+                                <input #fileEvento type="file" accept='.png' class="input-hidden" (change)="previsualizarImagen(fileEvento.files, 'notificacionEventosDian')" >
+                                <button mat-raised-button color="accent" (click)="fileEvento.click()">
+                                    Seleccionar Logo
+                                </button>
+                                <button mat-raised-button color="warn" (click)="quitarLogo('notificacionEventosDian')" *ngIf="imgUrl" style="margin-left: 5px;">
+                                    <mat-icon matToolTip="Quitar" color="#ffffff">delete</mat-icon>
+                                </button>
+                                <br>
+                                <div style="border: 1px solid black; display:inline-block; padding:5px; max-width:220px; max-height:160px; width:auto; height:auto; margin-top: 5px; margin-bottom: 5px;" *ngIf="imgUrl">
+                                    <img #imagenEvento [src]="imgUrl" style="max-width:200px; max-height:150px; width:auto; height:auto;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <!-- RECEPCIÓN - TRANSMISIÓN ERP -->
+                    <mat-expansion-panel [formGroup]="recepcionTransmisionErp" *ngIf="muestraOpcionesRelacionadasRecepcion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">RECEPCIÓN - TRANSMISIÓN ERP</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-16"> 
+                            <mat-label class="control-label" style="margin-right: 43px">Transmitir a ERP: </mat-label>
+                            <mat-radio-group [formControl]="ofe_recepcion_transmision_erp">
+                                <mat-radio-button value="SI" (change)="readonlyConexionErp = false" style="margin-right: 15px"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (change)="readonlyConexionErp = true"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <br>
+                        <div fxLayout="row"> 
+                            <mat-form-field fxFlex="100%" [floatLabel]="'always'">
+                                <mat-label class="control-label">Conexión ERP (<small>La información debe ser ingresada como objeto JSON</small>)</mat-label>
+                                <textarea matInput [formControl]="ofe_recepcion_conexion_erp" rows="10" [readonly]="readonlyConexionErp"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ofeIntegracionEcm" [expanded]="ver" *ngIf="(_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existeRol(aclsUsuario.roles, 'usuarioma')) && mostrarIntegracionEcm == 'SI'">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                    <strong style="font-size: large">INTEGRACIÓN openECM</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ofeIntegracionEcm.valid && !ver">
+                                <span style="color: red">¡Datos Requeridos por Completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-16">
+                            <mat-label class="control-label" class="mr-16">Activar integración con openECM: </mat-label>
+                            <mat-radio-group [formControl]="ofe_integracion_ecm" [disabled]="ver">
+                                    <mat-radio-button value="SI" class="mr-16" (click)="camposIntegracionOpenEcm('SI');"> SI </mat-radio-button>
+                                    <mat-radio-button value="NO" (click)="camposIntegracionOpenEcm('NO');"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" *ngIf="!integracionNo">
+                            <mat-form-field fxFlex="40">
+                                    <mat-label class="control-label">Id Base de Datos:</mat-label>
+                                    <input matInput type="text" [formControl]="ofe_integracion_ecm_id_bd" [readonly]="ver">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="40">
+                                <mat-label class="control-label">Id Negocio:</mat-label>
+                                <input matInput type="text" [formControl]="ofe_integracion_ecm_id_negocio" [readonly]="ver">
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="40">
+                                    <mat-label class="control-label">Url API:</mat-label>
+                                    <input matInput type="text" [formControl]="ofe_integracion_ecm_url_api" [readonly]="ver">
+                            </mat-form-field>
+                        </div>
+                        
+                        <div [formGroup]="integracionEcm" *ngIf="!integracionNo">
+                            <div class="mt-12" fxLayout="row" fxLayoutAlign="start">
+                                <button type="button" mat-raised-button matTooltip="Agregar Módulo" (click)="agregarIntegracionOpenEcm()" color="primary" [disabled]="ver">
+                                    <mat-icon aria-label="AgregarModulo">add_circle</mat-icon> Agregar Módulo
+                                </button>
+                            </div>
+                            <mat-panel-description *ngIf="integracionEcm.invalid && !ver">
+                                <span style="color: red">¡Datos Invalidos!</span>
+                            </mat-panel-description>
+    
+                            <div *ngFor="let integracionEcm of integracionEcm.get('integracionesEcm')['controls']; let i = index" formArrayName="integracionesEcm">
+                                <div
+                                    [formGroupName] ="i"
+                                    fxLayout="row wrap"
+                                    fxLayout.lt-sm="column"
+                                    fxLayoutGap="20px"
+                                    fxLayoutAlign="flex-start"
+                                    class="mt-8"
+                                >
+                                    <ng-select
+                                        class="customNgSelectRequired"
+                                        fxFlex="22%"
+                                        fxFlex.lt-md="40%"
+                                        fxFlex.lt-sm="100%"
+                                        [items]="itemsSelectEmision"
+                                        bindLabel="alias"
+                                        bindValue="id"
+                                        placeholder="Módulo"
+                                        notFoundText="No hay coincidencias"
+                                        loadingText="..."
+                                        appendTo="body"
+                                        formControlName="id_modulo_integracion_ecm"
+                                        [readonly]="ver"
+                                    ></ng-select>
+    
+                                    <mat-form-field
+                                        fxFlex="20%"
+                                        fxFlex.lt-md="35%"
+                                        fxFlex.lt-sm="100%"
+                                        [floatLabel]="'always'"
+                                    >
+                                        <input matInput 
+                                            placeholder="Id Servicio" 
+                                            formControlName="id_servicio_integracion_ecm" 
+                                            maxlength="200" 
+                                            style="margin-top:6px !important"
+                                            [readonly]="ver">
+                                    </mat-form-field>
+    
+                                    <mat-form-field
+                                        fxFlex="20%"
+                                        fxFlex.lt-md="35%"
+                                        fxFlex.lt-sm="100%"
+                                        [floatLabel]="'always'"
+                                    >
+                                        <input matInput 
+                                            placeholder="Id Sitio" 
+                                            formControlName="id_sitio_integracion_ecm" 
+                                            maxlength="200" 
+                                            style="margin-top:6px !important"
+                                            [readonly]="ver">
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        fxFlex="20%"
+                                        fxFlex.lt-md="35%"
+                                        fxFlex.lt-sm="100%"
+                                        [floatLabel]="'always'"
+                                    >
+                                        <input matInput 
+                                            placeholder="Id Grupo" 
+                                            formControlName="id_grupo_integracion_ecm" 
+                                            maxlength="200" 
+                                            style="margin-top:6px !important"
+                                            [readonly]="ver">
+                                    </mat-form-field>
+                                    <button type="button" mat-icon-button color="warn" matTooltip="Eliminar Modulo" (click)="eliminarCamposIntegracionOpenEcm(i)" *ngIf="i >= 0" [disabled]="ver">
+                                        <mat-icon aria-label="eliminarModulo">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+					</mat-expansion-panel>
+
+                    <!-- CADISOFT -->
+                    <mat-expansion-panel [formGroup]="configuracionCadisoft">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CADISOFT</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row"> 
+                            <mat-label class="control-label" style="margin-right: 43px">Activar integración con CADISOFT: </mat-label>
+                            <mat-radio-group [formControl]="ofe_cadisoft_activo">
+                                <mat-radio-button (click)="activarDesactivarCadisoft('SI')" value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                <mat-radio-button (click)="activarDesactivarCadisoft('NO')" value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div fxLayout="row" *ngIf="configuracionCadisoft.get('ofe_cadisoft_activo').value === 'SI'">
+                            <mat-form-field fxFlex="100">
+                                <mat-label class="control-label">URL API Facturas: </mat-label>
+                                <input matInput type="url" [formControl]="ofe_cadisoft_api_fc">
+                                <mat-error *ngIf="ofe_cadisoft_api_fc && !ofe_cadisoft_api_fc.valid">
+                                    Ingrese la URL del endpoint para consumo de Facturas
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="configuracionCadisoft.get('ofe_cadisoft_activo').value === 'SI'">
+                            <mat-form-field fxFlex="48">
+                                <mat-label class="control-label">Usuario: </mat-label>
+                                <input matInput type="text" [formControl]="ofe_cadisoft_api_fc_usuario">
+                                <mat-error *ngIf="ofe_cadisoft_api_fc_usuario && !ofe_cadisoft_api_fc_usuario.valid">
+                                    Ingrese el usuario del endpoint para consumo de Facturas
+                                </mat-error>
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="50">
+                                <mat-label class="control-label">Password: </mat-label>
+                                <input matInput type="text" [formControl]="ofe_cadisoft_api_fc_password">
+                                <mat-error *ngIf="ofe_cadisoft_api_fc_password && !ofe_cadisoft_api_fc_password.valid">
+                                    Ingrese el password del endpoint para consumo de Facturas
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="configuracionCadisoft.get('ofe_cadisoft_activo').value === 'SI'">
+                            <mat-form-field fxFlex="100">
+                                <mat-label class="control-label">URL API Notas: </mat-label>
+                                <input matInput type="text" [formControl]="ofe_cadisoft_api_notas">
+                                <mat-error *ngIf="ofe_cadisoft_api_notas && !ofe_cadisoft_api_notas.valid">
+                                    Ingrese la URL del endpoint para consumo de Notas
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="configuracionCadisoft.get('ofe_cadisoft_activo').value === 'SI'">
+                            <mat-form-field fxFlex="48">
+                                <mat-label class="control-label">Usuario: </mat-label>
+                                <input matInput type="text" [formControl]="ofe_cadisoft_api_notas_usuario">
+                                <mat-error *ngIf="ofe_cadisoft_api_notas_usuario && !ofe_cadisoft_api_notas_usuario.valid">
+                                    Ingrese el usuario del endpoint para consumo de Notas
+                                </mat-error>
+                            </mat-form-field>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="50">
+                                <mat-label class="control-label">Password: </mat-label>
+                                <input matInput type="text" [formControl]="ofe_cadisoft_api_notas_password">
+                                <mat-error *ngIf="ofe_cadisoft_api_notas_password && !ofe_cadisoft_api_notas_password.valid">
+                                    Ingrese el password del endpoint para consumo de Notas
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div fxLayout="row" *ngIf="configuracionCadisoft.get('ofe_cadisoft_activo').value === 'SI'">
+                            <div fxFlex="48">
+                                <h4>LOGO</h4>
+                                <p>La imagen debe estar en formato PNG y poseer unas dimensiones máximas de 200 píxeles de ancho x 150 píxeles de alto</p>
+                                <input type="hidden" name="fileHidden" [formControl]="ofe_cadisoft_logo"/>
+                                <input #file type="file" accept='.png' class="input-hidden" (change)="previsualizarImagen(file.files, 'cadisoft')"/>
+                                <button mat-raised-button color="accent" (click)="file.click()">
+                                    Seleccionar Logo
+                                </button>
+                                <button mat-raised-button color="warn" (click)="quitarLogo('cadisoft')" *ngIf="imgUrlCadisoft" style="margin-left: 5px;">
+                                    <mat-icon matToolTip="Quitar" color="#ffffff">delete</mat-icon>
+                                </button>
+                                <br>
+                                <div style="border: 1px solid black; display:inline-block; padding:5px; max-width:220px; max-height:160px; width:auto; height:auto; margin-top: 5px; margin-bottom: 5px;" *ngIf="imgUrlCadisoft">
+                                    <img #imagen [src]="imgUrlCadisoft" style="max-width:200px; max-height:150px; width:auto; height:auto;"/>
+                                </div>
+                            </div>
+                            <div fxFlex="2"></div>
+                            <mat-form-field fxFlex="50">
+                                <mat-label class="control-label">Fecuencia de consulta de datos (segundos): </mat-label>
+                                <input matInput type="number" [formControl]="ofe_cadisoft_frecuencia">
+                                <mat-error *ngIf="ofe_cadisoft_frecuencia && !ofe_cadisoft_frecuencia.valid">
+                                    Ingrese la frecuencia de consulta de datos, no puede ser cero.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" [disabled]="!validarEstadoFormulario()" (click)="guardarConfiguracionServicios()">
+                        <mat-icon color="#ffffff">check_box</mat-icon> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

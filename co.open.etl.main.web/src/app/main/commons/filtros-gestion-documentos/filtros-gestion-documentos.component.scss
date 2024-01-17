@@ -1,0 +1,25 @@
+.w-92p {
+    width: 92%;
+}
+
+.w-100p {
+    width: 100%;
+}
+
+.iconSize {
+    font-size: 17px;
+}
+
+.inputSearch {
+    padding: 2px 5px 2px 3px !important;
+}
+
+.mat-pseudo-checkbox-checked::after {
+    width: 9px !important;
+    height: 4px !important;
+}
+
+::ng-deep.mat-select-panel  {
+    max-width: unset !important;
+    width: auto !important;
+}

@@ -1,0 +1,149 @@
+<div fxLayout="column" fxFlex="100">
+    <div fxLayout="row">
+        <div fxFlex="tipo === 'ADQ' || tipo === 'PROV' ? 23 : 30">
+            <ng-select [items]="arrTiposDocumentos"
+                       bindLabel="tdo_codigo_descripion"
+                       bindValue="tdo_codigo"
+                       labelForId="labelTipoDoc"
+                       placeholder="Tipo de Documento"
+                       notFoundText="No hay coincidencias"
+                       loadingText="..."
+                       appendTo="body"
+                       [formControl]="tdo_id"
+                       (change)="cambiarTdo($event)"
+                       [searchFn]="customSearchFnTdo">
+                       <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div style="margin: 5px 0;" class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>{{item.tdo_codigo}}</strong> - {{item.tdo_descripcion}}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+            </ng-select>
+            <mat-error *ngIf="!ver && !tdo_id.valid && tdo_id.touched">
+                {{formErrors.tdo_id.required}}
+            </mat-error>
+        </div>
+        <div fxFlex="2"></div>
+        <div fxFlex="tipo === 'ADQ' || tipo === 'PROV' ? 23 : 30">
+            <ng-select [items]="arrTiposOrganizaciones"
+                       bindLabel="toj_codigo_descripion"
+                       bindValue="toj_codigo"
+                       labelForId="labelTipoOrg"
+                       placeholder="Tipo de Organización Jurídica"
+                       notFoundText="No hay coincidencias"
+                       loadingText="..."
+                       appendTo="body"
+                       [formControl]="toj_id"
+                       (change)="cambiarToj($event)"
+                       [searchFn]="customSearchFnToj">
+                       <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div style="margin: 5px 0;" class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>{{item.toj_codigo}}</strong> - {{item.toj_descripcion}}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+            </ng-select>
+            <mat-error *ngIf="!ver && toj_id && !toj_id.valid && toj_id.touched">
+                {{formErrors.toj_id.required}}
+            </mat-error>
+        </div>
+        <div fxFlex="2"></div>
+        <mat-form-field fxFlex="tipo === 'ADQ' || tipo === 'PROV' ? 23 : 30">
+            <mat-label class="control-label" style="padding-top:0px;">Identificación</mat-label>
+            <input matInput type="text" [formControl]="identificacion" [maxlength]="maxlengthIdentificacion"
+                   #IdentificacionInput [readonly]="sololectura" (blur)="calcularDV()" [pattern]=regexIdentificacion>
+            <mat-icon matSuffix class="fi">star rate</mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{ IdentificacionInput.value?.length || 0 }}/{{ maxlengthIdentificacion }}</mat-hint>
+            <mat-error *ngIf="!ver && !identificacion.valid">
+                {{formErrors.identificacion.required}}
+            </mat-error>
+        </mat-form-field>
+        <ng-container *ngIf="mostrarDV">
+            <div fxFlex="2" ></div>
+            <mat-form-field fxFlex="3" style="padding-top:6px;">
+                <mat-label class="control-label">DV</mat-label>
+                <input matInput type="text" [formControl]="DV" readonly>
+            </mat-form-field>
+        </ng-container>
+        <ng-container *ngIf="tipo === 'ADQ'">
+            <div fxFlex="2"></div>
+            <mat-form-field fxFlex="23" style="padding-top:6px;">
+                <mat-label>Id Personalizado</mat-label>
+                <input matInput type="text" [formControl]="adq_id_personalizado" #IdPersonalizado maxlength="100" [readonly]="sololectura">
+                <mat-hint align="end" *ngIf="!ver" class="fh">{{IdPersonalizado.value?.length || 0}}/100</mat-hint>
+            </mat-form-field>
+        </ng-container>
+        <ng-container *ngIf="tipo === 'PROV'">
+            <div fxFlex="2"></div>
+            <mat-form-field fxFlex="23" style="padding-top:6px;">
+                <mat-label>Id Personalizado</mat-label>
+                <input matInput type="text" [formControl]="pro_id_personalizado" #IdPersonalizadoPro maxlength="100" [readonly]="sololectura">
+                <mat-hint align="end" *ngIf="!ver" class="fh">{{IdPersonalizadoPro.value?.length || 0}}/100</mat-hint>
+            </mat-form-field>
+        </ng-container>
+    </div>
+
+    <div fxLayout="row" *ngIf="mostrarInformacionJuridica()">
+        <!-- Inicio Fila -->
+        <mat-form-field fxFlex="49">
+            <mat-label>Razón Social</mat-label>
+            <input matInput type="text" [formControl]="razon_social" #RazonSocial maxlength="255" [readonly]="sololectura">
+            <mat-icon matSuffix class="fi">star rate</mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{RazonSocial.value?.length || 0}}/255</mat-hint>
+            <mat-error *ngIf="!ver && !razon_social.valid">
+                {{formErrors.razon_social.required}}
+            </mat-error>
+        </mat-form-field>
+        <div fxFlex="2"></div>
+        <mat-form-field fxFlex="49">
+            <mat-label>Nombre Comercial</mat-label>
+            <input matInput type="text" [formControl]="nombre_comercial" #NombreComercial maxlength="255" [readonly]="sololectura">
+            <mat-icon matSuffix class="fi">star rate</mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{NombreComercial.value?.length || 0}}/255</mat-hint>
+            <mat-error *ngIf="!ver && !nombre_comercial.valid">
+                {{formErrors.nombre_comercial.required}}
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div fxLayout="row" *ngIf="mostrarInformacionPersonal()">
+        <mat-form-field fxFlex="24">
+            <mat-label>Primer Apellido</mat-label>
+            <input matInput type="text" [formControl]="primer_apellido" #PrimerApellido maxlength="100" [readonly]="sololectura">
+            <mat-icon matSuffix class="fi">star rate</mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{PrimerApellido.value?.length || 0}}/100</mat-hint>
+            <mat-error *ngIf="!ver && !primer_apellido.valid">
+                {{formErrors.primer_apellido.required}}
+            </mat-error>
+        </mat-form-field>
+        <div fxFlex="1"></div>
+        <mat-form-field fxFlex="24" style="padding-top:6px;">
+            <mat-label>Segundo Apellido</mat-label>
+            <input matInput type="text" [formControl]="segundo_apellido" #SegudoApellido maxlength="100" [readonly]="sololectura">
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{SegudoApellido.value?.length || 0}}/100</mat-hint>
+        </mat-form-field>
+        <div fxFlex="2"></div>
+        <mat-form-field fxFlex="24">
+            <mat-label>Primer Nombre</mat-label>
+            <input matInput type="text" [formControl]="primer_nombre" #PrimerNombre maxlength="100" [readonly]="sololectura">
+            <mat-icon matSuffix class="fi">star rate</mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{PrimerNombre.value?.length || 0}}/100</mat-hint>
+            <mat-error *ngIf="!ver && !primer_nombre.valid">
+                {{formErrors.primer_nombre.required}}
+            </mat-error>
+        </mat-form-field>
+        <div fxFlex="1"></div>
+        <mat-form-field fxFlex="24" style="padding-top:6px;">
+            <mat-label>Otros Nombres</mat-label>
+            <input matInput type="text" [formControl]="otros_nombres"
+                   #OtrosNombres maxlength="100" [readonly]="sololectura">
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{OtrosNombres.value?.length || 0}}/100</mat-hint>
+        </mat-form-field>
+    </div>
+</div>

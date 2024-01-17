@@ -1,0 +1,38 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Como diligenciar la Tasa de Cambio</h1>
+
+<mat-dialog-content>
+    <ngx-datatable
+        #tracking
+        class="material striped"
+        [loadingIndicator]="false"
+        [rows]="rows"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [columnMode]="'force'"
+        [rowHeight]="50"
+        [externalSorting]="true"
+        [externalPaging]="true"
+        [reorderable]="reorderable"
+        [selected]="selected"
+        [selectionType]="'checkbox'"
+        [messages]="messageDT"
+        [count]="4"
+        [offset]="0"
+        [limit]="4"
+        [scrollbarH]="true">
+
+        <ngx-datatable-column [width]="100" name="Moneda"              prop="moneda"></ngx-datatable-column>
+        <ngx-datatable-column [width]="140" name="Moneda Extranjera"   prop="moneda_extranjera"></ngx-datatable-column>
+        <ngx-datatable-column [width]="180" name="Enviar a la DIAN ME" prop="enviar_dia_me"></ngx-datatable-column>
+        <ngx-datatable-column [width]="100" name="TRM"                 prop="trm"></ngx-datatable-column>
+        <ngx-datatable-column [width]="140" name="Moneda XML-UBL"      prop="moneda_xml"></ngx-datatable-column>
+        <ngx-datatable-column [width]="320" name="TRM XML-UBL"         prop="trm_xml"></ngx-datatable-column>
+    </ngx-datatable>
+</mat-dialog-content>
+
+<br>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal()" class="button-close">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+</mat-dialog-actions>

@@ -1,0 +1,12 @@
+{
+    "production": true,
+    "API_ENDPOINT":             "http://172.16.27.177:49166/81/api/",
+    "API_DI":                   "http://172.16.27.177:49166/82/api/",
+    "API_DO":                   "http://172.16.27.177:49166/84/api/",
+    "BACKEND_URL":              "http://172.16.27.177:49166/81/",
+    "white_domains" : {
+        "local" : "api.openetl.test",
+        "server_api_main" : "http://172.16.27.177:49166",
+        "server_api_di" : "http://172.16.27.177:49166"
+    }
+}

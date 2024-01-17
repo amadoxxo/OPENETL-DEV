@@ -1,0 +1,56 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Gestionar FE/DS</h1>
+
+<mat-dialog-content>
+    <div class="cab-documentos">
+        <b>Documento(s): {{ arrDocumentos.join(', ') }}</b>
+    </div>
+    <mat-divider class="bot-space"></mat-divider>
+    <form fxLayout="column" name="form" [formGroup]="form">
+        <!-- Conforme o No Conforme -->
+        <div fxLayout="column" class="bot-space">
+            <mat-radio-group [formControl]="estado_gestion" fxLayout="row" fxLayoutGap="8px" fxFlex="100" (change)="changeEstado($event)">
+                <div *ngFor="let elemento of arrOpciones[etapa];" fxFlex="50">
+                    <mat-radio-button [value]="elemento.id">{{ elemento.name }}</mat-radio-button>
+                </div>
+            </mat-radio-group>
+        </div>
+
+        <!-- Causal de Devolución -->
+        <div fxFlex="25" *ngIf="estado_gestion.value === idRechazado" class="box-causal">
+            <mat-form-field [ngClass]="causal_devolucion.value != '' ? 'w-94p' : 'w-100p'">
+                <mat-select placeholder="Causal Devolución" formControlName="causal_devolucion">
+                    <mat-form-field class="w-100p p-8p">
+                        <input #inputCde matInput type="text" placeholder="Buscar Causal Devolución..." (keydown)="keyDownEvent($event)">
+                        <mat-icon matSuffix>search</mat-icon>
+                    </mat-form-field>
+                    <mat-option *ngFor="let registro of filtrarCausalDevolucion(inputCde.value)" [value]="registro.id" (click)="setCausalDevolucion()">
+                        {{ registro.name }}
+                    </mat-option>
+                    <mat-option *ngIf="filtrarCausalDevolucion(inputCde.value).length === 0 && inputCde.value != ''" value="" (click)="setCausalDevolucion()">No hay coincidencias</mat-option>
+                </mat-select>
+                <mat-error>
+                    Debe seleccionar una causal de devolución
+                </mat-error>
+            </mat-form-field>
+            <span class="cursor-pointer borrar-seleccion" *ngIf="causal_devolucion.value != ''" mat-icon-button (click)="clearComboValue()" matTooltip="Limpiar Causal Devolución">
+                <mat-icon class="iconSize mt-4">close</mat-icon>
+            </span>
+        </div>
+
+        <!-- Observación -->
+        <mat-form-field fxFlex="100">
+            <mat-label class="control-label">Observación</mat-label>
+            <textarea matInput [formControl]="observacion" rows="3" cols="200"></textarea>
+        </mat-form-field>
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button cdkFocusInitial mat-raised-button color="accent" (click)="saveModal()" class="button-save" [disabled]="form.invalid">
+        <mat-icon color="#ffffff">save</mat-icon> Guardar
+    </button>
+    <button mat-raised-button color="warn" (click)="closeModal()" class="button-close">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+</mat-dialog-actions>

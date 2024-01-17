@@ -1,0 +1,100 @@
+<div fxLayout="column" fxFlex="100">
+    <ng-container *ngIf="tipo === 'ADQ' || tipo === 'OFE'; else containerOtros">
+        <div fxLayout="row">
+            <mat-form-field fxFlex="32" style="margin: 5px 0;">
+                <mat-label class="control-label">Nombre Contacto: </mat-label>
+                <input matInput type="text" autocomplete="nope" [formControl]="nombreContacto" [readonly]="ver" #Contacto>
+                <mat-hint align="end" *ngIf="!ver" class="fh9">{{Contacto.value?.length || 0}}/255</mat-hint>
+            </mat-form-field>
+            <div fxFlex="2"></div>
+            <mat-form-field fxFlex="32" style="margin: 5px 0;">
+                <mat-label class="control-label">Teléfono: </mat-label>
+                <input matInput type="text" autocomplete="nope" [maxlength]="longitudTelefonoFax" [formControl]="telefono" [readonly]="ver" #Telefono>
+                <mat-hint align="end" *ngIf="!ver" class="fh9">{{Telefono.value?.length || 0}}/{{longitudTelefonoFax}}</mat-hint>
+            </mat-form-field>
+            <div fxFlex="2"></div>
+            <mat-form-field fxFlex="32" style="margin: 5px 0;">
+                <mat-label class="control-label">Fax: </mat-label>
+                <input matInput type="text" autocomplete="nope" [maxlength]="longitudTelefonoFax" [formControl]="fax" [readonly]="ver" #Fax>
+                <mat-hint align="end" *ngIf="!ver" class="fh9">{{Fax.value?.length || 0}}/{{longitudTelefonoFax}}</mat-hint>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row">
+            <mat-form-field fxFlex="{{anchoFelx}}" [ngStyle]="{'padding-top': (tipo === 'OFE') ? '20px' : '25px'}">
+                <mat-label class="control-label">Correo Electrónico: </mat-label>
+                <mat-icon matSuffix class="fi" *ngIf="tipo === 'OFE'">star rate</mat-icon>
+                <input matInput type="text" maxlength="255" [formControl]="correo" [readonly]="ver" #Correo autocomplete="nope">
+                <mat-hint align="end" *ngIf="!ver" class="fh">{{Correo.value?.length || 0}}/255</mat-hint>
+                <mat-error *ngIf="!ver && correo.errors && correo.errors.required">
+                    El correo es requerido!
+                </mat-error>
+                <mat-error *ngIf="!ver && correo.errors && correo.errors.email">
+                    El correo es inválido!
+                </mat-error>
+            </mat-form-field>
+            <div fxFlex="2"></div>
+            <mat-form-field fxFlex="{{anchoFelx}}" style="padding-top: 25px;">
+                <mat-label class="control-label">Matrícula Mercantil: </mat-label>
+                <input matInput type="text" maxlength="100" [formControl]="matricula" [readonly]="ver" #Matricula>
+                <mat-hint align="end" *ngIf="!ver" class="fh">{{Matricula.value?.length || 0}}/100</mat-hint>
+            </mat-form-field>
+            <div fxFlex="2"></div>
+            <mat-form-field fxFlex="{{anchoFelx}}" style="padding-top: 6px;">
+                <mat-label class="control-label">Notas: </mat-label>
+                <textarea matInput rows="2" [formControl]="notas" [readonly]="ver" #Notas></textarea>
+                <mat-hint align="end" *ngIf="!ver" class="fh">{{Notas.value?.length || 0}}</mat-hint>
+            </mat-form-field>
+            <ng-container *ngIf="tipo === 'OFE'">
+                <div fxFlex="2"></div>
+                <div fxFlex="25">
+                    <mat-label class="control-label">Actividad Económica:</mat-label>
+                    <tag-input style="padding-top: 6px;" [formControl]="actividadEconomica"
+                        placeholder=''
+                        [secondaryPlaceholder]=fraseActividadesEconomicas
+                        [addOnPaste]="true"
+                        [modelAsStrings]="true"
+                        [maxItems]="20"
+                        [validators]="validators"
+                        [blinkIfDupe]="true"
+                        [separatorKeyCodes]="[8,9,32,188]"
+                        [separatorKeys]="[';', ',', '-']"
+                        theme="bootstrap"
+                        [disable]="ver">
+                    </tag-input>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+    <ng-template #containerOtros>
+        <div fxLayout="row">
+            <mat-form-field fxFlex="32" style="padding-top: 6px;">
+                <mat-label class="control-label">Correo Electrónico: </mat-label>
+                <mat-icon matSuffix class="fi" *ngIf="tipo === 'OFE'">star rate</mat-icon>
+                <input matInput type="text" maxlength="255" [formControl]="correo" [readonly]="ver" #Correo autocomplete="nope">
+                <mat-hint align="end" *ngIf="!ver" class="fh">{{Correo.value?.length || 0}}/255</mat-hint>
+                <mat-error *ngIf="!ver && correo.errors && correo.errors.required">
+                    El correo es requerido!
+                </mat-error>
+                <mat-error *ngIf="!ver && correo.errors && correo.errors.email">
+                    El correo es inválido!
+                </mat-error>
+            </mat-form-field>
+            <div fxFlex="2"></div>
+            <ng-container *ngIf="tipo !== 'RADIANACTOR'; else radianActor">
+                <mat-form-field fxFlex="32" [ngStyle]="{'padding-top': tipo === 'OFE' ? '11px' : '6px'}">
+                    <mat-label class="control-label">Matrícula Mercantil: </mat-label>
+                    <input matInput type="text" maxlength="100" [formControl]="matricula" [readonly]="ver" #Matricula>
+                    <mat-hint align="end" *ngIf="!ver" class="fh">{{Matricula.value?.length || 0}}/100</mat-hint>
+                </mat-form-field>
+            </ng-container>
+
+            <ng-template #radianActor>
+                <mat-form-field fxFlex="32" style="margin: 5px 0;">
+                    <mat-label class="control-label">Teléfono: </mat-label>
+                    <input matInput type="text" autocomplete="nope" [maxlength]="longitudTelefonoFax" [formControl]="telefono" [readonly]="ver" #Telefono>
+                    <mat-hint align="end" *ngIf="!ver" class="fh9">{{Telefono.value?.length || 0}}/{{longitudTelefonoFax}}</mat-hint>
+                </mat-form-field>
+            </ng-template>
+        </div>
+    </ng-template>
+</div>

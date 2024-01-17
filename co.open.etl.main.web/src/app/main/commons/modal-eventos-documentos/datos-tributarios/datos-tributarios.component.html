@@ -1,0 +1,108 @@
+<div fxFlex="32">
+    <!-- <mat-label>Régimen Fiscal: <span *ngIf="tipo === 'OFE'" class="fi">*</span></mat-label> -->
+    <ng-select [items]="arrRegimenFiscal"
+        bindLabel="rfi_codigo_descripion"
+        bindValue="rfi_codigo"
+        placeholder="Régimen Fiscal:"
+        notFoundText="No hay coincidencias"
+        loadingText="..."
+        appendTo="body"
+        [formControl]="rfi_id"
+        [searchFn]="customSearchFnRegimen">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+        <div style="margin: 5px 0;" class="card">
+            <div class="card-body">
+                <p class="card-text">
+                    <strong>{{item.rfi_codigo}}</strong> - {{item.rfi_descripcion}}
+                </p>
+            </div>
+        </div>
+        </ng-template>
+    </ng-select>
+    <mat-error *ngIf="!ver && rfi_id.touched && rfi_id.errors && rfi_id.errors.required" style="color:red;" class="fh">
+        El Régimen Fiscal es requerido!
+    </mat-error>
+</div>
+<div fxFlex="2"></div>
+<div fxFlex="32">
+    <!-- <mat-label>Responsabilidad Fiscal: <span *ngIf="tipo === 'OFE'" class="fi">*</span></mat-label> -->
+    <ng-select  [items]="arrResponsabilidadFiscal"
+        #selectResponsabilidades
+        bindLabel="ref_codigo_descripion"
+        bindValue="ref_codigo"
+        placeholder="Responsabilidad Fiscal:"
+        notFoundText="No hay coincidencias"
+        loadingText="..."
+        appendTo="body"
+        [multiple]="true"
+        [formControl]="ref_id"
+        [clearOnBackspace]="false"
+        [closeOnSelect]="false"
+        [(ngModel)]="selectedsResFiscalId"
+        [searchFn]="customSearchFnResponsabilidadesFiscales">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.ref_codigo}}</strong> - {{item.ref_descripcion}}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+    </ng-select>
+</div>
+<ng-container *ngIf="origenVendedor">
+    <div fxFlex="2"></div>
+    <div fxFlex="32">
+        <ng-select [items]="arrProcedenciaVendedor"
+            bindLabel="ipv_codigo_descripcion"
+            bindValue="ipv_codigo"
+            placeholder="Procedencia Vendedor:"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            appendTo="body"
+            [formControl]="ipv_id"
+            [searchFn]="customSearchFnProcedenciaVendedor">
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.ipv_codigo}}</strong> - {{item.ipv_descripcion}}
+                    </p>
+                </div>
+            </div>
+            </ng-template>
+        </ng-select>
+        <mat-error *ngIf="!ver && ipv_id.touched && ipv_id.errors && ipv_id.errors.required" style="color:red;" class="fh">
+            La Procedencia Vendedor es requerido!
+        </mat-error>
+    </div>
+</ng-container>
+<ng-container *ngIf="tipo !== 'PROV'">
+    <div fxFlex="2"></div>
+    <div fxFlex="32">
+        <ng-select [items]="arrTributos"
+            #selectTributos
+            bindLabel="tri_codigo_descripion"
+            placeholder="Responsable Tributo"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            appendTo="body"
+            [multiple]="true"
+            [clearOnBackspace]="false"
+            [closeOnSelect]="false"
+            [(ngModel)]="tributosSeleccionados"
+            [searchFn]="customSearchFnTributo"
+            (change)="obtenerRegistro($event)">
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div style="margin: 5px 0;" class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>{{item.tri_codigo}}</strong> - {{item.tri_descripcion}}
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-select>
+    </div>
+</ng-container>

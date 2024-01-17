@@ -1,0 +1,362 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title> {{ textosDinamicos }} </h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form" id="formEventosDocumentos" *ngIf="form">
+        <div>
+            <p *ngIf="selectedOption !== 'datos_validacion' && selectedOption !== 'enviar_a_validacion' && selectedOption !== 'validar' && selectedOption !== 'rechazar' && selectedOption !== 'pagar'">Va a realizar {{ textosDinamicos }} para los siguientes documentos:</p>
+            <p *ngIf="selectedOption === 'datos_validacion' || selectedOption === 'enviar_a_validacion' || selectedOption === 'validar' || selectedOption === 'rechazar' || selectedOption === 'pagar'">{{ textosDinamicos }} los siguientes documentos:</p>
+            <ul>
+                <li *ngFor="let documento of documentos">
+                    {{ documento }}
+                </li>
+            </ul>
+            <p *ngIf="selectedOption === 'rechazo_documento' ">Por favor seleccione el concepto de rechazo e ingrese el motivo de rechazo (no obligatorio) que aplicará para los documentos listados:</p>
+        </div>
+        <span fxFlex="2">&nbsp;</span>
+        <ng-container *ngIf="selectedOption === 'rechazo_documento'">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <div fxFlex="100" fxLayout="column">
+                    <mat-label class="control-label">Concepto de Rechazo: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                    <ng-select class="custom"
+                        [items]="arrConceptosRechazo"
+                        bindLabel="cre_descripcion"
+                        bindValue="cre_codigo"
+                        [dropdownPosition]="'top'"
+                        formControlName="concepto_rechazo">
+                        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                            <div style="margin: 5px 0;" class="card">
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>{{item.cre_codigo}}</strong> - {{item.cre_descripcion}}
+                                    </p>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <mat-error *ngIf="hasError('concepto_rechazo', 'required') && concepto_rechazo.touched">
+                        {{formErrors.concepto_rechazo.required}}
+                    </mat-error>
+                </div>
+            </div>
+            <span fxFlex="2">&nbsp;</span>
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                <mat-form-field fxFlex="100">
+                    <input matInput #inputCod placeholder="Motivo Rechazo (No Obligatorio)" formControlName="motivo_rechazo">
+                </mat-form-field>
+            </div>
+        </ng-container>
+
+        <div *ngIf="selectedOption === 'recibo_del_bien' && !radian" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputCod placeholder="Observación Evento" formControlName="motivo_rechazo">
+            </mat-form-field>
+        </div>
+
+        <ng-container *ngIf="(selectedOption === 'recibo_del_bien' || selectedOption === 'datos_validacion' || selectedOption === 'enviar_a_validacion') && ofeRecepcionFncActivo === 'SI'">
+            <ng-container *ngIf="selectedOption === 'recibo_del_bien'">
+                <h2>Datos Validación</h2>
+            </ng-container>
+
+            <ng-container *ngFor="let campoFnc of form.get('campos_fnc')['controls']; let i = index;" formArrayName="campos_fnc">
+                <div [formGroupName]="i" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].tipo === 'texto' || ofeRecepcionFncConfiguracion.evento_recibo_bien[i].tipo === 'numerico'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].obligatorio === 'SI' && selectedOption !== 'datos_validacion'"
+                        />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].tipo === 'textarea'">
+                        <textarea
+                            matInput
+                            rows="3"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].obligatorio === 'SI' && selectedOption !== 'datos_validacion'"
+                        ></textarea>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].tipo === 'multiple'">
+                        <mat-select
+                            placeholder="{{ ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].obligatorio === 'SI' && selectedOption !== 'datos_validacion'"
+                        >
+                            <mat-option *ngFor="let opciones of ofeRecepcionFncConfiguracion.evento_recibo_bien[i].opciones" [value]="opciones">
+                                {{ opciones }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].tipo === 'por_defecto'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].obligatorio === 'SI' && selectedOption !== 'datos_validacion'"
+                            [value]="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].opciones"
+                        />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].tipo === 'parametrico'">
+                        <mat-select
+                            placeholder="{{ ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.evento_recibo_bien[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.evento_recibo_bien[i].obligatorio === 'SI' && selectedOption !== 'datos_validacion'"
+                        >
+                            <mat-option *ngFor="let opciones of ofeRecepcionFncConfiguracion.evento_recibo_bien[i].opciones" [value]="opciones">
+                                {{ opciones }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="selectedOption === 'validar' && ofeRecepcionFncActivo === 'SI'">
+            <ng-container *ngFor="let campoFnc of form.get('campos_fnc')['controls']; let i = index;" formArrayName="campos_fnc">
+                <div [formGroupName]="i" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].tipo === 'texto' || ofeRecepcionFncConfiguracion.validacion_aprobacion[i].tipo === 'numerico'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].obligatorio === 'SI'"
+                        />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].tipo === 'textarea'">
+                        <textarea
+                            matInput
+                            rows="3"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].obligatorio === 'SI'"
+                        ></textarea>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].tipo === 'multiple'">
+                        <mat-select
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].obligatorio === 'SI'"
+                        >
+                            <mat-option *ngFor="let opciones of ofeRecepcionFncConfiguracion.validacion_aprobacion[i].opciones" [value]="opciones">
+                                {{ opciones }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].tipo === 'por_defecto'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].obligatorio === 'SI'"
+                            [value]="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].opciones"
+                        />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" [floatLabel]="'always'" *ngIf="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].tipo === 'date'">
+                        <mat-label style="color:rgb(131, 129, 129) !important;">{{ ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo }}</mat-label>
+                        <input matInput
+                            [matDatepicker]="campo_fecha"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_aprobacion[i].campo)
+                            (click)="campo_fecha.open()"
+                            [max]="maxDateFechaFin"
+                        >
+                        <mat-icon *ngIf="ofeRecepcionFncConfiguracion.validacion_aprobacion[i].obligatorio === 'SI'" matSuffix class="fi">star rate</mat-icon>
+                        <mat-datepicker-toggle matSuffix [for]="campo_fecha"></mat-datepicker-toggle>
+                        <mat-datepicker #campo_fecha></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <div *ngIf="selectedOption === 'validar' && !radian" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <div fxFlex="100">
+                <ng-select [items]="usuariosNotificarValidacion"
+                    bindLabel="usuario" 
+                    bindValue="usu_email"
+                    placeholder="Correo Electrónico" 
+                    notFoundText="No hay coincidencias"
+                    loadingText="..."
+                    formControlName="usuarios_notificar"
+                    appendTo="body"
+                    [required]="false"
+                    [multiple]="true">
+                </ng-select>
+            </div>
+        </div>
+
+        <ng-container *ngIf="selectedOption === 'rechazar' && ofeRecepcionFncActivo === 'SI'">
+            <ng-container *ngFor="let campoFnc of form.get('campos_fnc')['controls']; let i = index;" formArrayName="campos_fnc">
+                <div [formGroupName]="i" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_rechazo[i].tipo === 'texto' || ofeRecepcionFncConfiguracion.validacion_rechazo[i].tipo === 'numerico'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_rechazo[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_rechazo[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_rechazo[i].obligatorio === 'SI'"
+                        />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_rechazo[i].tipo === 'multiple'">
+                        <mat-select
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_rechazo[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_rechazo[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_rechazo[i].obligatorio === 'SI'"
+                        >
+                            <mat-option *ngFor="let opciones of ofeRecepcionFncConfiguracion.validacion_rechazo[i].opciones" [value]="opciones">
+                                {{ opciones }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_rechazo[i].tipo === 'por_defecto'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_rechazo[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_rechazo[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_rechazo[i].obligatorio === 'SI'"
+                            [value]="ofeRecepcionFncConfiguracion.validacion_rechazo[i].opciones"
+                        />
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="selectedOption === 'pagar' && ofeRecepcionFncActivo === 'SI'">
+            <ng-container *ngFor="let campoFnc of form.get('campos_fnc')['controls']; let i = index;" formArrayName="campos_fnc">
+                <div [formGroupName]="i" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_pagado[i].tipo === 'texto' || ofeRecepcionFncConfiguracion.validacion_pagado[i].tipo === 'numerico'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_pagado[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_pagado[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_pagado[i].obligatorio === 'SI'"
+                        />
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_pagado[i].tipo === 'multiple'">
+                        <mat-select
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_pagado[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_pagado[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_pagado[i].obligatorio === 'SI'"
+                        >
+                            <mat-option *ngFor="let opciones of ofeRecepcionFncConfiguracion.validacion_pagado[i].opciones" [value]="opciones">
+                                {{ opciones }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="100" *ngIf="ofeRecepcionFncConfiguracion.validacion_pagado[i].tipo === 'por_defecto'">
+                        <input
+                            matInput 
+                            type="text"
+                            placeholder="{{ ofeRecepcionFncConfiguracion.validacion_pagado[i].campo }}"
+                            [formControlName]=_baseService.sanitizarString(ofeRecepcionFncConfiguracion.validacion_pagado[i].campo)
+                            [required]="ofeRecepcionFncConfiguracion.validacion_pagado[i].obligatorio === 'SI'"
+                            [value]="ofeRecepcionFncConfiguracion.validacion_pagado[i].opciones"
+                        />
+                    </mat-form-field>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <div *ngIf="selectedOption !== 'rechazo_documento' && selectedOption !== 'recibo_del_bien' && selectedOption !== 'datos_validacion' && selectedOption !== 'enviar_a_validacion' && selectedOption !== 'validar' && selectedOption !== 'rechazar' && selectedOption !== 'pagar' && !radian" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputCod placeholder="Observación Evento" formControlName="motivo_rechazo">
+            </mat-form-field>
+        </div>
+
+        <div *ngIf="radian && selectedOption !== 'rechazo_documento' && selectedOption !== 'datos_validacion' && selectedOption !== 'enviar_a_validacion' && selectedOption !== 'validar' && selectedOption !== 'rechazar' && selectedOption !== 'pagar' && (selectedOption == 'aceptacion_documento' || selectedOption == 'aceptacion_tacita')" fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputCod placeholder="Observación Evento" formControlName="motivo_rechazo">
+            </mat-form-field>
+        </div>
+
+        <div *ngIf="selectedOption !== 'rechazo_documento' && selectedOption !== 'datos_validacion' && selectedOption !== 'enviar_a_validacion' && selectedOption !== 'validar' && selectedOption !== 'rechazar' && selectedOption !== 'pagar' && selectedOption !== 'aceptacion_documento' &&  selectedOption !== 'aceptacion_tacita' && radian" fxLayout="column" fxLayoutAlign="start">
+            <div fxLayout="row">
+                <mat-form-field fxFlex="40">
+                    <input matInput placeholder="Observación Evento" formControlName="observacion">
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <div fxFlex="58">
+                    <ng-select class="custom"
+                        [items]="arrTiposDocumentos"
+                        bindLabel="tdo_descripcion"
+                        bindValue="tdo_id"
+                        [dropdownPosition]="'bottom'"
+                        placeholder="Tipo de Documento "
+                        formControlName="tipo_documento">
+                        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                            <div style="margin: 5px 0;" class="card">
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>{{item.tdo_codigo}}</strong> - {{item.tdo_descripcion}}
+                                    </p>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <mat-error *ngIf="tipo_documento.invalid && tipo_documento.touched"> 
+                        {{formErrors.tdo_id.required}}
+                    </mat-error>
+                </div>
+            </div>
+
+            <div fxLayout="row">
+                <mat-form-field fxFlex="30">
+                    <input matInput #num_documento placeholder="Número Documento" maxlength="20" formControlName="num_documento">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    <mat-hint class="fh">Máx 20 carácteres</mat-hint>
+                    <mat-hint align="end" class="fh">{{num_documento.value?.length || 0}}/20</mat-hint>
+                    <mat-error *ngIf="!num_documento.valid">
+                        {{formErrors.num_documento.required}}
+                    </mat-error>
+                </mat-form-field>
+                <span fxFlex="4">&nbsp;</span>
+                <mat-form-field fxFlex="30">
+                    <input matInput #nombres placeholder="Nombres" formControlName="nombres">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    <mat-hint class="fh">Máx 100 carácteres</mat-hint>
+                    <mat-hint align="end" class="fh">{{nombres.value?.length || 0}}/100</mat-hint>
+                    <mat-error *ngIf="!nombres.valid">
+                        {{formErrors.nombres.required}}
+                    </mat-error>
+                </mat-form-field>
+                <span fxFlex="4">&nbsp;</span>
+                <mat-form-field fxFlex="30">
+                    <input matInput #apellidos placeholder="Apellidos" formControlName="apellidos">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    <mat-hint class="fh">Máx 100 carácteres</mat-hint>
+                    <mat-hint align="end">{{apellidos.value.length || 0}}/100</mat-hint>
+                    <mat-error *ngIf="!apellidos.valid">
+                        {{formErrors.apellidos.required}}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxlayout="row">
+                <mat-form-field fxFlex="48">
+                    <input matInput #cargo placeholder="Cargo" formControlName="cargo">
+                    <mat-hint align="end">{{cargo.value.length || 0}}/100</mat-hint>
+                </mat-form-field>
+                <span fxFlex="4">&nbsp;</span>
+                <mat-form-field fxFlex="48">
+                    <input matInput #area_seccion placeholder="Area, Sección o Departamento" formControlName="area_seccion">
+                    <mat-hint align="end">{{area_seccion.value.length}}/100</mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="procesamientoEventosDocumentos()">
+        <mat-icon color="#ffffff">check_box</mat-icon> {{selectedOption === 'rechazo_documento' ? 'Rechazar Documentos' : 'Aceptar'}}
+    </button>
+</mat-dialog-actions>
+<br>

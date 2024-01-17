@@ -1,0 +1,208 @@
+<div fxLayout="column" fxFlex="100">
+    <!-- Inicio Fila -->
+    <div fxLayout="row" fxFlex="100">
+        <div fxFlex="32" fxLayout="column">
+            <ng-select *ngIf="tipo !== 'OFE'; else comboPaisOfe"
+                       [items]="paises$ | async"
+                       autocomplete="nope"
+                       #selectPaises
+                       bindLabel="pai_codigo_descripion"
+                       [loading]="paisesLoading"
+                       placeholder="País:"
+                       typeToSearchText="Puede ingresar el Nombre o Código ISO"
+                       notFoundText="No hay coincidencias"
+                       loadingText="..."
+                       [closeOnSelect]="true"
+                       [typeahead]="paisesInput$"
+                       [formControl]="pai_id"
+                       appendTo="body"
+                       [(ngModel)]="selectedPaiId"
+                       (clear)="clearPais()"
+                       (change)="cambiarPais($event)">
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                    <div style="margin: 5px 0;" class="card">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>{{item.pai_codigo}}</strong> - {{item.pai_descripcion}}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-select>
+            <ng-template #comboPaisOfe>
+                <ng-select [items]="opcionesComboPais"
+                       bindLabel="pai_codigo_descripion"
+                       placeholder="País:"
+                       notFoundText="No hay coincidencias"
+                       loadingText="..."
+                       [closeOnSelect]="true"
+                       [formControl]="pai_id"
+                       appendTo="body"
+                       [(ngModel)]="selectedPaiId"
+                       (change)="cambiarPais($event)">
+                    <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div style="margin: 5px 0;" class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>{{item.pai_codigo}}</strong> - {{item.pai_descripcion}}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-select>
+            </ng-template>
+
+            <mat-error *ngIf="!ver && !pai_id.valid" class="fh12">
+                El País es requerido!
+            </mat-error>
+        </div>
+        <div fxFlex="2"></div>
+        <div fxFlex="32" fxLayout="column">
+            <ng-select [items]="departamentos$ | async"
+                       autocomplete="nope"
+                       #selectDepartamentos
+                       bindLabel="dep_codigo_descripion"
+                       [loading]="departamentosLoading"
+                       placeholder="Departamento:"
+                       typeToSearchText="Puede ingresar el nombre o código"
+                       [closeOnSelect]="true"
+                       notFoundText="No hay coincidencias"
+                       loadingText="..."
+                       [typeahead]="departamentosInput$"
+                       [formControl]="dep_id"
+                       [(ngModel)]="selectedDepId"
+                       (change)="cambiarDepartamento($event)"
+                       (clear)="clearDepartamento()"
+                       appendTo="body">
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                    <div style="margin: 5px 0;" class="card">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>{{item.dep_codigo}}</strong> - {{item.dep_descripcion}}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-select>
+            <mat-error *ngIf="!ver && !dep_id.valid" class="fh12">
+                El Departamento es requerido!
+            </mat-error>
+        </div>
+        <div fxFlex="2"></div>
+        <div fxFlex="32" fxLayout="column">
+            <ng-select [items]="municipios$ | async"
+                       autocomplete="nope"
+                       #selectMunicipios
+                       bindLabel="mun_codigo_descripion"
+                       [loading]="municipiosLoading"
+                       placeholder="Municipio/Ciudad: "
+                       typeToSearchText="Puede ingresar el nombre o código"
+                       [closeOnSelect]="true"
+                       notFoundText="No hay coincidencias"
+                       loadingText="..."
+                       [typeahead]="municipiosInput$"
+                       [formControl]="mun_id"
+                       [(ngModel)]="selectedMunId"
+                       (clear)="clearMunicipio()"
+                       appendTo="body">
+                <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                    <div style="margin: 5px 0;" class="card">
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>{{item.mun_codigo}}</strong> - {{item.mun_descripcion}}
+                            </p>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-select>
+            <mat-error *ngIf="!ver && !mun_id.valid" class="fh12">
+                El Municipio es requerido!
+            </mat-error>
+        </div>
+    </div>
+    <!-- Fin Fila -->
+    <br>
+    <!-- Inicio Fila -->
+    <div fxLayout="row">
+        <mat-form-field fxFlex="45" [ngStyle]="{'margin-top':direccionRequerida ? '0px' : '6px' }">
+            <mat-label class="control-label">{{ tipo === 'OFE' ? 'Dirección Principal' : 'Dirección' }}</mat-label>
+            <input matInput type="text" maxlength="255" [formControl]="direccion" [readonly]="ver" #Direccion autocomplete="nope" (input)="cambioDireccion($event)" >
+            <mat-icon matSuffix class="fi" *ngIf="direccionRequerida">star rate</mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh9">{{Direccion.value?.length || 0}}/255</mat-hint>
+            <mat-error *ngIf="!ver && !direccion.valid">
+                La Dirección es requerida!
+            </mat-error>
+        </mat-form-field>
+        <span fxFlex="2">&nbsp;</span>
+        <div fxFlex="15" fxLayout="column" *ngIf="tipo !== 'DN'">
+            <ng-select [items]="codigos$ | async"
+                #selectCodigos
+                autocomplete="nope"
+                bindLabel="cpo_codigo"
+                [loading]="codigosLoading"
+                placeholder="Código Postal:"
+                typeToSearchText="Puede ingresar una cadena para autocompletar el código"
+                [closeOnSelect]="true"
+                notFoundText="No hay coincidencias"
+                loadingText="..."
+                [typeahead]="codigosInput$"
+                [formControl]="codigo_postal"
+                [(ngModel)]="selectedCpoId"
+                (clear)="clearCodigoPostal()"
+                (change)="cambiarCodigoPostal($event)"
+                appendTo="body">
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div style="margin: 5px 0;" class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>{{item.cpo_codigo}}</strong>
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+            </ng-select>
+            <mat-error *ngIf="!ver && !codigo_postal.valid" style="color:red;" class="fh12">
+                El Código Postal es requerido!
+            </mat-error>
+        </div>
+        <ng-container *ngIf="tipo !== 'ADQ' && tipo !== 'OFE'">
+            <span fxFlex="2">&nbsp;</span>
+            <div fxFlex="36" fxLayout="column" style="margin: 5px 0;">
+                <ng-container *ngIf="tipoUbicacion !== 'fiscal' || tipo === 'DN'">
+                    <mat-form-field fxFlex="49">
+                        <mat-label class="control-label">Teléfono: </mat-label>
+                        <input matInput type="text" autocomplete="nope" [maxlength]="longitudTelefono" [formControl]="telefono" [readonly]="ver" #Telefono>
+                        <mat-hint align="end" *ngIf="!ver" class="fh9">{{Telefono.value?.length || 0}}/{{longitudTelefono}}</mat-hint>
+                        <mat-error *ngIf="!ver && tipo === 'OFE' && !telefono.valid">
+                            El Teléfono es requerido!
+                        </mat-error>
+                    </mat-form-field>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+    <!-- Fin Fila -->
+
+    <!-- Inicio Fila Direcciones Adicionales OFEs -->
+    <div fxLayout="row" fxLayoutAlign="start start" *ngIf="tipo === 'OFE' && tipoUbicacion !== 'fiscal'">
+        <button mat-raised-button type="button" color="primary" matTooltip="Agregar Dirección Adicional" (click)="agregarDireccion()">
+            <mat-icon aria-label="AgregarUsuario" class="green-icon">add_circle</mat-icon>
+            Agregar Dirección Adicional
+        </button>
+    </div>
+    <span fxFlex="2">&nbsp;</span>
+    <div *ngIf="tipo === 'OFE' && tipoUbicacion !== 'fiscal'" [formGroup]="formDireccionesAdicionales">
+        <div *ngFor="let direccionAdicional of formDireccionesAdicionales.get('direcciones_adicionales')['controls']; let i = index" formArrayName="direcciones_adicionales">
+            <div fxLayout="row" fxLayoutAlign="start center" [formGroupName] ="i">
+                <mat-form-field fxFlex="100" >
+                    <input matInput placeholder="Dirección Adicional" formControlName="direccion">
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <button mat-icon-button type="button" color="warn" matTooltip="Eliminar Dirección" (click)="eliminarDireccion(i)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Fin Fila -->
+</div>

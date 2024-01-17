@@ -1,0 +1,54 @@
+<div id="rol" class="page-layout simple fullwidth" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Gestión Documentos</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ txtBreadCrum }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ txtBreadCrum }}</div> 
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24 pb-6">
+        <div class="mat-white-bg mat-elevation-z4">
+            <div fxLayout="column" fxLayoutGap="15px" class="px-24 pt-24">
+                <app-filtros-gestion-documentos #filtros [etapa]="etapa" [parent]="this"></app-filtros-gestion-documentos>
+                <div fxFlex="100" fxLayout="row" fxLayoutAlign="end center" >
+                    <button mat-raised-button type="button" color="accent" [disabled]="filtros.form.invalid" matTooltip="Buscar Documentos" (click)="searchDocumentos()">
+                        <mat-icon color="#ffffff">search</mat-icon> Buscar
+                    </button>
+                </div>
+                <mat-divider></mat-divider>
+            </div>
+
+            <app-gestion-documentos-tracking #gestionDocumentosTracking
+                [trackingInterface]="trackingInterface"
+                [columns]="columns"
+                [rows]="registros"
+                [etapa]="etapa"
+                [accionesLote]="accionesBloque"
+                [multiSelect]="accionesBloque.length > 0"
+                [loadingIndicator]="loadingIndicator"
+                [totalElements]="totalElements"
+                [existeConsulta]="existeConsulta"
+                [linkAnterior]="linkAnterior"
+                [linkSiguiente]="linkSiguiente"
+                [totalShow]="totalShow"
+                [permisoGestionarEtapa]="permisoGestionarEtapa"
+                [permisoSiguienteEtapa]="permisoSiguienteEtapa"
+            ></app-gestion-documentos-tracking>
+        </div>
+    </div>
+    <!-- / CONTENT -->
+</div>

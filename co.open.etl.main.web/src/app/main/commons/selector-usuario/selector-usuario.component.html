@@ -1,0 +1,28 @@
+<div fxFlex="100">
+    <ng-select [items]="usuarios$ | async"
+               [multiple]="true"
+               bindLabel="usu_identificacion_nombre"
+               [loading]="usuariosLoading"
+               placeholder="Usuarios: "
+               typeToSearchText="Puede ingresar el nombre o identificación"
+               [closeOnSelect]="true"
+               notFoundText="No hay coincidencias"
+               loadingText="..."
+               [typeahead]="usuariosInput$"
+               [formControl]="usu_id"
+               [(ngModel)]="selectedUsuIds"
+               appendTo="body">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.usu_identificacion}}</strong> - {{item.usu_nombre}} - {{item.usu_email}}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+    </ng-select>
+    <mat-error *ngIf="!usu_id.valid && usu_id.touched" style="color:red;" class="fh">
+        El Usuario es requerido!
+    </mat-error>
+</div>

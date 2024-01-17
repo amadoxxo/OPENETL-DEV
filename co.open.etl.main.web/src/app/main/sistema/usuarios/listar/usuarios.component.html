@@ -1,0 +1,143 @@
+<div id="usuarios" class="page-layout simple fullwidth">
+
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Sistema</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Usuarios</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Usuarios</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-icon-button matTooltip="Recargar" (click)="getData()">
+                    <mat-icon aria-label="Reload" color="#ffffff">autorenew</mat-icon>
+                </button>
+                <span fxFlex="2">&nbsp;</span>
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'AdministracionUsuariosSubir')"  
+                    mat-raised-button [routerLink]="['/sistema/usuarios/subir-usuarios']" color="accent">
+                    <mat-icon color="#ffffff">cloud_upload</mat-icon> Subir
+                </button> 
+                <span fxFlex="2">&nbsp;</span>
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'AdministracionUsuariosBajarUsuariosExcel')"  
+                    mat-raised-button (click)="descargarUsuarios()" class="green-900">
+                    <mat-icon color="#ffffff">cloud_download</mat-icon> Excel
+                </button> 
+                <span fxFlex="2">&nbsp;</span>
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'AdministracionUsuariosNuevo')"  
+                    mat-raised-button [routerLink]="['/sistema/usuarios/nuevo-usuario']" color="accent">
+                    <mat-icon color="#ffffff">add</mat-icon> Nuevo
+                </button> 
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="p-24">
+        <div class="entry">
+            <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between end" >
+                <mat-form-field fxFlex="25">
+                    <mat-select placeholder="Número de registros a mostrar"
+                                (selectionChange)="paginar($event.value)" name="num_registros">
+                        <mat-option *ngFor="let item of paginationSize" [value]="item.value">
+                            {{item.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <input class="search" matInput [size]="100" type="text"
+                            placeholder="Búsqueda rápida" [(ngModel)]="buscar" (keyup.enter)="searchinline()" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-select placeholder="Acciones en Bloque" #selectAcciones (selectionChange)="cambiarEstado($event.value)">
+                        <mat-option [value]="">Acciones en Bloque</mat-option>
+                        <mat-option *ngFor="let accBloque of accionesBloque" [value]="accBloque.id">
+                            {{ accBloque.itemName }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+        <ngx-datatable
+                #tracking
+                class="material striped"
+                [loadingIndicator]="loadingIndicator"
+                [rows]="rows"
+                [columnMode]="'force'"
+                [headerHeight]="50"
+                [footerHeight]="50"
+                [rowHeight]="50"
+                [externalSorting]="true"
+                [externalPaging]="true"
+                [reorderable]="reorderable"
+                [selected]="selected"
+                [selectionType]="'checkbox'"
+                [messages]="messageDT"
+                [count]="totalElements"
+                [offset]="page"
+                [limit]="totalShow"
+                (page)='onPage($event)'
+                (sort)="onSort($event)"
+                (select)='onSelect($event)'
+                [scrollbarH]="true">
+
+            <ngx-datatable-column [width]="48" [canAutoResize]="false" [sortable]="false">
+                <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+                    <mat-checkbox [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" [disabled]="rows.length === 0"></mat-checkbox>
+                </ng-template>
+                <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+                    <mat-checkbox [checked]="isSelected" (change)="onCheckboxChangeFn($event)"></mat-checkbox>
+                </ng-template>
+            </ngx-datatable-column>  
+
+            <ngx-datatable-column name="Opciones" [sortable]="false" [width]="50">
+                <div mat-row>
+                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                                _auth.existePermiso(aclsUsuario.permisos, 'AdministracionUsuariosVer')"  
+                                mat-menu-item [routerLink]="['/sistema/usuarios/ver-usuario/' + row.usu_id + '/' + row.usu_identificacion]">
+                                <mat-icon>visibility</mat-icon>
+                                <span>Ver</span>
+                            </button>
+                            <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                                _auth.existePermiso(aclsUsuario.permisos, 'AdministracionUsuariosEditar')"  
+                                mat-menu-item [routerLink]="['/sistema/usuarios/editar-usuario/' + row.usu_id]">
+                                <mat-icon>edit</mat-icon>
+                                <span>Editar Usuario / Roles</span>
+                            </button>
+                            <button mat-menu-item (click)="cambiarEstadoIndividual(row.usu_id)" *ngIf="row.usu_type !== 'INTEGRACION'">
+                                <mat-icon>compare_arrows</mat-icon>
+                                <span>Cambiar Estado</span>
+                            </button>
+                            <button mat-menu-item (click)="openModalCambioClave(row.usu_id)">
+                                <mat-icon>vpn_key</mat-icon>
+                                <span>Cambiar Clave</span>
+                            </button>
+                        </mat-menu>
+                    </ng-template>
+                </div>
+            </ngx-datatable-column>
+            
+            <ngx-datatable-column name="Nombre" prop="usu_nombre" ></ngx-datatable-column>
+            <ngx-datatable-column name="Identificación" prop="usu_identificacion"></ngx-datatable-column>
+            <ngx-datatable-column name="Email" prop="usu_email"></ngx-datatable-column>
+            <ngx-datatable-column name="Tipo" prop="usu_type"></ngx-datatable-column>
+            <ngx-datatable-column name="Base de Datos" prop="get_base_datos_rg.bdd_alias"></ngx-datatable-column>
+            <ngx-datatable-column name="Estado" prop="estado"></ngx-datatable-column>
+
+        </ngx-datatable>
+    </div>
+    <!-- / CONTENT -->
+</div>

@@ -1,0 +1,28 @@
+
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>{{ tituloModal }}</h1>
+
+<mat-dialog-content>
+    <!-- CONTENT -->
+    <app-open-tracking
+        [rows]="registros"
+        [columns]="columns"
+        [accionesLote]="accionesBloque"
+        [trackingOpciones]="trackingOpciones"
+        [totalElements]="totalElements"
+        [totalShow]="totalShow"
+        [loadingIndicator]="loadingIndicator"
+        [permisoEditar]=""
+        [permisoVer]=""
+        [permisoCambiarEstado]="false"
+        [trackingInterface]="trackingInterface"
+        [paginacionCincoRegistros]="true">
+    </app-open-tracking>
+    <!-- / CONTENT -->
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+</mat-dialog-actions>
+<br>

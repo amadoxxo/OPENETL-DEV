@@ -1,0 +1,81 @@
+<mat-expansion-panel [formGroup]="infoEventosDian" *ngIf="mostrarSeccion">
+    <mat-expansion-panel-header class="right-aligned-header">
+        <mat-panel-title>
+            <strong style="font-size: large">{{tituloSeccion | uppercase}}</strong>
+        </mat-panel-title>
+        <mat-panel-description *ngIf="!infoEventosDian.valid && !ver">
+            <span style="color: red">Existen datos requeridos por completar!</span>
+        </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div fxLayout="column" fxFlex="100">
+        <div fxLayout="row" fxFlex="100" fxLayoutGap="15px">
+            <div fxFlex="40">
+                <ng-select class="custom"
+                    [items]="tiposDocumento"
+                    bindLabel="tdo_codigo_descripion"
+                    bindValue="tdo_codigo"
+                    labelForId="labelTipoDoc"
+                    placeholder="Tipo de Documento "
+                    notFoundText="No hay coincidencias"
+                    loadingText="..."
+                    appendTo="body"
+                    [formControl]="tdo_id"
+                    [searchFn]="customSearchFnTdo">
+                    <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                        <div style="margin: 5px 0;" class="card">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    <strong>{{item.tdo_codigo}}</strong> - {{item.tdo_descripcion}}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-select>
+                <mat-error *ngIf="!ver && !tdo_id.valid && tdo_id.touched">
+                    {{formErrors.tdo_id.required}}
+                </mat-error>
+            </div>
+            <mat-form-field fxFlex="15">
+                <input matInput #inputNombres placeholder="Número Documento" maxlength="20" formControlName="use_identificacion">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                <mat-hint *ngIf="!ver" align="end" class="fh">{{inputNombres.value?.length || 0}}/20</mat-hint>
+                <mat-error *ngIf="!ver && !use_identificacion.valid">
+                    {{formErrors.use_identificacion.required}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlex="23">
+                <input matInput #inputNombres placeholder="Nombres" maxlength="100" formControlName="use_nombres">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="!ver" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="!ver" align="end" class="fh">{{inputNombres.value?.length || 0}}/100</mat-hint>
+                <mat-error *ngIf="!ver && !use_nombres.valid">
+                    {{formErrors.use_nombres.required}}
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field fxFlex="22">
+                <input matInput #inputApellidos placeholder="Apellidos" maxlength="100" formControlName="use_apellidos">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="!ver" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="!ver" align="end" class="fh">{{inputApellidos.value?.length || 0}}/100</mat-hint>
+                <mat-error *ngIf="!ver && !use_apellidos.valid">
+                    {{formErrors.use_apellidos.required}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+            <mat-form-field fxFlex="50">
+                <input matInput #inputCargo placeholder="Cargo" maxlength="100" formControlName="use_cargo">
+                <mat-hint *ngIf="!ver" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="!ver" align="end" class="fh">{{inputCargo.value?.length || 0}}/100</mat-hint>
+            </mat-form-field>
+        
+            <mat-form-field fxFlex="50">
+                <input matInput #inputArea placeholder="Area, Sección o Departamento" maxlength="100" formControlName="use_area">
+                <mat-hint *ngIf="!ver" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="!ver" align="end" class="fh">{{inputArea.value?.length || 0}}/100</mat-hint>
+            </mat-form-field>
+        </div>
+    </div>
+</mat-expansion-panel>

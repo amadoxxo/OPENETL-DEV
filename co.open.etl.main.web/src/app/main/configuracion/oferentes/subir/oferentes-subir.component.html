@@ -1,0 +1,39 @@
+<div id="forms" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Comunes</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Obligados a Facturar Electrónicamente</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Subir Obligados a Facturar Electrónicamente</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">Subir Obligados a Facturar Electrónicamente</div> 
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button type="button" color="accent" [routerLink]="['/configuracion/oferentes']">
+                    <mat-icon color="primary">keyboard_arrow_left</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24">
+        <div class="mat-elevation-z4">
+            <div class="mat-white-bg p-24" style="background-color: white;">
+                <app-cargas-masivas [tipo]="'OFE'"></app-cargas-masivas>
+            </div>
+            <app-log-errores [tipoLog]="'OFE'"></app-log-errores>
+        </div>
+    </div>
+    <!-- / CONTENT -->
+</div>

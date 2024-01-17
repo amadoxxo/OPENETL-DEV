@@ -1,0 +1,220 @@
+<div id="usuario" class="page-layout simple fullwidth" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Sistema</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Usuarios</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ textoSeccion }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ textoSeccion }}</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-raised-button type="button" color="accent" [routerLink]="['/sistema/usuarios']">
+                    <mat-icon color="primary">keyboard_arrow_left</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24 pb-6">
+        <div class="entry">
+            <div fxLayout="row">
+                <form class="mat-white-bg" fxLayout="column" fxLayoutAlign="start" fxFlex="100%"
+                    name="form" [formGroup]="form">
+                    <mat-vertical-stepper #stepper>
+                        <mat-step [stepControl]="datosGenerales" label="DATOS GENERALES" [formGroup]="datosGenerales" errorMessage="Existen datos requeridos por completar!">
+                                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+
+                                    <mat-form-field fxFlex="20">
+                                        <input matInput #inputId placeholder="Identificación" [formControl]="usu_identificacion"
+                                            maxlength="20" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{inputId.value?.length || 0}}/20</mat-hint>
+                                        <mat-error *ngIf="!usu_identificacion.valid">
+                                            {{formErrors.usu_identificacion.required}}
+                                        </mat-error>
+                                    </mat-form-field>
+            
+                                    <mat-form-field fxFlex="40">
+                                        <input matInput #inputName placeholder="Nombre Completo" [formControl]="usu_nombre" maxlength="255" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{inputName.value?.length || 0}}/255</mat-hint>
+                                        <mat-error *ngIf="usu_nombre.errors && usu_nombre.errors.required">
+                                            {{formErrors.usu_nombre.required}}
+                                        </mat-error>
+                                        <mat-error *ngIf="usu_nombre.errors && usu_nombre.errors.minlength">
+                                            {{formErrors.usu_nombre.minLength}}
+                                        </mat-error>
+                                    </mat-form-field>
+            
+                                    <mat-form-field fxFlex="40">
+                                        <input matInput #inputEmail placeholder="Email" [formControl]="usu_email" maxlength="255" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{inputEmail.value?.length || 0}}/255</mat-hint>
+                                        <mat-error *ngIf="usu_email.errors && usu_email.errors.required">
+                                            {{formErrors.usu_email.required}}
+                                        </mat-error>
+                                        <mat-error *ngIf="usu_email.errors && usu_email.errors.minlength">
+                                            {{formErrors.usu_email.minLength}}
+                                        </mat-error>
+                                        <mat-error *ngIf="usu_email.errors && usu_email.errors.email">
+                                            {{formErrors.usu_email.email}}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                    <mat-form-field fxFlex="100">
+                                        <input matInput #inputDir placeholder="Dirección" [formControl]="usu_direccion"
+                                            maxlength="255" [readonly]="ver">
+                                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{inputDir.value?.length || 0}}/255</mat-hint>
+                                    </mat-form-field>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+
+                                    <div fxLayout="column" fxFlex="25">
+                                        <ng-select [items]="tiposUsuario"
+                                            bindLabel="itemName"
+                                            bindValue="id"
+                                            placeholder="Tipo de Usuario"
+                                            notFoundText="No hay coincidencias"
+                                            loadingText="..."
+                                            [formControl]="usu_type"
+                                            dropdownPosition="top"
+                                            appendTo="body"
+                                        >
+                                        </ng-select>
+                                        <mat-error *ngIf="!usu_type.valid && usu_type.touched" style="color:red; font-size:11px;">
+                                            EL Tipo de Usuario es requerido!
+                                        </mat-error>
+                                    </div>
+            
+                                    <mat-form-field fxFlex="22">
+                                        <input matInput #inputTel placeholder="Teléfono(s)" [formControl]="usu_telefono" maxlength="50" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint *ngIf="!ver" class="fh">Máx 50 caracteres</mat-hint>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{inputTel.value?.length || 0}}/50</mat-hint>
+                                        <mat-error *ngIf="!usu_identificacion.valid">
+                                            {{formErrors.usu_telefono.required}}
+                                        </mat-error>
+                                    </mat-form-field>
+            
+                                    <mat-form-field fxFlex="22">
+                                        <input matInput #inputMovil placeholder="Móvil" [formControl]="usu_movil" maxlength="50" [readonly]="ver">
+                                        <mat-hint *ngIf="!ver" class="fh">Máx 50 caracteres</mat-hint>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{inputMovil.value?.length || 0}}/50</mat-hint>
+                                    </mat-form-field>
+                                </div>
+                        </mat-step>
+                        <!-- <mat-step [stepControl]="ofesColeccion" label="ACCESO A RADICACIÓN DE DOCUMENTOS OFES" [formGroup]="ofesColeccion">
+                            
+                        </mat-step>
+                        <mat-step label="PROVEEDORES A LOS QUE EL USUARIO LE PODRÁ GESTIONAR DOCUMENTOS">
+
+                        </mat-step> -->
+                    </mat-vertical-stepper>
+                    <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                    <br>
+                    <div fxLayout="row" fxLayoutAlign="end center" *ngIf="!ver && !editarUsuarioIntegracion">
+                        <button mat-raised-button type="button" color="accent" [disabled]="!form.valid"
+                                (click)="resourceUsuario(form.value)">
+                            <mat-icon color="#ffffff">check_box</mat-icon>
+                            {{ textoSeccion }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <br>
+            <hr>
+            <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <div fxFlex="50">
+                        <h2>Roles de Usuario</h2>
+                        <p>Seleccione los roles que asignará al usuario:</p>
+                    </div>
+                    <div fxFlex="25">
+                        <button mat-raised-button type="button" color="primary" (click)="filtrarAsignados();" [disabled]="ver || usu_id === 0">
+                            <mat-icon color="accent">filter_list</mat-icon>
+                            <strong> {{ textoAsignados }}</strong>
+                        </button>
+                    </div>
+                    <div fxFlex="25">
+                        <button mat-raised-button type="button" color="warn" (click)="actDesTodos();" [disabled]="ver || usu_id === 0">
+                            <mat-icon color="primary">check</mat-icon>
+                            <strong> {{ textoActDesTodos }}</strong>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center">
+                <div fxFlex="50%">
+                    <mat-form-field fxFlex="50%">
+                        <mat-select placeholder="Número de registros a mostrar"
+                                    (selectionChange)="paginar($event.value)" name="num_registros" [disabled]="ver">
+                            <mat-option *ngFor="let item of paginationSize" [value]="item.value">
+                                {{item.label}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div fxFlex="50" fxLayoutAlign="end">
+                    <mat-form-field fxFlex="50">
+                        <input class="search" matInput [size]="100" type="text"
+                                placeholder="Búsqueda rápida" [(ngModel)]="buscar" (keyup.enter)="searchinline()" [readonly]="ver">
+                    </mat-form-field>
+                </div>
+            </div><ngx-datatable
+                class="material"
+                [loadingIndicator]="loadingIndicator"
+                [rows]="rows"
+                [columnMode]="'force'"
+                [headerHeight]="50"
+                [footerHeight]="50"
+                [rowHeight]="50"
+                [externalSorting]="true"
+                [externalPaging]="true"
+                [reorderable]="reorderable"
+                [selected]="selected"
+                [selectionType]="'checkbox'"
+                [messages]="messageDT"
+                [count]="totalElements"
+                [offset]="page"
+                [limit]="totalShow"
+                (page)='onPage($event)'
+                (sort)="onSort($event)"
+                (select)='onSelect($event)'
+                [scrollbarH]="true">
+
+            <ngx-datatable-column name="Act/Des" [canAutoResize]="false" [sortable]="false" [width]="80">
+                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                    <mat-slide-toggle matTooltip="Activar/Desactivar" (change)="permisosRol($event, row.rol_id)"
+                                      [checked]="estaAsignado(row)" [disabled]="ver || usu_id === 0"></mat-slide-toggle>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Código Rol" prop="rol_codigo" [width]="80"></ngx-datatable-column>
+            <ngx-datatable-column name="Rol de Uusario" prop="rol_descripcion" [width]="300"></ngx-datatable-column>
+
+        </ngx-datatable>
+
+    </div>
+    <!-- / CONTENT -->
+
+</div>
+
+

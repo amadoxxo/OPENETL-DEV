@@ -1,0 +1,174 @@
+<div id="actor" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Radian</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Actores</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{titulo}}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <form [formGroup]="formulario">
+                <br>
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-datos-generales-registro [tdo_id]="tdo_id" [toj_id]="toj_id"
+                            [identificacion]="act_identificacion" [nombre_comercial]="act_nombre_comercial"
+                            [razon_social]="act_razon_social" [primer_apellido]="act_primer_apellido"
+                            [segundo_apellido]="act_segundo_apellido" [primer_nombre]="act_primer_nombre"
+                            [otros_nombres]="act_otros_nombres" [sololectura]="_act_id"
+                            [tiposOrganizacion]="tipoOrganizaciones" [tiposDocumento]="tipoDocumentos" [DV]="DV"
+                            [tipoDocumentoSelect]="tipoDocumentoSelect" [tipoOrganizacionSelect]="tipoOrganizacionSelect"
+                            [ver]="ver" [parent]="gestor" [editar]="editar" [tipo]="'OFE'"
+                            [initOrganizacion]="initOrganizacion"
+                            [initDV]="initDV" [maxlengthIdentificacion]="maxlengthIdentificacion" [regexIdentificacion]="regexIdentificacion">
+                        </app-datos-generales-registro>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ubicacion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DOMICILIO DE CORRESPONDENCIA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ubicacion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open #domicilioCorrespondencia [pai_id]="pai_id" [dep_id]="dep_id" [mun_id]="mun_id"
+                                            [direccion]="act_direccion" [longitudTelefono]="255" [codigo_postal]="cpo_id"
+                                            [sololectura]="_act_id" [ver]="ver" [tipoUbicacion]="'fiscal'" [tipo]="'OFE'">
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionAdicional">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN ADICIONAL</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!informacionAdicional.valid && !ver">
+                                <span style="color: red">El correo electrónico es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-informacion-adicional [telefono]="act_telefono" [longitudTelefonoFax]="50"
+                            [correo]="act_correo" [ver]="ver" [editar]="editar" [tipo]="'RADIANACTOR'">
+                        </app-informacion-adicional>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="sftSelector">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">SOFTWARE PROVEEDOR TECNOLÓGICO</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!sft_id.value && !ver">
+                                <span style="color: red">El Proveedor de Software Tecnológico es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-selector-sft [sft_id]="sft_id" [ver]="ver" [tipo]="'DE'"></app-selector-sft>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="correosNotificacion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CORREOS DE NOTIFICACIÓN</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!correosNotificacion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        
+                        <app-notificaciones [correos]="act_correos_notificacion" [ver]="ver" [tipo]="'OFE'" [etiqueta]="'Ingrese los correos a los cuales se requiere enviar las notificaciones de documentos electrónicos: '"></app-notificaciones>
+                        <br>
+                        <div fxLayout="column">
+                            <mat-label class="control-label">Notificación con un solo correo:</mat-label>
+                            <mat-radio-group [formControl]="act_notificacion_un_solo_correo">
+                                <mat-radio-button value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="rolesRadian">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">ROLES RADIAN</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!rolesRadian.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div
+                            formArrayName="roles"
+                            fxLayout="row wrap"
+                            fxLayoutAlign="flex-start"
+                            class="mt-3"
+                        >
+                            <div
+                                *ngFor="let item of formulario['controls'].rolesRadian['controls'].roles['controls']; let i = index;"
+                                fxFlex.sm="100%"
+                                fxFlex.md="100%"
+                                fxFlex.lg="100%"
+                                fxFlex.xl="50%"
+                                formGroupName="{{i}}"
+                                >
+                                <mat-checkbox formControlName="rol_id">{{dataRolesRadian[i]?.rol_descripcion}}</mat-checkbox>
+                                <input matInput type="hidden" formControlName="rol_descripcion" [readonly]="true">
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="reglaAceptacionTacita">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">ACEPTACIÓN TÁCITA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!reglaAceptacionTacita.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-aceptacion-tacita [tat_id]="tat_id" [tiemposAceptacionTacita]="tiemposAceptacionTacita" [ver]="ver"></app-aceptacion-tacita>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid || !sft_id.value" (click)="resourceActor(formulario.value)" *ngIf="!ver">
+                        <mat-icon color="#ffffff">check_box</mat-icon> Guardar
+                    </button>
+
+                    <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid" (click)="regresar()" *ngIf="ver">
+                        <mat-icon color="#ffffff">arrow_back_ios</mat-icon> Regresar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Fin Content -->
+</div>

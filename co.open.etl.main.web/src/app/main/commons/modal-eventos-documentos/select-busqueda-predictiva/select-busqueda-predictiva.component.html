@@ -1,0 +1,27 @@
+<div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+    <div fxFlex="100" >
+        <ng-select fxFlex="85"
+                    [items]="items$ | async"
+                    bindLabel="item[descripcion]"
+                    typeToSearchText='Ingrese un criterio de búsqueda'
+                    bindValue="item[id]"
+                   placeholder="{{label}}"
+                    [trackByFn]="itemByFn"
+                    [loading]="itemsLoading"
+                    [typeahead]="itemsInput$"
+                    [(ngModel)]="valorEscogido"
+                    (clear)="onClearItem()"
+                    [formControl]="control">
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div style="margin: 5px 0;" class="card">
+                    <div class="card-body">
+                        <p class="card-text" style="font-size: x-small">
+                            <strong>{{item[id]}}</strong>
+                            {{item[descripcion]}}
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-select>
+    </div>
+</div>

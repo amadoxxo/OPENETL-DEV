@@ -1,0 +1,75 @@
+<div id="rfa" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">OFEs</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <form>
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">{{ _razon_social }} ({{ _ofe_identificacion }})</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        
+                        <div fxLayout="row" fxLayoutAlign="flex-start" class="mt-28">
+                            <div class="mat-body-2"><strong>VALORES POR DEFECTO EN LOS DOCUMENTOS ELECTRÓNICOS</strong></div>
+                        </div>
+                        <mat-divider class="mb-16"></mat-divider>
+
+                        <ng-container *ngIf="datosFacturacionWeb !== undefined && datosFacturacionWeb.length === 0; else listarDatosFacturacionWeb">
+                            <span class="red-600-fg mat-caption">
+                                El OFE no tiene cargados los Datos de Facturación Web
+                            </span>
+                        </ng-container>
+
+                        <ng-template #listarDatosFacturacionWeb>
+                            <app-open-tracking
+                                [rows]="datosFacturacionWeb"
+                                [columns]="columns"
+                                [accionesLote]="accionesBloque"
+                                [trackingOpciones]="trackingOpciones"
+                                [totalElements]="totalElements"
+                                [totalShow]="totalShow"
+                                [loadingIndicator]="loadingIndicator"
+                                [permisoEditar]="'ConfiguracionOFEEditar'"
+                                [permisoVer]="'ConfiguracionOFEVer'"
+                                [permisoConfigurarDocumentoElectronico]=false
+                                [permisoCambiarEstado]=false
+                                [trackingInterface]="trackingInterface"
+                                [indicadorOFE]=false
+                                [multiSelect]=false
+                                [dataExterna]=false
+                            ></app-open-tracking>
+                        </ng-template>
+                        
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </form>
+        </div>
+    </div>
+</div>

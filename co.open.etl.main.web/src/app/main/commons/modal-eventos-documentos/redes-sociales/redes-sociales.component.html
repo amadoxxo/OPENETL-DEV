@@ -1,0 +1,26 @@
+<div fxLayout="column" fxFlex="100">
+    <div fxLayout="row">
+        <mat-form-field fxFlex="100">
+            <mat-label class="control-label">Sitio Web</mat-label>
+            <input matInput type="text" maxlength="255" [formControl]="sitio_web" [readonly]="ver" #SitioWeb>
+            <mat-icon matSuffix svgIcon="website"></mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{SitioWeb.value?.length || 0}}/255</mat-hint>
+        </mat-form-field>
+    </div>
+    <div fxLayout="row">
+        <mat-form-field fxFlex="100">
+            <mat-label class="control-label">Twitter</mat-label>
+            <input matInput type="text" maxlength="255" [formControl]="twitter" [readonly]="ver" #Twitter>
+            <mat-icon matSuffix svgIcon="twitter"></mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{Twitter.value?.length || 0}}/255</mat-hint>
+        </mat-form-field>
+    </div>
+    <div fxLayout="row">
+        <mat-form-field fxFlex="100">
+            <mat-label class="control-label">Facebook</mat-label>
+            <input matInput type="text" maxlength="255" [formControl]="facebook" [readonly]="ver" #Facebook>
+            <mat-icon matSuffix svgIcon="facebook"></mat-icon>
+            <mat-hint align="end" *ngIf="!ver" class="fh">{{Facebook.value?.length || 0}}/255</mat-hint>
+        </mat-form-field>
+    </div>
+</div>

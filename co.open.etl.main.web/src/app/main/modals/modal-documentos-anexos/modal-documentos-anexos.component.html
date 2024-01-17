@@ -1,0 +1,109 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>
+    Documentos Anexos - {{ documento.cdo_clasificacion }}{{ documento.rfa_prefijo }}-{{ documento.cdo_consecutivo}}
+</h1>
+
+<mat-dialog-content>
+    <ng-container *ngIf="proceso !== 'recepcion'; else recepcion">
+        <p><strong>Total de Documentos Anexos:</strong> {{ totalDocumentos }}</p>
+        <p>Para descargar un documento puede dar click en la fila del documento que desea descargar, o para descargar todos los documentos, puede dar click en el botón 'Descargar Todos'</p>
+        <table class="table table-hover" id="documentos">
+            <thead>
+                <tr>
+                    <th width="40%">Descripción</th>
+                    <th width="40%">Archivo</th>
+                    <th width="10%">Tamaño</th>
+                    <th width="10%" *ngIf="subproceso === 'emisionCargaDocumentosAnexos' && 
+                        (this._auth.existeRol(this.aclsUsuario.roles, 'superadmin') || this._auth.existePermiso(this.aclsUsuario.permisos, 'EmisionEliminarDocumentosAnexos'))">Borrar
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let documento of documentos">
+                    <tr style="cursor:pointer;">
+                        <td style="word-break:break-all; white-space:normal;" (click)="descargarDocumentos(documento.dan_id)">
+                            {{ documento.dan_descripcion }}
+                        </td>
+                        <td style="word-break:break-all; white-space:normal;" (click)="descargarDocumentos(documento.dan_id)">
+                            {{ documento.dan_nombre }}
+                        </td>
+                        <td (click)="descargarDocumentos(documento.dan_id)">
+                            {{ documento.dan_tamano }}
+                        </td>
+                        <td align="center" *ngIf="subproceso === 'emisionCargaDocumentosAnexos'">
+                            <button mat-icon-button color="warn" (click)="eliminarDocumentoAnexo(documento.dan_id)"
+                            *ngIf="
+                                subproceso === 'emisionCargaDocumentosAnexos' &&
+                                (this._auth.existeRol(this.aclsUsuario.roles, 'superadmin') || this._auth.existePermiso(this.aclsUsuario.permisos, 'EmisionEliminarDocumentosAnexos'))
+                            "
+                        >
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </ng-container>
+
+    <ng-template #recepcion>
+        <p><strong>Total de Documentos Anexos:</strong> {{ totalDocumentos }}</p>
+        <p>Para descargar un documento puede dar click en la fila del documento que desea descargar, o para descargar todos los documentos, puede dar click en el botón 'Descargar Todos'</p>
+        <table class="table table-hover" id="documentos">
+            <thead>
+                <tr>
+                    <th width="40%">Descripción</th>
+                    <th width="40%">Archivo</th>
+                    <th width="10%">Tamaño</th>
+                    <th width="10%" *ngIf="(this._auth.existeRol(this.aclsUsuario.roles, 'superadmin') || this._auth.existePermiso(this.aclsUsuario.permisos, 'RecepcionEliminarDocumentosAnexos'))">Borrar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let documento of documentos">
+                    <tr style="cursor:pointer;">
+                        <td style="word-break:break-all; white-space:normal;" (click)="descargarDocumentos(documento.dan_id)">
+                            {{ documento.dan_descripcion }}
+                        </td>
+                        <td style="word-break:break-all; white-space:normal;" (click)="descargarDocumentos(documento.dan_id)">
+                            {{ documento.dan_nombre }}
+                        </td>
+                        <td (click)="descargarDocumentos(documento.dan_id)">
+                            {{ documento.dan_tamano }}
+                        </td>
+                        <td align="center" *ngIf="(this._auth.existeRol(this.aclsUsuario.roles, 'superadmin') || this._auth.existePermiso(this.aclsUsuario.permisos, 'RecepcionEliminarDocumentosAnexos'))">
+                            <button mat-icon-button color="warn" (click)="eliminarDocumentoAnexo(documento.dan_id)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="basic" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial
+        (click)="descargarDocumentos(documentosIds)">
+        <mat-icon color="#ffffff">get_app</mat-icon> Descargar Todos
+    </button>
+    <button mat-raised-button color="warn" cdkFocusInitial
+        *ngIf="
+            subproceso === 'emisionCargaDocumentosAnexos' && proceso === 'emision' &&
+            (this._auth.existeRol(this.aclsUsuario.roles, 'superadmin') || this._auth.existePermiso(this.aclsUsuario.permisos, 'EmisionEliminarDocumentosAnexos'))
+        "
+        (click)="eliminarDocumentoAnexo(documentosIds)">
+        <mat-icon color="#ffffff">delete_forever</mat-icon> Eliminar Todos
+    </button>
+    <button mat-raised-button color="warn" cdkFocusInitial
+        *ngIf="
+            proceso !== 'emision' &&
+            (this._auth.existeRol(this.aclsUsuario.roles, 'superadmin') || this._auth.existePermiso(this.aclsUsuario.permisos, 'RecepcionEliminarDocumentosAnexos'))
+        "
+        (click)="eliminarDocumentoAnexo(documentosIds)">
+        <mat-icon color="#ffffff">delete_forever</mat-icon> Eliminar Todos
+    </button>
+</mat-dialog-actions>
+<br>

@@ -1,0 +1,89 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Agregar Mandato Profesional</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Actualizar Mandato Profesional</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver Mandato Profesional</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="50">
+                <input matInput #inputCod placeholder="Código" formControlName="cmp_codigo">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" class="fh">Máx 10 caracteres</mat-hint>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputCod.value?.length || 0}}/10</mat-hint>
+                <mat-error *ngIf="hasError('cmp_codigo', 'required')">
+                    {{formErrors.cmp_codigo.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('cmp_codigo', 'maxlength')">
+                    {{formErrors.cmp_codigo.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputSigni placeholder="Significado" formControlName="cmp_significado">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputSigni.value?.length || 0}}/100</mat-hint>
+                <mat-error *ngIf="hasError('cmp_significado', 'required')">
+                    {{formErrors.cmp_significado.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('cmp_significado', 'maxlength')">
+                    {{formErrors.cmp_significado.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputDesc placeholder="Descripción" formControlName="cmp_descripcion">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" class="fh">Máx 255 caracteres</mat-hint>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputDesc.value?.length || 0}}/255</mat-hint>
+                <mat-error *ngIf="hasError('cmp_descripcion', 'required')">
+                    {{formErrors.cmp_descripcion.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('cmp_descripcion', 'maxlength')">
+                    {{formErrors.cmp_descripcion.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <app-selector-par-fechas-vigencia
+            [fecha_vigencia_desde]="fecha_vigencia_desde"
+            [fecha_vigencia_hasta]="fecha_vigencia_hasta"
+            [hora_vigencia_desde]="hora_vigencia_desde"
+            [hora_vigencia_hasta]="hora_vigencia_hasta"
+            [fecha_vigencia_desde_anterior]="fecha_vigencia_desde_anterior"
+            [fecha_vigencia_hasta_anterior]="fecha_vigencia_hasta_anterior">
+        </app-selector-par-fechas-vigencia>
+        <span fxFlex="1" *ngIf="action === 'edit'">&nbsp;</span>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+            <ng-container *ngIf="action === 'edit'">
+                <mat-label class="control-label">Estado: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                <mat-radio-group formControlName="estado" style="margin-left: 25px">
+                    <mat-radio-button value="ACTIVO" style="margin-right: 15px"> Activo </mat-radio-button>
+                    <mat-radio-button value="INACTIVO"> Inactivo </mat-radio-button>
+                </mat-radio-group>
+            </ng-container>
+        </div>
+        <span fxFlex="2" *ngIf="action === 'edit'">&nbsp;</span>
+        <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="action === 'edit' || action === 'view'" [modal]="true"></app-magic-fields>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)"
+        *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveItem(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveItem(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(false)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

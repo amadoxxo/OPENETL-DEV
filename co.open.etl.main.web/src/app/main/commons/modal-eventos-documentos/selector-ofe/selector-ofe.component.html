@@ -1,0 +1,28 @@
+<div fxFlex="100">
+    <ng-select [items]="oferentes$ | async"
+               bindLabel="ofe_identificacion_ofe_razon_social"
+               [loading]="oferentesLoading"
+               labelForId="labelOferente"
+               placeholder=">Oferente:"
+               typeToSearchText="Puede ingresar el nombre o identificación"
+               [closeOnSelect]="true"
+               notFoundText="No hay coincidencias"
+               loadingText="..."
+               [typeahead]="oferentesInput$"
+               [formControl]="ofe_id"
+               [(ngModel)]="selectedOfeId"
+               appendTo="body">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.ofe_identificacion}}</strong> - {{item.ofe_razon_social}}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+    </ng-select>
+    <mat-error *ngIf="!ofe_id.valid && ofe_id.touched" style="color:red;" class="fh">
+        El OFE es requerido!
+    </mat-error>
+</div>

@@ -1,0 +1,202 @@
+<div class="p-24">
+    <div class="entry">
+        <div fxLayout="row" fxLayoutAlign="end center" *ngIf="trackingOrigen === 'control-consecutivos' && _auth.existePermiso(aclsUsuario.permisos, 'FacturacionWebControlConsecutivosNuevo') && mostrarBotonAperturarPeriodo" class="pt-12">
+            <button mat-raised-button matTooltip="Aperturar Periodo" color="accent" (click)="aperturarPeriodoControlConsecutivos()">
+                <mat-icon aria-label="Reload" color="#ffffff">date_range</mat-icon> Aperturar Periodo
+            </button>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="space-between end">
+            <mat-form-field fxFlex="25">
+                <mat-select placeholder="Número de registros a mostrar"
+                            (selectionChange)="paginar($event.value)" name="num_registros">
+                    <mat-option *ngFor="let item of paginationSize" [value]="item.value">
+                        {{item.label}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="permisoCambiarEstado !== false">
+                <input class="search" matInput [size]="100" type="text"
+                        placeholder="Búsqueda rápida" [(ngModel)]="buscar" (keyup.enter)="searchinline()" />
+            </mat-form-field>
+            <mat-form-field fxFlex="25" *ngIf="
+                permisoCambiarEstado !== false &&
+                permisoAccionesBloque !== false &&
+                (accionesLote.length > 0 || (_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existePermiso(aclsUsuario.permisos, permisoCambiarEstado)))
+            ">
+                <mat-select placeholder="Acciones en Bloque" #selectAcciones (selectionChange)="accionesBloque($event.value)">
+                    <mat-option [value]="">Acciones en Bloque</mat-option>
+                    <mat-option *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, permisoCambiarEstado)"  
+                    [value]="'cambiarEstado'">Cambiar Estado</mat-option>
+                    <ng-container *ngIf="accionesLote.length > 0">
+                        <mat-option *ngFor="let accBloque of accionesLote" [value]="accBloque.id">
+                            {{ accBloque.itemName }}
+                        </mat-option>
+                    </ng-container>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <ngx-datatable
+        #tracking
+        class="material striped"
+        [loadingIndicator]="loadingIndicator"
+        [rows]="rows"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [columnMode]="'force'"
+        [rowHeight]="50"
+        [externalSorting]="dataExterna"
+        [externalPaging]="dataExterna"
+        [reorderable]="reorderable"
+        [selected]="selected"
+        [selectionType]="'checkbox'"
+        [messages]="messageDT"
+        [count]="totalElements"
+        [offset]="page"
+        [limit]="totalShow"
+        (page)='onPage($event)'
+        (sort)="onSort($event)"
+        (select)='onSelect($event)'
+        [scrollbarH]="true">
+
+        <ngx-datatable-column [width]="48" [canAutoResize]="false" [sortable]="false" *ngIf="multiSelect">
+            <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+                <mat-checkbox [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" [disabled]="rows.length === 0"></mat-checkbox>
+            </ng-template>
+            <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+                <mat-checkbox [checked]="isSelected" (change)="onCheckboxChangeFn($event)"></mat-checkbox>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column [width]="widthOpciones" name="Opciones" [sortable]="false" *ngIf="showOpciones() && !mostrarIconoTresPuntos">
+            <div mat-row>
+                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                    <button *ngIf="trackingOpciones.editButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                        (_auth.existePermiso(aclsUsuario.permisos, permisoEditar)))"  
+                        mat-icon-button matTooltip="Editar" color="accent" (click)="editar(row)">
+                        <mat-icon aria-label="Edit" color="#ffffff">edit</mat-icon>
+                    </button>
+                    <button *ngIf="trackingOpciones.showButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                        _auth.existePermiso(aclsUsuario.permisos, permisoVer))" 
+                        mat-icon-button matTooltip="Ver" (click)="ver(row)">
+                        <mat-icon aria-label="View" class="green-icon">visibility</mat-icon>
+                    </button>
+                    <button *ngIf="indicadorOFE && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, permisoConfigurarDocumentoElectronico)) && row.ofe_cadisoft_activo !== 'SI'" 
+                        mat-icon-button matTooltip="Configuración Documento Electrónico" (click)="configuracionDocumentoElectronico(row)">
+                        <mat-icon aria-label="ConfiguracionDocumentoElectronico" [ngClass]="{'grey-500-fg': row['ofe_tiene_representacion_grafica_personalizada'] === 'SI', 'red-500-fg': row['ofe_tiene_representacion_grafica_personalizada'] !== 'SI'}">insert_drive_file</mat-icon>
+                    </button>
+                    <button *ngIf="trackingOpciones.portalesButton" (click)="openModalUsuariosPortales(row)"
+                        mat-icon-button matTooltip="Usuarios Portales">
+                        <mat-icon aria-label="UsuariosPortales" [ngClass]="{'primary-100-fg': !tieneUsuariosPortales(row), 'red-500-fg': tieneUsuariosPortales(row)}">web</mat-icon>
+                    </button>
+                    <button *ngIf="trackingOpciones.downloadButton && row.descargar && !existePermisoReporteBackground()" 
+                        mat-icon-button matTooltip="Descargar" (click)="descargar(row)">
+                        <mat-icon aria-label="Download" class="green-icon">save_alt</mat-icon>
+                    </button>
+                    <div *ngIf="trackingOpciones.unableDownloadButton && existePermisoReporteBackground()">
+                        <button *ngIf="row.descargar && row.existe_archivo" 
+                            mat-icon-button matTooltip="Descargar" (click)="descargar(row)">
+                            <mat-icon aria-label="Download" class="green-icon">save_alt</mat-icon>
+                        </button>
+                        <button *ngIf="row.descargar && !row.existe_archivo" 
+                            mat-icon-button matTooltip="Documento no existe">
+                            <mat-icon aria-label="Download" class="gray-icon">save_alt</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+            </div>
+        </ngx-datatable-column>
+
+        <!-- Se pinta el icono de los tres puntos -->
+        <ngx-datatable-column name="Opciones" [sortable]="false" *ngIf="showIconoTresPuntos() && mostrarIconoTresPuntos"> 
+            <div mat-row>
+                <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu #menu="matMenu">
+                        <button *ngIf="trackingOpciones.showButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existePermiso(aclsUsuario.permisos, permisoVer))" 
+                            mat-menu-item matTooltip="Ver" (click)="ver(row)">
+                            <mat-icon>visibility</mat-icon>
+                            <span>Ver</span>
+                        </button>
+                        <button *ngIf="(trackingOpciones.editButton || (trackingOrigen == 'grupos-trabajo-usuarios' && row.ofe_recepcion_fnc_activo && row.ofe_recepcion_fnc_activo == 'SI')) && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            (_auth.existePermiso(aclsUsuario.permisos, permisoEditar)))"  
+                            mat-menu-item matTooltip="Editar" (click)="editar(row)">
+                            <mat-icon>edit</mat-icon>
+                            <span>Editar</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.cambiarEstadoButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            (_auth.existePermiso(aclsUsuario.permisos, permisoCambiarEstado)))"  
+                            mat-menu-item matTooltip="Cambiar Estado" (click)="cambiarEstado(row)">
+                            <mat-icon>compare_arrows</mat-icon>
+                            <span>Cambiar Estado</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.verUsuarioAsociadoButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionGrupoTrabajoAsociarUsuarioVerUsuariosAsociados'))" 
+                            mat-menu-item matTooltip="Ver Usuarios Asociados" (click)="verUsuariosAsociados(row)">
+                            <mat-icon>view_list</mat-icon>
+                            <span>Ver Usuarios Asociados</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.verProveedorAsociadoButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionGrupoTrabajoAsociarProveedorVerProveedoresAsociados'))"
+                            mat-menu-item matTooltip="Ver Proveedores Asociados" (click)="verProveedoresAsociados(row)">
+                            <mat-icon>view_list</mat-icon>
+                            <span>Ver Proveedores Asociados</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.configuracionServicioButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existeRol(aclsUsuario.roles, 'usuarioma') || _auth.existePermiso(aclsUsuario.permisos, 'ConfigurarServicios'))"
+                            mat-menu-item matTooltip="Configuracion Servicios" (click)="configuracionServicios(row)">
+                            <mat-icon>apps</mat-icon>
+                            <span>Configuracion Servicios</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.configuracionDocumentoElectronicoButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existePermiso(aclsUsuario.permisos, 'ConfigurarDocumentoElectronico')) && row.ofe_emision === 'SI'"
+                            mat-menu-item matTooltip="Configuracion Documento Electronico" (click)="configuracionDocumentoElectronico(row)">
+                            <mat-icon>library_books</mat-icon>
+                            <span>Configuracion Documento Electronico</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.configuracionDocumentoSoporteButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existePermiso(aclsUsuario.permisos, 'ConfigurarDocumentoSoporte')) && row.ofe_documento_soporte === 'SI'"
+                            mat-menu-item matTooltip="Configuracion Documento Soporte" (click)="configuracionDocumentoSoporte(row)">
+                            <mat-icon>web</mat-icon>
+                            <span>Configuracion Documento Soporte</span>
+                        </button>
+                        <button *ngIf="trackingOpciones.valoresPorDefectoEnDocumentoButton && (_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                            _auth.existePermiso(aclsUsuario.permisos, 'ValoresDefectoDocumento')) && (row.ofe_emision === 'SI' || row.ofe_documento_soporte === 'SI')"
+                            mat-menu-item matTooltip="Valores por Defecto en Documentos" (click)="valoresPorDefectoEnDocumento(row)">
+                            <mat-icon>description</mat-icon>
+                            <span>Valores por Defecto en Documentos</span>
+                        </button>
+                    </mat-menu>
+
+                    <button mat-icon-button 
+                        *ngIf="indicadorOFE && row['ofe_emision'] === 'SI' && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existePermiso(aclsUsuario.permisos, permisoConfigurarDocumentoElectronico)) && row.ofe_cadisoft_activo !== 'SI'"
+                        [matTooltip]="row['ofe_tiene_representacion_grafica_personalizada'] === 'SI' ? 'Aplica Representación Gráfica Personalizada Documento Electrónico' : 'Aplica Representación Gráfica Estándar Documento Electrónico'"
+                        [ngClass]="row['ofe_tiene_representacion_grafica_personalizada'] === 'SI' ? 'grey-500-fg' : 'red-500-fg'"
+                        >
+                        <mat-icon svgIcon="icon_letra_d" class="icon-letra"></mat-icon><mat-icon svgIcon="icon_letra_e" class="icon-letra icon-letra-rigth"></mat-icon>
+                    </button>
+                    <button mat-icon-button
+                        *ngIf="indicadorOFE && row['ofe_documento_soporte'] === 'SI' && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existePermiso(aclsUsuario.permisos, 'ConfigurarDocumentoSoporte'))"
+                        [matTooltip]="row['ofe_tiene_representacion_grafica_personalizada_ds'] === 'SI' ? 'Aplica Representación Gráfica Personalizada Documento Soporte' : 'Aplica Representación Gráfica Estándar Documento Soporte'"
+                        [ngClass]="row['ofe_tiene_representacion_grafica_personalizada_ds'] === 'SI' ? 'grey-500-fg' : 'red-500-fg'"
+                        >
+                        <mat-icon svgIcon="icon_letra_d" class="icon-letra"></mat-icon><mat-icon svgIcon="icon_letra_s" class="icon-letra icon-letra-rigth"></mat-icon>
+                    </button>
+                </ng-template>
+            </div>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column *ngFor="let item of columns" name="{{item.name}}" prop="{{item.prop}}" [sortable]="item.sorteable" [width]="item.width"
+            [cellClass]="item.align">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                {{ getValue(row, item.prop) }}
+            </ng-template>
+        </ngx-datatable-column>
+    </ngx-datatable>
+</div>

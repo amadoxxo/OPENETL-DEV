@@ -1,0 +1,219 @@
+<div id="rfa" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Emisión</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <form [formGroup]="form">
+                <br>
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="ofeSelector">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">OFE</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ofeSelector.valid && !ver">
+                                <span style="color: red">El OFE es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-selector-ofe-precargado [ofe_id]="ofe_id" [oferentes]="ofes" [ver]="ver"></app-selector-ofe-precargado>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <br>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                <mat-form-field fxFlex="20">
+                                    <mat-select placeholder="Tipo" formControlName="rfa_tipo" (selectionChange)="seleccionTipoResolucion($event.value, true)" [disabled]="ver" required>
+                                        <mat-option [value]="">Seleccione</mat-option>
+                                        <mat-option *ngFor="let tipo of arrTipos" [value]="tipo.id">
+                                            {{ tipo.nombre }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="18">
+                                    <input matInput #inputResolucion placeholder="Número de Resolución" maxlength="20" [readonly]="ver" formControlName="rfa_resolucion">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                                    <mat-hint *ngIf="!ver" align="end" class="fh">{{inputResolucion.value?.length || 0}}/20</mat-hint>
+                                    <mat-error *ngIf="!ver && !rfa_resolucion.valid">
+                                        {{formErrors.rfa_resolucion.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="18">
+                                    <input matInput #inputPrefijo placeholder="Prefijo" maxlength="4" [readonly]="ver" formControlName="rfa_prefijo">
+                                    <mat-hint *ngIf="!ver" class="fh">Máx 4 caracteres</mat-hint>
+                                    <mat-hint *ngIf="!ver" align="end" class="fh">{{inputPrefijo.value?.length || 0}}/4</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="20">
+                                    <input matInput [matDatepicker]="cdoFD"
+                                        placeholder="Vigencia Desde"
+                                        formControlName="rfa_fecha_desde"
+                                        (click)="cdoFD.open()" (dateChange)="setMinDateFechaFin($event.target.value)">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-datepicker-toggle matSuffix [for]="cdoFD"></mat-datepicker-toggle>
+                                    <mat-datepicker #cdoFD></mat-datepicker>
+                                    <mat-error *ngIf="!ver && !rfa_fecha_desde.valid">
+                                        {{formErrors.rfa_fecha_desde.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="20">
+                                    <input matInput [matDatepicker]="cdoFH"
+                                        placeholder="Vigencia Hasta"
+                                        formControlName="rfa_fecha_hasta"
+                                        (click)="cdoFH.open()" [min]="minDateFechaFin">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-datepicker-toggle matSuffix [for]="cdoFH"></mat-datepicker-toggle>
+                                    <mat-datepicker #cdoFH></mat-datepicker>
+                                    <mat-error *ngIf="!ver && !rfa_fecha_hasta.valid">
+                                        {{formErrors.rfa_fecha_hasta.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div fxLayout="row" fxFlex="100">
+                                <mat-form-field fxFlex="49">
+                                    <input matInput #inputCI placeholder="Consecutivo Inicial" maxlength="20" [readonly]="ver" formControlName="rfa_consecutivo_inicial">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                                    <mat-hint *ngIf="!ver" align="end" class="fh">{{inputCI.value?.length || 0}}/20</mat-hint>
+                                    <mat-error *ngIf="!ver && !rfa_consecutivo_inicial.valid">
+                                        {{formErrors.rfa_consecutivo_inicial.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                                <div fxFlex="2"></div>
+                                <mat-form-field fxFlex="49">
+                                    <input matInput #inputCF placeholder="Consecutivo Final" maxlength="20" [readonly]="ver" formControlName="rfa_consecutivo_final">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                                    <mat-hint *ngIf="!ver" align="end" class="fh">{{inputCF.value?.length || 0}}/20</mat-hint>
+                                    <mat-error *ngIf="!ver && !rfa_consecutivo_final.valid">
+                                        {{formErrors.rfa_consecutivo_final.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosTransmision" *ngIf="mostrarDatosTransmisionDian">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS TRANSMISIÓN DIAN</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosTransmision.valid && !ver">
+                                <span style="color: red">La Clave Técnica es requerida!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                <mat-form-field fxFlex="100">
+                                    <textarea matInput placeholder="Clave Técnica" [readonly]="ver" formControlName="rfa_clave_tecnica"
+                                        rows="3" cols="50">
+                                    </textarea>
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-error *ngIf="!ver && !rfa_clave_tecnica.valid">
+                                        {{formErrors.rfa_clave_tecnica.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="controlConsecutivos">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONTROL DE CONSECUTIVOS FACTURACIÓN MANUAL</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px" class="mb-12">
+                                <mat-label class="control-label">Aplica Control de Consecutivos:</mat-label>
+                                <mat-radio-group formControlName="cdo_control_consecutivos" [disabled]="ver">
+                                    <mat-radio-button value="SI" style="margin-right: 15px" (change)="changeAplicaControlConsecutivos('SI')"> SI </mat-radio-button>
+                                    <mat-radio-button value="NO" (change)="changeAplicaControlConsecutivos('NO')"> NO </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                <mat-label class="control-label">Aplica Consecutivo Provisional:</mat-label>
+                                <mat-radio-group formControlName="cdo_consecutivo_provisional" [disabled]="ver">
+                                    <mat-radio-button value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                    <mat-radio-button value="NO"> NO </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="vencimientoResolucion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONFIGURACIÓN VENCIMIENTO RESOLUCIÓN</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+
+                            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                <mat-form-field fxFlex="25">
+                                    <input matInput #inputDiasAviso placeholder="Dias Aviso" maxlength="4" pattern="^\d+$" [readonly]="ver" formControlName="rfa_dias_aviso">
+                                    <mat-hint *ngIf="!ver" class="fh">Máx 4 caracteres</mat-hint>
+                                    <mat-hint *ngIf="!ver" align="end" class="fh">{{inputDiasAviso.value?.length || 0}}/4</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="25">
+                                    <input matInput #inputConsecutivosAviso placeholder="Consecutivos Aviso" maxlength="20" pattern="^\d+$" [readonly]="ver" formControlName="rfa_consecutivos_aviso">
+                                    <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                                    <mat-hint *ngIf="!ver" align="end" class="fh">{{inputConsecutivosAviso.value?.length || 0}}/20</mat-hint>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" [disabled]="!form.valid" *ngIf="!ver"
+                            (click)="resourceRFA(form.value)">
+                        <mat-icon color="#ffffff">check_box</mat-icon>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>

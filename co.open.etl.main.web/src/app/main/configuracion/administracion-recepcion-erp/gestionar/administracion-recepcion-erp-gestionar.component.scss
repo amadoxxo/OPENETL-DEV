@@ -1,0 +1,44 @@
+#administracion {
+    .p-24 {
+        .entry {
+            padding-top: 5px;
+            padding-bottom: 40px;
+            padding-left: 24px;
+            padding-right: 24px;
+            background-color: white;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            .search {
+                .mat-input-wrapper {
+                    width: 400px !important;
+                }
+            }
+        }
+    }
+}
+
+.fh {
+    font-size: 9px;
+}
+
+.error {
+    font-size: 12px;
+    margin-top: auto;
+}
+
+.green-icon {
+    font-size: 12px;
+    color: #22890b !important;
+}
+
+.red-icon {
+    color: #f70a0a !important;
+}
+
+.purple {
+    color: #600ead !important;
+}
+
+.fi {
+    font-size: 9px;
+    color: red;
+}

@@ -1,0 +1,17 @@
+.fh {
+    font-size: 12px;
+}
+
+.fi {
+	font-size: 9px;
+	color: red;
+}
+
+.ng-select.customNgSelectRequired ::ng-deep .ng-select-container .ng-value-container .ng-placeholder,
+.ng-select.ng-select-disabled.customNgSelectRequired ::ng-deep .ng-select-container .ng-value-container .ng-placeholder {
+    font-size: 16px;
+    &:after {
+        content: ' *';
+        color: red;
+    }
+}

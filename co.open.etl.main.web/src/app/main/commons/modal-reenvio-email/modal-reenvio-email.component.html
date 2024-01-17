@@ -1,0 +1,29 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Correos Adicionales</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form" id="formRechazoDocumentos">
+        <div>
+            <ul>
+                <li *ngFor="let documento of documentos">
+                    {{ documento }}
+                </li>
+            </ul>
+        </div>
+        <span fxFlex="2">&nbsp;</span>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <div fxFlex="100">
+                <app-notificaciones [correos]="reenvio_emails" [ver]="false" [tipo]="'REENVIO'" [etiqueta]="'Correo electrónico: '"></app-notificaciones>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal()">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="procesamientoReenvioEmails()">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

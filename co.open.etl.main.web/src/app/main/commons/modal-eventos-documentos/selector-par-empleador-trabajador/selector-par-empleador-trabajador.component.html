@@ -1,0 +1,73 @@
+<div fxFlex="row" fxFlex="100">
+    <div fxFlex="column" fxFlex="48">
+        <ng-select 
+            [items]="empleadores" 
+            style="padding-bottom:0px;"
+            #selectEmpleadores
+            bindValue="emp_id"
+            bindLabel="emp_identificacion_nombre_completo"
+            placeholder="Empleador"
+            [searchFn]="customSearchFnEmpleador"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            appendTo="body"
+            [formControl]="emp_id"
+            [(ngModel)]="selectedEmpleadorId"
+            (clear)="clear()"
+            (change)="onEmpleadorSeleccionado($event)">
+
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>({{ item.emp_identificacion }})</strong> - {{ item.nombre_completo }}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+        </ng-select>
+        <mat-error *ngIf="!emp_id.valid && emp_id.touched" style="color:red;" class="fh">
+            Seleccione el Empleador!
+        </mat-error>
+    </div>
+    <span fxFlex="4">&nbsp;</span>
+    <div fxFlex="column" fxFlex="48">
+        <ng-select 
+            [items]="trabajadores$ | async" 
+            style="padding-bottom:0px;"
+            #selectTrabajadores
+            bindValue="tra_id"
+            bindLabel="tra_identificacion_nombre_completo"
+            [loading]="trabajadoresLoading"
+            labelForId="labelTrabajador"
+            placeholder="Trabajador"
+            typeToSearchText="Puede ingresar el nombre o identificación"
+            [closeOnSelect]="!selector_multiple_trabajador"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [typeahead]="trabajadoresInput$"
+            [formControl]="tra_id"
+            appendTo="body"
+            [(ngModel)]="selectedTraId"
+            (change)="onTrabajadorSeleccionado($event)"
+            [multiple]="selector_multiple_trabajador"
+        >
+            <ng-template ng-header-tmp *ngIf="arrTraBusqueda && arrTraBusqueda.length > 0 && selector_multiple_trabajador">
+                <div>
+                    <button style="color:#4b4b4b;border:none;background:none;cursor:pointer;margin: 5px 0;padding-right: 40px;" (click)="onSeleccionarTodosTrabajadores()">Seleccionar Todos</button>
+                    <button style="color:#4b4b4b;border:none;background:none;cursor:pointer;margin: 5px 0;" (click)="onLimpiarTrabajadorReg()">Limpiar Todos</button>
+                </div>
+            </ng-template>
+
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div style="margin: 5px 0;" class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>({{ item.tra_identificacion }}</strong> - {{ item.nombre_completo }}
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-select>
+    </div>
+</div>

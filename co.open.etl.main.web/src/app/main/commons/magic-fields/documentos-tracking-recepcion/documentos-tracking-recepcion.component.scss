@@ -1,0 +1,77 @@
+.green-icon {
+    color: green !important;
+}
+
+.red-icon {
+    color:red !important;
+}
+
+.gray-icon {
+    color: #a1a1a1 !important;
+}
+
+.blue-1-icon {
+    color: 	#2196f3 !important;
+}
+
+.blue-2-icon {
+    color: #4682B4 !important;
+}
+
+.gray-color {
+    color: #696969 !important;
+}
+
+.p-24 {
+    .entry {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-left: 24px;
+        padding-right: 24px;
+        background-color: white;
+        box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+        .search {
+            .mat-input-wrapper {
+                width: 400px !important;
+            }
+        }
+    }
+}
+
+.mat-icon-button-tracking {
+    width: auto !important;
+    height: auto !important;
+}
+
+.btn-descargar {
+    height: 36px;
+    margin-top: 18px;
+}
+
+.custom-icons-recepcion {
+    margin-top: 8px;
+}
+
+.ng-select.selectDescargas ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option, .ng-select.selectAccionesLote ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    line-height: 2em !important;
+    min-height: 2em !important;
+}
+
+.ng-select.selectDescargas ::ng-deep .ng-dropdown-panel, .ng-select.selectAccionesLote ::ng-deep .ng-dropdown-panel {
+    width: auto !important;
+}
+
+.icon-button {
+    height: 36px;
+    margin-top: 18px;
+}
+
+.mat-menu-item {
+    line-height: 30px !important;
+    height: 30px !important;
+}
+
+::ng-deep.mat-menu-panel {
+    max-width:fit-content !important;
+    min-height: auto !important;
+}

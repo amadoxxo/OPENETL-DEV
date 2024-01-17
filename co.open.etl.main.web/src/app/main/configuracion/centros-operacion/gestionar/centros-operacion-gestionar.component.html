@@ -1,0 +1,56 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Agregar Centro Operación</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Actualizar Centro Operación</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver Centro Operación</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputDesc placeholder="Descripción" formControlName="cop_descripcion">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" class="fh">Máx 100 caracteres</mat-hint>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputDesc.value?.length || 0}}/100</mat-hint>
+                <mat-error *ngIf="hasError('cop_descripcion', 'required')">
+                    {{formErrors.cop_descripcion.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('cop_descripcion', 'maxlength')">
+                    {{formErrors.cop_descripcion.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <span>&nbsp;</span>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <span fxFlex="2" *ngIf="action === 'edit'">&nbsp;</span>
+            <div fxLayout="column">
+                <ng-container *ngIf="action === 'edit'">
+                    <mat-label class="control-label" style="margin-left: 25px">Estado: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                    <mat-radio-group formControlName="estado" style="margin-left: 25px">
+                        <mat-radio-button value="ACTIVO" style="margin-right: 15px"> Activo </mat-radio-button>
+                        <mat-radio-button value="INACTIVO"> Inactivo </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+            </div>
+        </div>
+        <span fxFlex="2">&nbsp;</span>
+        <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="action === 'edit' || action === 'view'" [modal]="true"></app-magic-fields>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)"
+        *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveItem(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveItem(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(false)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

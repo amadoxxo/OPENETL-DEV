@@ -1,0 +1,563 @@
+<div fxLayout="row" fxLayoutAlign="space-between end" class="px-24 pt-12" *ngIf="tipo !== 'correos-recibidos' && tipo !== 'validacion-documentos'">
+    <div fxFlex="40" fxLayoutAlign="start end" *ngIf="
+        _auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+        (
+            tipo === 'sin-envio' && !tipoDocumentosSoporteSinEnvio && 
+            _auth.existePermiso(aclsUsuario.permisos, 'EmisionDocumentosSinEnvioDescargar')
+        ) ||
+        (
+            tipo === 'enviados' && !tipoDocumentosSoporteEnviados && 
+            _auth.existePermiso(aclsUsuario.permisos, 'EmisionDocumentosEnviadosDescargar')
+        ) ||
+        (
+            tipo === 'recibidos' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'RecepcionDocumentosRecibidosDescargar')
+        ) ||
+        (
+            tipo === 'nomina-sin-envio' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'DnDocumentosSinEnvioDescargar')
+        ) ||
+        (
+            tipo === 'nomina-enviados' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'DnDocumentosEnviadosDescargar')
+        ) ||
+        (
+            tipoDocumentosSoporteSinEnvio && 
+            _auth.existePermiso(aclsUsuario.permisos, 'DocumentosSoporteDocumentosSinEnvioDescargar')
+        ) ||
+        (
+            tipoDocumentosSoporteEnviados && 
+            _auth.existePermiso(aclsUsuario.permisos, 'DocumentosSoporteDocumentosEnviadosDescargar')
+        ) ||
+        (
+            tipo === 'radian' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'RadianDocumentosDescargar')
+        ) 
+    ">
+        <ng-select [items]="arrDescargas" style="padding-bottom:0px;"
+            class="selectDescargas"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Descargas"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [multiple]="true"
+            [(ngModel)]="tiposDescargas">
+        </ng-select>
+        <span fxFlex="2">&nbsp;</span>
+        <button mat-raised-button type="button" color="accent" matTooltip="Descargar Documentos" (click)="descargar()" class="btn-descargar">
+            <mat-icon color="#ffffff">cloud_download</mat-icon>
+        </button>
+    </div>
+    <span fxFlex="2">&nbsp;</span>
+    <div *ngIf="
+        tipo === 'enviados' && botonReenvioEmail && 
+        (
+            _auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+            _auth.existePermiso(aclsUsuario.permisos, 'EmisionDocumentosEnviadosEnviarCorreo')
+        )
+    ">
+        <button mat-raised-button type="button" color="accent" matTooltip="Reenviar Emails" (click)="enviar()">
+            <mat-icon color="#ffffff">mail_outline</mat-icon>
+        </button>
+    </div>
+    <div fxFlex="25" *ngIf="(
+            tipo === 'recibidos' && 
+            (
+                _auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                _auth.existePermiso(aclsUsuario.permisos, 'RecepcionDocumentosRecibidosReenvioNotificacion')
+            )
+        ) || 
+        (
+            tipo === 'radian' && 
+            (
+                _auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                _auth.existePermiso(aclsUsuario.permisos, 'RadianDocumentosReenvioNotificacion')
+            )
+        )
+    ">
+        <ng-select fxFlex="80"
+            style="padding-bottom:0px;"
+            class="selectDescargas"
+            [items]="arrReenvioNotificacion"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Reenvío Notificación"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [(ngModel)]="tiposReenvioNotificacion">
+        </ng-select>
+        <span fxFlex="2">&nbsp;</span>
+        <button mat-raised-button type="button" color="accent" matTooltip="Reenvío Notificación" (click)="reenvioNotificacion()" class="icon-button">
+            <mat-icon color="#ffffff">mail_outline</mat-icon>
+        </button>
+    </div>
+    <span fxFlex="2">&nbsp;</span>
+    <div fxFlex="10" 
+        *ngIf="
+        _auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+        (
+            tipo === 'sin-envio' && !tipoDocumentosSoporteSinEnvio && 
+            _auth.existePermiso(aclsUsuario.permisos, 'EmisionDocumentosSinEnvioDescargarExcel')
+        ) ||
+        (
+            tipo === 'enviados' && !tipoDocumentosSoporteEnviados && 
+            _auth.existePermiso(aclsUsuario.permisos, 'EmisionDocumentosEnviadosDescargarExcel')
+        ) ||
+        (
+            tipo === 'recibidos' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'RecepcionDocumentosRecibidosDescargarExcel')
+        ) ||
+        (
+            tipo === 'nomina-sin-envio' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'DnDocumentosSinEnvioDescargarExcel')
+        ) ||
+        (
+            tipo === 'nomina-enviados' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'DnDocumentosEnviadosDescargarExcel')
+        ) ||
+        (
+            tipoDocumentosSoporteSinEnvio && 
+            _auth.existePermiso(aclsUsuario.permisos, 'DocumentosSoporteDocumentosSinEnvioDescargarExcel')
+        ) ||
+        (
+            tipoDocumentosSoporteEnviados && 
+            _auth.existePermiso(aclsUsuario.permisos, 'DocumentosSoporteDocumentosEnviadosDescargarExcel')
+        ) ||
+        (
+            tipo === 'radian' &&
+            _auth.existePermiso(aclsUsuario.permisos, 'RadianDocumentosDescargarExcel')
+        )
+        "
+    >
+        <button mat-raised-button type="button" class="green-900" matTooltip="Descargar Excel"
+            (click)="descargarExcel()">
+            <mat-icon color="#ffffff">cloud_download</mat-icon>
+        </button>
+    </div>
+
+    <div fxFlex="31" *ngIf="accionesLote.length > 0">
+        <ng-select #selectAcciones [items]="accionesLote" style="padding-bottom:0px;"
+            class="selectAccionesLote"
+            bindLabel="nombre"
+            bindValue="id"
+            placeholder="Acciones en Bloque"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [(ngModel)]="selectedOption"
+            (change)="accionesBloque($event)"
+            >
+        </ng-select>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="space-between end" class="px-24 pt-12" *ngIf="tipo === 'validacion-documentos'">
+    <div fxFlex="45" fxLayoutAlign="start end" *ngIf="
+        _auth.existeRol(aclsUsuario.roles, 'superadmin') || 
+        _auth.existePermiso(aclsUsuario.permisos, 'RecepcionValidacionDocumentosDescargar')
+    ">
+        <ng-select [items]="arrDescargas" style="padding-bottom:0px;"
+            class="selectDescargas"
+            bindLabel="name"
+            bindValue="id"
+            placeholder="Descargas"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [multiple]="true"
+            [(ngModel)]="tiposDescargas">
+        </ng-select>
+        <span fxFlex="2">&nbsp;</span>
+        <button mat-raised-button type="button" color="accent" matTooltip="Descargar Documentos" (click)="descargar()" class="btn-descargar">
+            <mat-icon color="#ffffff">cloud_download</mat-icon>
+        </button>
+    </div>
+
+    <div fxFlex="45" 
+        *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existePermiso(aclsUsuario.permisos, 'RecepcionValidacionDescargarExcel')"
+    >
+        <button mat-raised-button type="button" class="green-900" matTooltip="Descargar Excel"
+            (click)="descargarExcel()">
+            <mat-icon color="#ffffff">cloud_download</mat-icon>
+        </button>
+    </div>
+
+    <div fxFlex="22" *ngIf="accionesLote.length > 0">
+        <ng-select #selectAcciones [items]="accionesLote" style="padding-bottom:0px;"
+            class="selectAccionesLote"
+            bindLabel="nombre"
+            bindValue="id"
+            placeholder="Acciones en Bloque"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [(ngModel)]="selectedOption"
+            (change)="accionesBloque($event)"
+            >
+        </ng-select>
+    </div>
+</div>
+
+<div fxLayout="row" fxLayoutAlign="space-between end" class="px-24 pt-4">
+    <mat-form-field fxFlex="19">
+        <mat-select placeholder="Número de registros a mostrar"
+                    (selectionChange)="paginar($event.value)" name="num_registros" [disabled]="!existeConsulta">
+            <mat-option *ngFor="let item of paginationSize" [value]="item.value">
+                {{item.label}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field fxFlex="22">
+        <input class="search" matInput [size]="100" type="text"
+            placeholder="Búsqueda rápida" [(ngModel)]="buscar" (keyup.enter)="searchinline()" />
+    </mat-form-field>
+</div>
+<ngx-datatable
+    #tracking
+    class="material striped"
+    [loadingIndicator]="loadingIndicator"
+    [rows]="rows"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    [columnMode]="'force'"
+    [rowHeight]="50"
+    [externalSorting]="true"
+    [externalPaging]="true"
+    [reorderable]="reorderable"
+    [selected]="selected"
+    [selectionType]="'checkbox'"
+    [messages]="messageDT"
+    [count]="totalElements"
+    [offset]="page"
+    [limit]="totalShow"
+    (page)='onPage($event)'
+    (sort)="onSort($event)"
+    (select)='onSelect($event)'
+    [scrollbarH]="true">
+
+    <ngx-datatable-column [width]="10" [canAutoResize]="false" [sortable]="false" *ngIf="multiSelect">
+        <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+            <mat-checkbox [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" [disabled]="rows.length === 0"></mat-checkbox>
+        </ng-template>
+        <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <mat-checkbox [checked]="isSelected" (change)="onCheckboxChangeFn($event)"></mat-checkbox>
+        </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column *ngIf="tipo === 'sin-envio'" [sortable]="false" [width]="140">
+        <div mat-row fxFlex="110">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu" *ngIf="visorEcm || checkIconVerFacturacionWeb(row) || checkIconEditarFacturacionWeb(row)">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button *ngIf="visorEcm" mat-menu-item (click)="validarVisorEcm(row, tipo)">
+                        <mat-icon>open_in_new</mat-icon>
+                        <span>Visor openECM</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="checkIconVerFacturacionWeb(row)"
+                        (click)="verDocumentoFacturacionWeb(row)"
+                    >
+                        <mat-icon>visibility</mat-icon>
+                        <span>Ver</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="checkIconEditarFacturacionWeb(row)"
+                        (click)="editarDocumentoFacturacionWeb(row)"
+                    >
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar</span>
+                    </button>
+                </mat-menu>
+
+                <button mat-icon-button matTooltip="Modificar Documento / Sin estado Pickup-Cash" (click)="modificarDocumento(row, 'sin-pickupcash')" *ngIf="checkIconModificarDocumentoSinPickup(row)">
+                    <mat-icon class="red-icon">create</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Modificar Documento / Estado Pickup-Cash sin finalizar" (click)="modificarDocumento(row, 'pickupcash-no-finalizado')" *ngIf="checkIconModificarDocumentoConPickupNoFinalizado(row)">
+                    <mat-icon class="blue-1-icon">create</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Modificar Documento / Estado Pickup-Cash Finalizado" (click)="modificarDocumento(row, 'pickupcash-finalizado')" *ngIf="checkIconModificarDocumentoConPickupFinalizado(row)">
+                    <mat-icon class="green-icon">create</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Ver Documento" (click)="verDocumento(row)" *ngIf="checkIconModificarDocumentoSinPickup(row) || checkIconModificarDocumentoConPickupNoFinalizado(row) || checkIconModificarDocumentoConPickupFinalizado(row)">
+                    <mat-icon aria-label="View" class="green-icon">visibility</mat-icon>
+                </button>
+                
+                <button mat-icon-button matTooltip="Documentos Anexos" (click)="openModalDocumentosAnexos(row)" *ngIf="checkDocumentosAnexos(row)">
+                    <mat-icon class="green-icon">get_app</mat-icon>
+                </button>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngIf="tipo === 'enviados' || tipo === 'nomina-enviados'" [sortable]="false" [width]="190">
+        <div mat-row fxFlex="100">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button [matMenuTriggerFor]="menuEnviados" aria-label="Menu" *ngIf="checkDocumentosAnexos(row) || checkCadisoftReemplazarPdf(row)">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menuEnviados="matMenu">
+                    <button mat-menu-item (click)="openModalDocumentosAnexos(row)" *ngIf="checkDocumentosAnexos(row)">
+                        <mat-icon class="green-icon">get_app</mat-icon>
+                        <span>Documentos Anexos</span>
+                    </button>
+                    
+                    <button mat-menu-item (click)="openModalReemplazarPdf(row)" *ngIf="checkCadisoftReemplazarPdf(row)">
+                        <mat-icon class="blue-500-fg">picture_as_pdf</mat-icon>
+                        <span>Reemplazar PDF</span>
+                    </button>
+                </mat-menu>
+
+                <button mat-icon-button matTooltip="Aprobado con Notificacion" (click)="openModalEstados(row)" *ngIf="checkEstadoNotificacionExitoso(row) && !checkEstadoDoWarning(row)">
+                    <mat-icon class="blue-1-icon">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aprobado" (click)="openModalEstados(row)" *ngIf="checkEstadoDoExitosoNoNotificado(row) && !checkEstadoDoWarning(row)">
+                    <mat-icon class="green-icon">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Fallido" (click)="openModalEstados(row)" *ngIf="checkEstadoDoFallido(row) && !checkEstadoDoWarning(row)">
+                    <mat-icon class="red-icon">cancel</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Procesando" (click)="openModalEstados(row)" *ngIf="checkEstadoDoWarning(row)">
+                    <mat-icon class="blue-2-icon">error</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Notificación" (click)="openModalNotificacion(row)" *ngIf="checkEstadoExitosoNotificado(row)">
+                    <mat-icon [ngClass]="{
+                        'green-icon': checkNotificacionEntregada(row),
+                        'red-icon': !checkNotificacionEntregada(row)
+                    }">local_post_office</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado" (click)="openModalEstados(row, 'aceptado')" *ngIf="checkEstadoAceptado(row) && !checkEstadoAceptadoTacitamente(row) && !checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_aceptado" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Tácitamente" (click)="openModalEstados(row, 'aceptadot')" *ngIf="checkEstadoAceptadoTacitamente(row) && !checkEstadoAceptado(row) && !checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_aceptado_tacitamente" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Tácitamente Fallido" (click)="openModalEstados(row, 'aceptadotfallido')" *ngIf="checkEstadoAceptadoTacitamenteFallido(row) && !checkEstadoAceptado(row) && !checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_aceptado_tacitamente_fallido" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Rechazado" (click)="openModalEstados(row, 'rechazado')" *ngIf="checkEstadoRechazado(row) && !checkEstadoAceptado(row) && !checkEstadoAceptadoTacitamente(row)">
+                    <mat-icon svgIcon="documento_rechazado" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Información No Disponible" (click)="mostrarMensajeInformacionNoDisponible()" *ngIf="checkEnviadoDianSinEstadoDo(row)">
+                    <mat-icon class="grey-500-fg">block</mat-icon>
+                </button>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngIf="tipo === 'recibidos'" [sortable]="false" [width]="190">
+        <div mat-row fxFlex="100">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu" *ngIf="checkIconVerDocumentoNoElectronico(row) || checkIconEditarDocumentoNoElectronico(row)">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item *ngIf="checkIconVerDocumentoNoElectronico(row)"
+                        (click)="verDocumentoNoElectronico(row)"
+                    >
+                        <mat-icon>visibility</mat-icon>
+                        <span>Ver</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="checkIconEditarDocumentoNoElectronico(row)"
+                        (click)="editarDocumentoNoElectronico(row)"
+                    >
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar</span>
+                    </button>
+                </mat-menu>
+
+                <button mat-icon-button matTooltip="Estados Validación" (click)="openModalEstados(row)"
+                    *ngIf="
+                        row.cdo_origen === 'NO-ELECTRONICO' &&
+                        row.ofe_recepcion_fnc_activo === 'SI' &&
+                        row.estado_validacion_en_proceso_pendiente
+                    ">
+                    <mat-icon class="gray-color">help_outline</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Inconsistencias openETL" (click)="openModalEstados(row)" *ngIf="checkEstadoRdiInconsistencias(row) && !checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row) && !checkEstadoRechazadoDian(row)">
+                    <mat-icon class="red-icon">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Dian" (click)="openModalEstados(row)" *ngIf="checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row)">
+                    <!-- <mat-icon class="green-icon">check_circle</mat-icon> -->
+                    <mat-icon [ngClass]="{
+                        'green-icon': (checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row)) && !checkEstadoRdiInconsistencias(row),
+                        'red-icon': (checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row)) && checkEstadoRdiInconsistencias(row)
+                    }">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Dian con Notificacion" (click)="openModalEstados(row)" *ngIf="checkEstadoAceptadoDianNotificacion(row) && !checkEstadoAceptadoDian(row) && !checkEstadoGetStatusWarning(row)">
+                    <mat-icon [ngClass]="{
+                        'blue-1-icon': (checkEstadoAceptadoDianNotificacion(row) && !checkEstadoAceptadoDian(row) && !checkEstadoGetStatusWarning(row)) && !checkEstadoRdiInconsistencias(row),
+                        'red-icon': (checkEstadoAceptadoDianNotificacion(row) && !checkEstadoAceptadoDian(row) && !checkEstadoGetStatusWarning(row)) && checkEstadoRdiInconsistencias(row)
+                    }">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Rechazado Dian" (click)="openModalEstados(row)" *ngIf="checkEstadoRechazadoDian(row) && !checkEstadoGetStatusWarning(row) && !checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row)">
+                    <mat-icon class="red-icon">cancel</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Procesando Dian" *ngIf="checkEstadoGetStatusWarning(row) && !checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoRechazadoDian(row)">
+                    <mat-icon class="blue-2-icon">error</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Notificación" (click)="openModalNotificacion(row)" *ngIf="checkEventosNotificadoRecepcion(row)">
+                    <mat-icon [ngClass]="{
+                        'green-icon': checkEstadoNotificacion(row),
+                        'red-icon': !checkEstadoNotificacion(row)
+                    }">local_post_office</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Tácitamente" (click)="openModalEstados(row, 'aceptadot')" *ngIf="checkEstadoAceptadoTacitamente(row)">
+                    <mat-icon svgIcon="documento_aceptado_tacitamente" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado" (click)="openModalEstados(row, 'aceptado')" *ngIf="!checkEstadoAceptadoTacitamente(row) && checkEstadoAceptado(row) && !checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_aceptado" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Rechazado" (click)="openModalEstados(row, 'rechazado')" *ngIf="!checkEstadoAceptadoTacitamente(row) && !checkEstadoAceptado(row) && checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_rechazado" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Fallido" (click)="openModalEstados(row, 'aceptado')" *ngIf="!checkEstadoAceptadoTacitamente(row) && checkEstadoAceptadoFallido(row) && !checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_aceptado_fallido" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Tácitamente Fallido" (click)="openModalEstados(row, 'aceptadot')" *ngIf="checkEstadoAceptadoTacitamenteFallido(row) && !checkEstadoAceptado(row) && !checkEstadoAceptadoTacitamente(row) && !checkEstadoRechazado(row)">
+                    <mat-icon svgIcon="documento_aceptado_tacitamente_fallido" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Rechazado Fallido" (click)="openModalEstados(row, 'rechazado')" *ngIf="!checkEstadoAceptadoTacitamente(row) && !checkEstadoAceptado(row) && checkEstadoRechazadoFallido(row)">
+                    <mat-icon svgIcon="documento_rechazado_fallido" class="custom-icons-recepcion"></mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Documentos Anexos" (click)="openModalDocumentosAnexos(row)" *ngIf="checkDocumentosAnexos(row)">
+                    <mat-icon class="green-icon">get_app</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Transmisión ERP" (click)="openModalEstados(row, undefined, 'transmisionerp')" *ngIf="checkTransmisionErp(row)">
+                    <mat-icon [ngClass]="{
+                        'green-icon': checkTransmisionErp(row, 'TRANSMISIONERP_EXITOSO'),
+                        'gray-color': checkTransmisionErp(row, 'TRANSMISIONERP_EXCLUIDO'),
+                        'red-icon': checkTransmisionErp(row, 'TRANSMISIONERP_FALLIDO') && !checkTransmisionErp(row, 'TRANSMISIONERP_EXITOSO') && !checkTransmisionErp(row, 'TRANSMISIONERP_EXCLUIDO')
+                    }">swap_horizontal_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Transmisión openComex" (click)="openModalEstados(row, undefined, undefined, 'transmisionOpenComex')" *ngIf="checkTransmisionOpenComex(row)">
+                    <mat-icon [ngClass]="{
+                        'green-icon': checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_EXITOSO'),
+                        'red-icon': checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_FALLIDO') && !checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_EXITOSO') && !checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_SINESTADO'),
+                        'gray-icon': checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_SINESTADO') && !checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_EXITOSO') && !checkTransmisionOpenComex(row, 'TRANSMISIONOPENCOMEX_FALLIDO')
+                    }">offline_pin</mat-icon>
+                </button>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngIf="tipo === 'radian'" [sortable]="false" [width]="190">
+        <div mat-row fxFlex="100">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button matTooltip="Aceptado Dian" (click)="openModalEstados(row)" *ngIf="checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row)">
+                    <mat-icon [ngClass]="{
+                        'green-icon': (checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row)) && !checkEstadoRdiInconsistencias(row),
+                        'red-icon': (checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row) && !checkEstadoGetStatusWarning(row)) && checkEstadoRdiInconsistencias(row)
+                    }">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Aceptado Dian con Notificacion" (click)="openModalEstados(row)" *ngIf="checkEstadoAceptadoDianNotificacion(row) && !checkEstadoAceptadoDian(row) && !checkEstadoGetStatusWarning(row)">
+                    <mat-icon [ngClass]="{
+                        'blue-1-icon': (checkEstadoAceptadoDianNotificacion(row) && !checkEstadoAceptadoDian(row) && !checkEstadoGetStatusWarning(row)) && !checkEstadoRdiInconsistencias(row),
+                        'red-icon': (checkEstadoAceptadoDianNotificacion(row) && !checkEstadoAceptadoDian(row) && !checkEstadoGetStatusWarning(row)) && checkEstadoRdiInconsistencias(row)
+                    }">check_circle</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Rechazado Dian" (click)="openModalEstados(row)" *ngIf="checkEstadoRechazadoDian(row) && !checkEstadoGetStatusWarning(row) && !checkEstadoAceptadoDian(row) && !checkEstadoAceptadoDianNotificacion(row)">
+                    <mat-icon class="red-icon">cancel</mat-icon>
+                </button>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngIf="tipo === 'correos-recibidos'" [sortable]="false" [width]="25">
+        <div mat-row fxFlex="180">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" class="menu-correos">
+                    <button mat-menu-item (click)="openModalCorreoRecibido(row)" *ngIf="_auth.existePermiso(aclsUsuario.permisos, 'RecepcionCorreosRecibidosVer')">
+                        <mat-icon>visibility</mat-icon>
+                        <span>Ver Detalles</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="row.epm_procesado === 'NO' && _auth.existePermiso(aclsUsuario.permisos, 'RecepcionCorreosRecibidosDescargar')" (click)="descargarCorreoRecibido(row)">
+                        <mat-icon>get_app</mat-icon>
+                        <span>Descargar Anexos</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="row.epm_procesado === 'NO' && _auth.existePermiso(aclsUsuario.permisos, 'RecepcionCorreosRecibidosAsociarAnexos')" (click)="asociarAnexoCorreoRecibido(row)">
+                        <mat-icon>create_new_folder</mat-icon>
+                        <span>Asociar anexos con documento</span>
+                    </button>
+
+                    <button mat-menu-item *ngIf="row.epm_procesado === 'NO' && _auth.existePermiso(aclsUsuario.permisos, 'RecepcionCorreosRecibidosCrearDocumentoAsociarAnexos')" (click)="crearDocumentoAsociarAnexo(row)">
+                        <mat-icon>add_circle_outline</mat-icon>
+                        <span>Crear documento y asociar anexos </span>
+                    </button>
+                </mat-menu>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngIf="tipo === 'validacion-documentos'" [sortable]="false" [width]="120">
+        <div mat-row fxFlex="180">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button matTooltip="Pendiente" (click)="openModalEstados(row)" *ngIf="checkEstadoValidacion(row, 'PENDIENTE')">
+                    <mat-icon class="gray-color">help_outline</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Validado" (click)="openModalEstados(row)" *ngIf="checkEstadoValidacion(row, 'VALIDADO')">
+                    <mat-icon class="green-icon">assignment_turned_in</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Rechazado" (click)="openModalEstados(row)" *ngIf="checkEstadoValidacion(row, 'RECHAZADO')">
+                    <mat-icon class="red-icon">highlight_off</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Pagado" (click)="openModalEstados(row)" *ngIf="checkEstadoValidacion(row, 'PAGADO')">
+                    <mat-icon class="blue-1-icon">monetization_on</mat-icon>
+                </button>
+
+                <button mat-icon-button matTooltip="Documentos Anexos" (click)="openModalDocumentosAnexos(row)" *ngIf="checkDocumentosAnexos(row)">
+                    <mat-icon class="green-icon">get_app</mat-icon>
+                </button>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngFor="let item of columns" name="{{item.name}}" prop="{{item.prop}}" [sortable]="item.sorteable" [width]="item.width">
+        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+            <span *ngIf="item.derecha" fxFlex="100" fxLayout="row" fxLayoutAlign="end center" style="width: 100px;font-size: 9pt !important">
+                {{getValue(row, item.prop)}}
+            </span>
+
+            <span *ngIf="!item.derecha" style="font-size: 9pt !important">
+                {{getValue(row, item.prop)}}
+            </span>
+
+        </ng-template>
+    </ngx-datatable-column>
+</ngx-datatable>

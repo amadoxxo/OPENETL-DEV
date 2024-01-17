@@ -1,0 +1,29 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>{{ proceso === 'emision' ? 'Emisión - ' : '' }} Reemplazar PDF - {{ item.rfa_prefijo }}{{ item.cdo_consecutivo }}</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="formReemplazarPdf" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+            <mat-form-field fxFlex="100">
+                <input matInput readonly class="form-control margin-file-field"
+                        [placeholder]="'Ubique el nuevo archivo PDF'"
+                        [value]="removeFakePath(pdf.value)"
+                        (click)="fileToUpload.click()">
+                <input (change)="fileChangeEvent($event)"
+                        type="file"
+                        #fileToUpload
+                        style="display:none;"
+                        formControlName="pdf"
+                        [accept]="'.pdf'">
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+    <button mat-raised-button type="button" color="accent" [disabled]="!formReemplazarPdf.valid" (click)="uploadPdf()">
+        <mat-icon color="#ffffff">picture_as_pdf</mat-icon> Cargar Archivo
+    </button>
+</mat-dialog-actions>
+<br>

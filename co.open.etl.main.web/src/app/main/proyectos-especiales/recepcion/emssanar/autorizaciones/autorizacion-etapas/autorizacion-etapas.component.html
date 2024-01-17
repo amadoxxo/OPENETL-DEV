@@ -1,0 +1,97 @@
+<div id="rol" class="page-layout simple fullwidth" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Autorizaciones</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ txtBreadCrum }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ txtBreadCrum }}</div> 
+            </div>
+        </div>
+    </div>
+
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24 pb-6">
+        <div class="mat-white-bg mat-elevation-z4 px-24 pt-24">
+            <div fxLayout="column" fxLayoutGap="15px">
+                <app-filtros-gestion-documentos #filtros [etapa]="etapa" [parent]="this"></app-filtros-gestion-documentos>
+                <div fxFlex="100" fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" [disabled]="filtros.form.invalid" matTooltip="Buscar Documentos" (click)="searchDocumentos()">
+                        <mat-icon color="#ffffff">search</mat-icon> Buscar
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="documento">
+                <br>
+                <mat-divider></mat-divider>
+                <h4>Documento seleccionado</h4>
+                <table id="documentos">
+                    <thead>
+                        <tr>
+                            <th width="10%">Tipo</th>
+                            <th>Prefijo</th>
+                            <th>Consecutivo</th>
+                            <th>Receptor</th>
+                            <th>Fecha</th>
+                            <th>Etapa Actual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ documento?.gdo_clasificacion }}</td>
+                            <td>{{ documento?.rfa_prefijo }}</td>
+                            <td>{{ documento?.gdo_consecutivo }}</td>
+                            <td>{{ documento?.get_configuracion_obligado_facturar_electronicamente.nombre_completo }}</td>
+                            <td>{{ documento?.gdo_fecha }}</td>
+                            <td>{{ documento?.nombre_etapa_actual }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+                <br>
+                <form fxLayout="column" name="form" [formGroup]="form">
+                    <input type="hidden" [formControl]="gdo_id">
+                    <input type="hidden" [formControl]="etapa">
+                    <!-- Observación -->
+                    <mat-form-field fxFlex="100">
+                        <mat-label class="control-label">Observación
+                            <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        </mat-label>
+                        <textarea matInput [formControl]="observacion" rows="3" cols="200"></textarea>
+                    </mat-form-field>
+                </form>
+                <div style="height:10px; bottom:10px;"></div>
+                <div fxLayout="row" fxLayoutAlign="center center" class="upload-files">
+                    <div fxLayoutAlign="center">
+                        <div>
+                            <button mat-raised-button color="primary" (click)="devolverDocumento()">
+                                <mat-icon color="#ffffff">assignment_return</mat-icon> Devolver Etapa Anterior
+                            </button>
+                        </div>
+                    </div>
+                    <span fxFlex="2">&nbsp;</span>
+                    <div fxLayoutAlign="center">
+                        <div>
+                            <button mat-raised-button color="primary" (click)="clearFormDocumento()">
+                                <mat-icon color="warn">cancel</mat-icon> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+    </div>
+    <!-- / CONTENT -->
+</div>

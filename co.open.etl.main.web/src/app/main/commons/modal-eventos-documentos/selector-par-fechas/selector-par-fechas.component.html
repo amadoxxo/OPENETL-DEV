@@ -1,0 +1,28 @@
+<div fxFlex="100">
+    <mat-form-field fxFlex="50" [floatLabel]="'always'">
+        <mat-label style="color:rgb(131, 129, 129) !important;">{{labelDesde}}</mat-label>
+        <input matInput [matDatepicker]="cdoFD"
+            [max]="maxDate"
+            [formControl]="fecha_desde" 
+            (click)="cdoFD.open()" (dateChange)="setMinDateFechaFin($event.target.value)">
+        <mat-icon *ngIf="req" matSuffix class="fi">star rate</mat-icon>
+        <mat-datepicker-toggle matSuffix [for]="cdoFD"></mat-datepicker-toggle>
+        <mat-datepicker #cdoFD></mat-datepicker>
+        <mat-error *ngIf="!fecha_desde.valid">
+            Seleccione la Fecha Desde...
+        </mat-error>
+    </mat-form-field>
+    <span fxFlex="4">&nbsp;</span>
+    <mat-form-field fxFlex="50" [floatLabel]="'always'">
+        <mat-label style="color:rgb(131, 129, 129) !important">{{labelHasta}}</mat-label>
+        <input matInput [matDatepicker]="cdoFH"
+            [formControl]="fecha_hasta" 
+            (click)="cdoFH.open()" [min]="minDateFechaFin" [max]="maxDateFechaFin">
+        <mat-icon *ngIf="req" matSuffix class="fi">star rate</mat-icon>
+        <mat-datepicker-toggle matSuffix [for]="cdoFH"></mat-datepicker-toggle>
+        <mat-datepicker #cdoFH></mat-datepicker>
+        <mat-error *ngIf="!fecha_hasta.valid">
+                Seleccione la Fecha Hasta...
+        </mat-error>
+    </mat-form-field>
+</div>

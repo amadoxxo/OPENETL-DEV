@@ -1,0 +1,74 @@
+<div fxFlex="row" fxFlex="100">
+    <div fxFlex="column" fxFlex="48">
+        <ng-select 
+            [items]="oferentes" 
+            style="padding-bottom:0px;"
+            #selectOfes
+            bindValue="ofe_id"
+            bindLabel="ofe_identificacion_ofe_razon_social"
+            placeholder="{{ labelOfe }}"
+            [searchFn]="customSearchFnOfe"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            appendTo="body"
+            [formControl]="ofe_id"
+            [(ngModel)]="selectedOfeId"
+            (clear)="clear()"
+            (change)="onOfeSeleccionado($event)"
+            [readonly]="disabled_ofe">
+
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>({{ item.ofe_identificacion }})</strong> - {{ item.ofe_razon_social }}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+        </ng-select>
+        <mat-error *ngIf="!ofe_id.valid && ofe_id.touched" style="color:red;" class="fh">
+            Seleccione el {{ labelOfe }}!
+        </mat-error>
+    </div>
+    <span fxFlex="4">&nbsp;</span>
+    <div fxFlex="column" fxFlex="48">
+        <ng-select 
+            [items]="adquirentes$ | async" 
+            style="padding-bottom:0px;"
+            #selectAdqs
+            bindValue="adq_id"
+            bindLabel="adq_identificacion_adq_razon_social"
+            [loading]="adquirentesLoading"
+            labelForId="labelReceptor"
+            placeholder="{{ labelAdq }}"
+            typeToSearchText="Puede ingresar la razón social o identificación"
+            [closeOnSelect]="!selector_multiple_receptor"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [typeahead]="adquirentesInput$"
+            [formControl]="adq_id"
+            appendTo="body"
+            [(ngModel)]="selectedAdqId"
+            (change)="onAdqSeleccionado($event)"
+            [multiple]="selector_multiple_receptor"
+        >
+            <ng-template ng-header-tmp *ngIf="arrAdqBusqueda && arrAdqBusqueda.length > 0 && selector_multiple_receptor">
+                <div>
+                    <button style="color:#4b4b4b;border:none;background:none;cursor:pointer;margin: 5px 0;padding-right: 40px;" (click)="onSeleccionarTodosReceptor()">Seleccionar Todos</button>
+                    <button style="color:#4b4b4b;border:none;background:none;cursor:pointer;margin: 5px 0;" (click)="onLimpiarReceptorReg()">Limpiar Todos</button>
+                </div>
+            </ng-template>
+
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div style="margin: 5px 0;" class="card">
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>({{ item.adq_identificacion }}{{ item.adq_id_personalizado !== undefined && item.adq_id_personalizado !== null && item.adq_id_personalizado !== '' ? ' / ' + item.adq_id_personalizado : '' }})</strong> - {{ item.adq_razon_social }}
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-select>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<div id="centros-op" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Centros Operación</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Centros Operación</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-icon-button matTooltip="Recargar" (click)="getData()">
+                    <mat-icon aria-label="Reload" color="#ffffff">autorenew</mat-icon>
+                </button>
+                <span fxFlex="2">&nbsp;</span> 
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionCentrosOperacionNuevo')" 
+                    mat-raised-button (click)="openModalCentrosOperacion('new')" color="accent">
+                    <mat-icon color="#ffffff">add</mat-icon> Nuevo
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <app-open-tracking
+        [rows]="centrosOperacion"
+        [columns]="columns"
+        [trackingOpciones]="trackingOpciones"
+        [totalElements]="totalElements"
+        [totalShow]="totalShow"
+        [loadingIndicator]="loadingIndicator"
+        [permisoEditar]="'ConfiguracionCentrosOperacionEditar'"
+        [permisoVer]="'ConfiguracionCentrosOperacionVer'"
+        [permisoCambiarEstado]="'ConfiguracionCentrosOperacionCambiarEstado'"
+        [trackingInterface]="trackingInterface">
+    </app-open-tracking>
+    <!-- / CONTENT -->
+</div>

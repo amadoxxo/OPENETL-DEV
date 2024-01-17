@@ -1,0 +1,235 @@
+<div id="empleadores" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Documento Soporte de Pago de Nómina Electrónica</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Empleadores</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <br>
+            <form [formGroup]="form">
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                    
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-sm="column">
+                                <div fxFlex="50%" fxFlex.lt-md="50%" fxFlex.lt-sm="100%">
+                                    <ng-select [items]="tiposDocumento"
+                                            bindLabel="tdo_codigo_descripion"
+                                            bindValue="tdo_codigo"
+                                            labelForId="labelTipoDoc"
+                                            placeholder="Tipo de Documento"
+                                            notFoundText="No hay coincidencias"
+                                            loadingText="..."
+                                            appendTo="body"
+                                            [formControl]="tdo_codigo"
+                                            (change)="cambiarTdo($event)"
+                                            [searchFn]="customSearchFnTdo"
+                                            [readonly]="ver">
+                                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                                                <div style="margin: 5px 0;" class="card">
+                                                    <div class="card-body">
+                                                        <p class="card-text">
+                                                            <strong>{{item.tdo_codigo}}</strong> - {{item.tdo_descripcion}}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </ng-template>
+                                    </ng-select>
+                                    <mat-error *ngIf="!ver && !tdo_codigo.valid && tdo_codigo.touched">
+                                        {{formErrors.tdo_codigo.required}}
+                                    </mat-error>
+                                </div>
+
+                                <mat-form-field [fxFlex]="anchoFlex" [fxFlex.lt-md]="anchoFlex" fxFlex.lt-sm="100%">
+                                    <mat-label class="control-label" style="padding-top:0px;">Identificación</mat-label>
+                                    <input matInput type="text" [formControl]="emp_identificacion" [maxlength]="maxlengthIdentificacion"
+                                        #IdentificacionInput (blur)="calcularDV()" [pattern]="regexIdentificacion" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{ IdentificacionInput.value?.length || 0 }}/{{ maxlengthIdentificacion }}</mat-hint>
+                                    <mat-error *ngIf="!ver && !emp_identificacion.valid">
+                                        {{formErrors.emp_identificacion.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <ng-container *ngIf="mostrarDV">
+                                    <mat-form-field fxFlex="4" style="padding-top:6px;">
+                                        <mat-label class="control-label">DV</mat-label>
+                                        <input matInput type="text" [formControl]="tdo_digito" readonly>
+                                    </mat-form-field>
+                                </ng-container>
+                            </div>
+
+                            <div *ngIf="mostrarCamposTdo31" fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                <mat-form-field fxFlex="100%">
+                                    <mat-label>Razón Social</mat-label>
+                                    <input matInput type="text" [formControl]="emp_razon_social" #RazonSocial maxlength="255" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{RazonSocial.value?.length || 0}}/255</mat-hint>
+                                    <mat-error *ngIf="!ver && !emp_razon_social.valid">
+                                        {{formErrors.emp_razon_social.required}}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Se pintan los campos cuando el tipo de documento es diferente a 31 -->
+                            <div *ngIf="!mostrarCamposTdo31" fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px" fxLayout.lt-md="column" fxLayout.lt-sm="column">
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="50%" fxFlex.lt-sm="100%">
+                                    <mat-label>Primer Apellido</mat-label>
+                                    <input matInput type="text" [formControl]="emp_primer_apellido" #PrimerApellido maxlength="60" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{PrimerApellido.value?.length || 0}}/60</mat-hint>
+                                    <mat-error *ngIf="!ver && !emp_primer_apellido.valid">
+                                        {{formErrors.emp_primer_apellido.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="24%" fxFlex.lt-md="49%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <mat-label>Segundo Apellido</mat-label>
+                                    <input matInput type="text" [formControl]="emp_segundo_apellido" #SegudoApellido maxlength="60" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{SegudoApellido.value?.length || 0}}/60</mat-hint>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="25%" fxFlex.lt-md="50%" fxFlex.lt-sm="100%">
+                                    <mat-label>Primer Nombre</mat-label>
+                                    <input matInput type="text" [formControl]="emp_primer_nombre" #PrimerNombre maxlength="60" [readonly]="ver">
+                                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{PrimerNombre.value?.length || 0}}/60</mat-hint>
+                                    <mat-error *ngIf="!ver && !emp_primer_nombre.valid">
+                                        {{formErrors.emp_primer_nombre.required}}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="24%" fxFlex.lt-md="49%" fxFlex.lt-sm="100%" style="padding-top:6px;">
+                                    <mat-label>Otros Nombres</mat-label>
+                                    <input matInput type="text" [formControl]="emp_otros_nombres" #OtrosNombres maxlength="60" [readonly]="ver">
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{OtrosNombres.value?.length || 0}}/60</mat-hint>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="domicilio">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DOMICILIO</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!domicilio.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open #direccionFiscal [pai_id]="pai_id" [dep_id]="dep_id" [mun_id]="mun_id"
+                                            [direccion]="emp_direccion" [direccionRequerida]="true" [telefono]="emp_telefono" [longitudTelefono]="50" [codigo_postal]="cpo_id"
+                                            [sololectura]="false" [ver]="ver" [tipoUbicacion]="'fiscal'" [tipo]="'DN'">
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionAdicional">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN ADICIONAL</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                    
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxFlex="1 0 auto" fxLayoutGap="15px">
+                                <mat-form-field fxFlex="100">
+                                    <mat-label class="control-label">Correo Electrónico</mat-label>
+                                    <input matInput type="text" maxlength="255" [formControl]="emp_correo" [readonly]="ver" #CorreoId>
+                                    <mat-hint align="end" *ngIf="!ver" class="fh">{{CorreoId.value?.length || 0}}/255</mat-hint>
+                                    <mat-error *ngIf="!ver && emp_correo.errors && emp_correo.errors.email">
+                                        El correo es inválido!
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="redesSociales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">REDES SOCIALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!redesSociales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-redes-sociales [correo]="emp_correo" [sitio_web]="emp_web" [twitter]="emp_twitter" 
+                            [facebook]="emp_facebook" [ver]="ver" [tipo]="'DN'">
+                        </app-redes-sociales>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="softwareProveedor">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">SOFTWARE PROVEEDOR TECNOLÓGICO</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!softwareProveedor.valid && !ver">
+                                <span style="color: red">El Proveedor de Software Tecnológico es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-selector-sft [sft_id]="sft_id" [ver]="ver" [tipo]="'DN'"></app-selector-sft>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="configuracion" *ngIf="(_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existeRol(aclsUsuario.roles, 'usuarioma'))">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONFIGURACIÓN</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row">
+                            <mat-form-field fxFlex="30" style="margin-top: 20px">
+                                <mat-label class="control-label">Prioridad Proceso de Agendamiento</mat-label>
+                                <input matInput type="text" [formControl]="emp_prioridad_agendamiento" [readonly]="ver">
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <br><br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" *ngIf="!ver" [disabled]="!form.valid"
+                            (click)="resourceEmpleador(form.value)">
+                        <mat-icon color="#ffffff">check_box</mat-icon>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>

@@ -1,0 +1,53 @@
+#rol {
+    .p-24 {
+        .entry {
+            padding-top: 5px;
+            padding-bottom: 40px;
+            padding-left: 24px;
+            padding-right: 24px;
+            background-color: white;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            .search {
+                .mat-input-wrapper {
+                    width: 400px !important;
+                }
+            }
+        }
+    }
+}
+
+.fh {
+    font-size: 12px;
+}
+
+.fi {
+    font-size: 9px;
+    color: red;
+}
+
+#documentos {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#documentos td, #documentos th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#documentos tr:nth-child(even){background-color: #f2f2f2;}
+
+#documentos tr:hover {background-color: #ddd;}
+
+#documentos th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #0091EA;
+    color: white;
+}
+
+table {
+    width: 100%;
+}

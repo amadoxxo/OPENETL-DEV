@@ -1,0 +1,77 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">{{tipo}} Agregar {{tituloModulo}}</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">{{tipo}} Actualizar {{tituloModulo}}</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">{{tipo}} Ver {{tituloModulo}}</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <div fxFlex="100">
+                <ng-select class="custom mgBottom"
+                    [ngClass]="{'error-required' : (hasError('xde_aplica_para', 'required') && xde_aplica_para.touched)}"
+                    [items]="aplicaParaItems"
+                    bindValue="xde_aplica_para"
+                    bindLabel="xde_aplica_para_descripcion"
+                    [(ngModel)]="aplicaParaSeleccionado"
+                    placeholder="Tipo Documento "
+                    [multiple]="true"
+                    notFoundText="No hay coincidencias"
+                    loadingText="..."
+                    [closeOnSelect]="false"
+                    formControlName="xde_aplica_para"
+                    [dropdownPosition]="'down'"
+                >
+                </ng-select>
+                <mat-error *ngIf="hasError('xde_aplica_para', 'required') && xde_aplica_para.touched" style="font-size: 12px !important;margin-top: -8px !important;">
+                    {{formErrors.xde_aplica_para.required}}
+                </mat-error>
+            </div>
+        </div>
+        <app-selector-ofe-precargado *ngIf="tipoConfiguracion === 'personalizados'"
+            [ofe_id]="ofe_identificacion" 
+            [oferentes]="ofes" 
+            [ver]="action === 'view'" 
+            [label]="'OFE / Receptor'">
+        </app-selector-ofe-precargado>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <mat-label class="control-label">XPath <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                <textarea matInput [formControl]="xde_xpath" rows="3"></textarea>
+                <mat-error *ngIf="hasError('xde_xpath', 'required')">
+                    {{formErrors.xde_xpath.required}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" style="margin-top: 5px !important;">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputDesc placeholder="Descripción" formControlName="xde_descripcion">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputDesc.value?.length || 0}}/255</mat-hint>
+                <mat-error *ngIf="hasError('xde_descripcion', 'required')">
+                    {{formErrors.xde_descripcion.required}}
+                </mat-error>
+                <mat-error *ngIf="hasError('xde_descripcion', 'maxlength')">
+                    {{formErrors.xde_descripcion.maxLength}}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="action === 'edit' || action === 'view'" [modal]="true"></app-magic-fields>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)" *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="savePathConfiguracion(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="savePathConfiguracion(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(false)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

@@ -1,0 +1,11 @@
+<div fxFlex="100">
+    <ng-select [items]="tiemposAceptacionTacita"
+               bindLabel="tat_codigo_descripcion"
+               labelForId="labelAceptacionTacita"
+               placeholder="Regla de Aceptación Tácita"
+               notFoundText="No hay coincidencias"
+               loadingText="..."
+               appendTo="body"
+               [formControl]="tat_id">
+    </ng-select>
+</div>

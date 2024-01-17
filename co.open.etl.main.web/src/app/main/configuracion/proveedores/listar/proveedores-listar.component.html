@@ -1,0 +1,66 @@
+<div id="proveedores" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Proveedores</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Proveedores</div>
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-icon-button matTooltip="Recargar" (click)="getData()">
+                    <mat-icon aria-label="Reload" color="#ffffff">autorenew</mat-icon>
+                </button>
+                <span fxFlex="2">&nbsp;</span>
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionProveedoresSubir')"  
+                    mat-raised-button (click)="subirProveedores()" color="accent">
+                    <mat-icon color="#ffffff">cloud_upload</mat-icon> Subir
+                </button>
+                <span fxFlex="2">&nbsp;</span>
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionProveedoresNuevo')" 
+                    mat-raised-button (click)="nuevoProveedor()" color="accent">
+                    <mat-icon color="#ffffff">add</mat-icon> Nuevo
+                </button>
+                <span fxFlex="2">&nbsp;</span>
+                <button fxFlex="25" *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionProveedores')" 
+                    mat-raised-button (click)="selectAcciones.open()" class="green-900">
+                    <mat-icon color="#ffffff">cloud_download</mat-icon> Descargas
+                    <mat-select #selectAcciones (selectionChange)="descargasExcel($event.value)">
+                        <mat-select-trigger></mat-select-trigger>
+                        <mat-option [value]="">Descargas</mat-option>
+                        <mat-option *ngFor="let accDescargar of accionesDescargar" [value]="accDescargar.id">
+                            {{ accDescargar.itemName }}
+                        </mat-option>
+                    </mat-select>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+    <!-- CONTENT -->
+    <app-open-tracking
+        [rows]="registros"
+        [columns]="columns"
+        [accionesLote]="accionesBloque"
+        [trackingOpciones]="trackingOpciones"
+        [totalElements]="totalElements"
+        [totalShow]="totalShow"
+        [loadingIndicator]="loadingIndicator"
+        [permisoEditar]="'ConfiguracionProveedoresEditar'"
+        [permisoVer]="'ConfiguracionProveedoresVer'"
+        [permisoCambiarEstado]="'ConfiguracionProveedoresCambiarEstado'"
+        [trackingInterface]="trackingInterface"
+        [trackingOrigen]="'proveedores'">
+    </app-open-tracking>
+    <!-- / CONTENT -->
+</div>

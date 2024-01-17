@@ -1,0 +1,12 @@
+.fh {
+    font-size: 12px;
+  }
+  
+.fi {
+  font-size: 9px;
+  color: red;
+}
+
+::ng-deep .ng-dropdown-panel.ng-select-bottom {
+  margin-top: -15px !important;
+}

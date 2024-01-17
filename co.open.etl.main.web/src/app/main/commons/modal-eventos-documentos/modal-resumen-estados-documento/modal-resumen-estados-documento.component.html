@@ -1,0 +1,912 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>{{titulo}}</h1>
+<mat-dialog-content>
+    <ng-container>
+        <mat-list class="app-class">
+            <ng-container *ngIf="documento.proceso !== 'recepcion' && documento.proceso !== 'validacion-documentos'; else infoRecepcion">
+                <ng-container *ngIf="documento.proceso === 'radian'">
+                    <mat-list-item>
+                        <h2>Resultado Validación Previa</h2>
+                    </mat-list-item>
+
+                    <ng-container *ngIf="mostrarAceptadoDian">
+                        <mat-divider></mat-divider>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Descripción Estado</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.StatusDescription }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && (estObjectDian.cdoFechaValidacionDian !== '' || documento?.cdo_fecha_validacion_dian !== '')">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Fecha/Hora Validacion</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.cdoFechaValidacionDian ? estObjectDian.cdoFechaValidacionDian : documento?.cdo_fecha_validacion_dian }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && estObjectDian.XmlDocumentKey !== ''">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>XML Document Key</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.XmlDocumentKey }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>CUFE</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">
+                                            {{ getCufe() }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && mostrarAceptadoDianNotificacion">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Notificaciones</b></div>
+                                    <div fxFlex="75">
+                                        <div style="word-break: break-all">
+                                            <span style="word-break: break-all" *ngFor="let item of errroMessage"><b>*</b> {{item}}<br></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && estObjectDian.origen_estado !== ''">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Origen</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.origen_estado | titlecase }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="documento.estadoEventoAceptadoRechazado === undefined">
+                    <mat-list-item>
+                        <h2>Resultado Transmisión</h2>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarXmlUbl"></mat-divider>
+                    <mat-list-item  *ngIf="mostrarXmlUbl" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25" *ngIf="documento.proceso !== 'nomina-electronica'"><b>XML-UBL</b></div>
+                            <div fxFlex="25" *ngIf="documento.proceso === 'nomina-electronica'"><b>XML</b></div>
+                            <div fxFlex="55">
+                                <span style="word-break: break-all" *ngFor="let item of xmlUblMensaje">{{item}}<br></span>
+                            </div>
+                            <div fxFlex="20" align="right">
+                                <span style="text-align: right;">{{xmlUblEstado}}</span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarAttachedDocument"></mat-divider>
+                    <mat-list-item  *ngIf="mostrarAttachedDocument" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25" *ngIf="documento.proceso !== 'nomina-electronica'"><b>ATTACHEDDOCUMENT</b></div>
+                            <div fxFlex="55">
+                                <span style="word-break: break-all" *ngFor="let item of attachedDocumentMensaje">{{item}}<br></span>
+                            </div>
+                            <div fxFlex="20" align="right">
+                                <span style="text-align: right;">{{ublAttachedDocumentEstado}}</span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarWsDian && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')"></mat-divider>
+                    <mat-list-item *ngIf="mostrarWsDian && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>WS DIAN</b></div>
+
+                            <div fxFlex="55" *ngIf="wsDianEstado === 'FALLIDO'">
+                                <span style="word-break: break-all" *ngFor="let item of wsDianMensaje"><b>*</b> {{item}}<br></span>
+                            </div>
+                            <div fxFlex="60" *ngIf="wsDianEstado !== 'FALLIDO'">
+                                <span style="word-break: break-all" *ngFor="let item of wsDianMensaje">{{item}}<br></span>
+                            </div>
+
+                            <div fxFlex="20" align="right">
+                                <span style="text-align: right;">{{wsDianProcesoEstado}}</span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarNotificacion && (wsDianProcesoEstado != 'ENPROCESO' && wsDianProcesoEstado != '' && wsDianProcesoEstado != null)"></mat-divider>
+                    <mat-list-item *ngIf="mostrarNotificacion && (wsDianProcesoEstado != 'ENPROCESO' && wsDianProcesoEstado != '' && wsDianProcesoEstado != null)" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>NOTIFICACIÓN</b></div>
+                            <div fxFlex="55">
+                                <span style="word-break: break-all" *ngFor="let item of notificacionMensaje">{{item}}<br></span>
+                            </div>
+                            <div fxFlex="20" align="right">
+                                <span style="text-align: right;">{{notificacionEstado}}</span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarRegistroRecepcion"></mat-divider>
+                    <mat-list-item *ngIf="mostrarRegistroRecepcion" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>REGISTRO RECEPCIÓN</b></div>
+                            <div fxFlex="55">
+                                <span style="word-break: break-all" *ngFor="let item of registroRecepcionMensaje">{{item}}<br></span>
+                            </div>
+                            <div fxFlex="20" align="right">
+                                <span style="text-align: right;">{{registroRecepcionEstado}}</span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarTransmisionEdm"></mat-divider>
+                    <mat-list-item  *ngIf="mostrarTransmisionEdm" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25" *ngIf="documento.proceso !== 'nomina-electronica'"><b>TRANSMISIÓN EDM</b></div>
+                            <div fxFlex="55">
+                                <span style="word-break: break-all" *ngFor="let item of transmisionEdmMensaje">{{item}}<br></span>
+                            </div>
+                            <div fxFlex="20" align="right">
+                                <span style="text-align: right;">{{transmisionEdmEstado}}</span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-list-item  *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')">
+                        <h2>Resultado Validación Previa</h2>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')"></mat-divider>
+                    <mat-list-item *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Descripción Estado</b></div>
+                            <div fxFlex="75">
+                                <span *ngIf="estObject !== null" style="word-break: break-all;">
+                                    {{estObject.StatusDescription}}
+                                </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')"></mat-divider>
+                    <mat-list-item *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Fecha/Hora Validación</b></div>
+                            <div fxFlex="75" *ngIf="documento.proceso != 'nomina-electronica' else templateFecha">
+                                <span *ngIf="estObject !== null" style="word-break: break-all">
+                                    {{estObject.cdoFechaValidacionDian}}
+                                </span>
+                            </div>
+                            <ng-template #templateFecha>
+                                <div fxFlex="75">
+                                    <span *ngIf="estObject !== null" style="word-break: break-all">
+                                        {{estObject.cdnFechaValidacionDian}}
+                                    </span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')"></mat-divider>
+                    <mat-list-item *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Xml Document Key</b></div>
+                            <div fxFlex="75">
+                                <span *ngIf="estObject !== null" style="word-break: break-all">
+                                    {{estObject.XmlDocumentKey}}
+                                </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')"></mat-divider>
+                    <mat-list-item *ngIf="mostrarValidacion && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>{{cudeCufeLabel()}}</b></div>
+                            <div fxFlex="75">
+                                <span *ngIf="estObject !== null" style="word-break: break-all">
+                                    {{getCufe()}}
+                                </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="mostrarNotificacionMensaje && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')"></mat-divider>
+                    <mat-list-item *ngIf="mostrarNotificacionMensaje && (xmlUblEstado != 'ENPROCESO' && xmlUblEstado != '' && xmlUblEstado != null && xmlUblMensaje == 'Proceso Realizado con Éxito')" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Notificaciones</b></div>
+                            <div fxFlex="75">
+                                <div *ngIf="estObject !== null" style="word-break: break-all">
+                                    <span style="word-break: break-all" *ngFor="let item of errroMessage"><b>*</b> {{item}}<br></span>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-list-item *ngIf="(estObjectAcuse !== null && estObjectAcuse.acuseRecibo !== null && estObjectAcuse.acuseRecibo !== undefined) ||
+                        (estObjectReciboBien !== null && estObjectReciboBien.reciboBien !== null && estObjectReciboBien.reciboBien !== undefined)"
+                    >
+                        <h2>Eventos</h2>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="estObjectAcuse !== null && estObjectAcuse.acuseRecibo !== null && estObjectAcuse.acuseRecibo !== undefined"></mat-divider>
+                    <mat-list-item *ngIf="estObjectAcuse !== null && estObjectAcuse.acuseRecibo !== null && estObjectAcuse.acuseRecibo !== undefined" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Acuse de Recibo</b></div>
+                            <div fxFlex="75">
+                                Código Evento:<br>
+                                {{ estObjectAcuse.acuseRecibo?.codigo_evento }}<br>
+                                <br>
+                                Descripción Evento:<br>
+                                {{ estObjectAcuse.acuseRecibo?.descripcion_evento }}<br>
+                                <br>
+                                Id Evento:<br>
+                                {{ estObjectAcuse.acuseRecibo?.id_evento }}<br>
+                                <br>
+                                CUDE:<br>
+                                <span style="word-break: break-all">
+                                    {{ estObjectAcuse.acuseRecibo?.cude_evento }}<br>
+                                </span>
+                                <br>
+                                Fecha y Hora:<br>
+                                {{ estObjectAcuse.acuseRecibo?.fecha_evento }} {{ estObjectAcuse.acuseRecibo?.hora_evento }}<br>
+                            </div>
+                        </div>
+                    </mat-list-item>
+
+                    <mat-divider *ngIf="estObjectReciboBien !== null && estObjectReciboBien.reciboBien !== null && estObjectReciboBien.reciboBien !== undefined"></mat-divider>
+                    <mat-list-item *ngIf="estObjectReciboBien !== null && estObjectReciboBien.reciboBien !== null && estObjectReciboBien.reciboBien !== undefined" class="font-size-text">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Recibo del Bien y/o Prestación del Servicio</b></div>
+                            <div fxFlex="75">
+                                Código Evento:<br>
+                                {{ estObjectReciboBien.reciboBien?.codigo_evento }}<br>
+                                <br>
+                                Descripción Evento:<br>
+                                {{ estObjectReciboBien.reciboBien?.descripcion_evento }}<br>
+                                <br>
+                                Id Evento:<br>
+                                {{ estObjectReciboBien.reciboBien?.id_evento }}<br>
+                                <br>
+                                CUDE:<br>
+                                <span style="word-break: break-all">
+                                    {{ estObjectReciboBien.reciboBien?.cude_evento }}<br>
+                                </span>
+                                <br>
+                                Fecha y Hora:<br>
+                                {{ estObjectReciboBien.reciboBien?.fecha_evento }} {{ estObjectReciboBien.reciboBien?.hora_evento }}<br>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                </ng-container>
+
+                <ng-container *ngIf="documento.estadoEventoAceptadoRechazado !== undefined">
+                    <mat-list-item>
+                        <h2> {{ estObject.estadoFinal?.tituloEvento }}</h2>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                    <mat-list-item class="font-size-text" *ngIf="estObject.estadoFinal?.codigo_evento">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Código Evento:</b></div>
+                            <div fxFlex="75">
+                                <span style="word-break: break-all"> {{ estObject.estadoFinal?.codigo_evento }} </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item class="font-size-text" *ngIf="estObject.estadoFinal?.descripcion_evento">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Descripción Evento:</b></div>
+                            <div fxFlex="75">
+                                <span style="word-break: break-all"> {{ estObject.estadoFinal?.descripcion_evento }} </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item class="font-size-text" *ngIf="estObject.estadoFinal?.id_evento">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Id Evento:</b></div>
+                            <div fxFlex="75">
+                                <span style="word-break: break-all"> {{ estObject.estadoFinal?.id_evento }} </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item class="font-size-text" *ngIf="estObject.estadoFinal?.cude_evento">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>CUDE:</b></div>
+                            <div fxFlex="75">
+                                <span style="word-break: break-all"> {{ estObject.estadoFinal?.cude_evento }} </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item class="font-size-text" *ngIf="estObject.estadoFinal?.fecha_evento">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Fecha y Hora:</b></div>
+                            <div fxFlex="75">
+                                <span style="word-break: break-all"> {{ estObject.estadoFinal?.fecha_evento }} {{ estObject.estadoFinal?.hora_evento }} </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item class="font-size-text" *ngIf="erroresAceptacionTFallido.est_mensaje_resultado && erroresAceptacionTFallido.est_estado == 'ACEPTACIONT'">
+                        <div fxLayout="row" fxFlex="100">
+                            <div fxFlex="25"><b>Errores:</b></div>
+                            <div fxFlex="75">
+                                <span style="word-break: break-all"> {{ erroresAceptacionTFallido.est_mensaje_resultado }} </span>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                </ng-container>
+            </ng-container>
+
+            <ng-template #infoRecepcion>
+                <ng-container *ngIf="documento.proceso === 'recepcion'">
+                    <ng-container *ngIf="estObjectRdi !== null && estObjectRdi.est_informacion_adicional && estObjectRdi.est_informacion_adicional.inconsistencia  && estObjectRdi.est_informacion_adicional.inconsistencia.length > 0 && documento.estadoEventoAceptadoRechazado === undefined && documento.estadoTransmisionErp === undefined && documento.estadoTransmisionOpenComex === undefined && estObjectAceptacionTacita.est_resultado === undefined">
+                        <mat-list-item>
+                            <h2>Inconsistencias openETL</h2>
+                        </mat-list-item>
+
+                        <ng-container>
+                            <mat-divider></mat-divider>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b></b></div>
+                                    <div fxFlex="75">
+                                        <div style="word-break: break-all">
+                                            <span style="word-break: break-all" *ngFor="let inconsistencia of estObjectRdi.est_informacion_adicional.inconsistencia"><b>*</b> {{inconsistencia}}<br></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngIf="documento.estadoEventoAceptadoRechazado === undefined && documento.estadoTransmisionErp === undefined && documento.estadoTransmisionOpenComex === undefined && estObjectAceptacionTacita.est_resultado === undefined && documento.cdo_origen !== 'NO-ELECTRONICO'">
+                        <mat-list-item>
+                            <h2>Resultado Validación Previa</h2>
+                        </mat-list-item>
+
+                        <ng-container *ngIf="mostrarAceptadoDian">
+                            <mat-divider></mat-divider>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Descripción Estado</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.StatusDescription }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && (estObjectDian.cdoFechaValidacionDian !== '' || documento?.cdo_fecha_validacion_dian !== '')">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Fecha/Hora Validacion</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.cdoFechaValidacionDian ? estObjectDian.cdoFechaValidacionDian : documento?.cdo_fecha_validacion_dian }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && estObjectDian.XmlDocumentKey !== ''">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>XML Document Key</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectDian.XmlDocumentKey }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>{{ cudeCufeLabel() }}</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">
+                                            {{ getCufe() }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                            <mat-list-item class="font-size-text" *ngIf="estObjectDian !== null && mostrarAceptadoDianNotificacion">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Notificaciones</b></div>
+                                    <div fxFlex="75">
+                                        <div style="word-break: break-all">
+                                            <span style="word-break: break-all" *ngFor="let item of errroMessage"><b>*</b> {{item}}<br></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectAcuse !== null && estObjectAcuse !== undefined && estObjectAcuse?.usuario?.identificacion"></mat-divider>
+                            <mat-list-item *ngIf="estObjectAcuse !== null && estObjectAcuse !== undefined && estObjectAcuse?.usuario?.identificacion" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Acuse de Recibo</b></div>
+                                    <div fxFlex="75">
+                                        Realizado por:<br>
+                                        ({{ estObjectAcuse?.usuario?.identificacion }}) {{ estObjectAcuse?.usuario?.nombre }}<br>
+                                        {{ estObjectAcuse?.usuario?.correo }}<br>
+                                        <br>
+                                        Estado Evento:<br>
+                                        <span *ngIf="estObjectAcuse?.code && estObjectAcuse?.code !== null && estObjectAcuse?.code !== ''">
+                                            ({{ estObjectAcuse?.code }}) {{ estObjectAcuse?.message }}<br>
+                                        </span>
+                                        <span style="word-break: break-all" *ngIf="estObjectAcuse?.mensaje_resultado && estObjectAcuse?.mensaje_resultado !== null && estObjectAcuse?.mensaje_resultado !== ''">
+                                           {{ estObjectAcuse?.mensaje_resultado }}<br>
+                                        </span>
+                                        <span *ngIf="estObjectAcuse?.created && estObjectAcuse?.created !== null && estObjectAcuse?.created !== ''">
+                                            <br>
+                                            Fecha y Hora:<br>
+                                            {{ estObjectAcuse?.created }}<br>
+                                        </span>
+                                        <span *ngIf="estObjectAcuse?.observacion.observacion && estObjectAcuse?.observacion.observacion !== null">
+                                            <br>
+                                            Observación:<br>
+                                            {{ estObjectAcuse?.observacion.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectReciboBien !== null && estObjectReciboBien !== undefined && estObjectReciboBien?.usuario?.identificacion"></mat-divider>
+                            <mat-list-item *ngIf="estObjectReciboBien !== null && estObjectReciboBien !== undefined && estObjectReciboBien?.usuario?.identificacion" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Recibo del Bien y/o Prestación del Servicio</b></div>
+                                    <div fxFlex="75">
+                                        Realizado por:<br>
+                                        ({{ estObjectReciboBien?.usuario?.identificacion }}) {{ estObjectReciboBien?.usuario?.nombre }}<br>
+                                        {{ estObjectReciboBien?.usuario?.correo }}<br>
+                                        <br>
+                                        Estado Evento:<br>
+                                        <span *ngIf="estObjectReciboBien?.code && estObjectReciboBien?.code !== null && estObjectReciboBien?.code !== ''">
+                                            ({{ estObjectReciboBien?.code }}) {{ estObjectReciboBien?.message }}<br>
+                                        </span>
+                                        <span style="word-break: break-all" *ngIf="estObjectReciboBien?.mensaje_resultado && estObjectReciboBien?.mensaje_resultado !== null && estObjectReciboBien?.mensaje_resultado !== ''">
+                                            {{ estObjectReciboBien?.mensaje_resultado }}<br>
+                                        </span>
+                                        <span *ngIf="estObjectReciboBien?.created && estObjectReciboBien?.created !== null && estObjectReciboBien?.created !== ''">
+                                            <br>
+                                            Fecha y Hora:<br>
+                                            {{ estObjectReciboBien?.created }}<br>
+                                        </span>
+                                        <span *ngIf="estObjectReciboBien?.observacion.observacion && estObjectReciboBien?.observacion.observacion !== null">
+                                            <br>
+                                            Observación:<br>
+                                            {{ estObjectReciboBien?.observacion.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblAcuseReciboFallido !== null && estObjectUblAcuseReciboFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblAcuseReciboFallido !== null && estObjectUblAcuseReciboFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Acuse de Recibo</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblAcuseReciboFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblAcuseReciboFallido?.est_motivo_rechazo?.observacion && estObjectUblAcuseReciboFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblAcuseReciboFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblReciboBienFallido !== null && estObjectUblReciboBienFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblReciboBienFallido !== null && estObjectUblReciboBienFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Recibo del Bien y/o Prestación del Servicio</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblReciboBienFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblReciboBienFallido?.est_motivo_rechazo?.observacion && estObjectUblReciboBienFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblReciboBienFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblAceptadoFallido !== null && estObjectUblAceptadoFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblAceptadoFallido !== null && estObjectUblAceptadoFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Aceptación Expresa</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblAceptadoFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblAceptadoFallido?.est_motivo_rechazo?.observacion && estObjectUblAceptadoFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblAceptadoFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblRechazadoFallido !== null && estObjectUblRechazadoFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblRechazadoFallido !== null && estObjectUblRechazadoFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Reclamo (Rechazo)</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblRechazadoFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblRechazadoFallido?.est_motivo_rechazo?.observacion && estObjectUblRechazadoFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblRechazadoFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblAdAcuseReciboFallido !== null && estObjectUblAdAcuseReciboFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblAdAcuseReciboFallido !== null && estObjectUblAdAcuseReciboFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>AttachedDocument Acuse de Recibo</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblAdAcuseReciboFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblAdAcuseReciboFallido?.est_motivo_rechazo?.observacion && estObjectUblAdAcuseReciboFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblAdAcuseReciboFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblAdReciboBienFallido !== null && estObjectUblAdReciboBienFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblAdReciboBienFallido !== null && estObjectUblAdReciboBienFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>AttachedDocument Recibo del Bien y/o Prestación del Servicio</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblAdReciboBienFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblAdReciboBienFallido?.est_motivo_rechazo?.observacion && estObjectUblAdReciboBienFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblAdReciboBienFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblAdAceptadoFallido !== null && estObjectUblAdAceptadoFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblAdAceptadoFallido !== null && estObjectUblAdAceptadoFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>AttachedDocument Aceptación Expresa</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblAdAceptadoFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblAdAceptadoFallido?.est_motivo_rechazo?.observacion && estObjectUblAdAceptadoFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblAdAceptadoFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-divider *ngIf="estObjectUblAdRechazadoFallido !== null && estObjectUblAdRechazadoFallido !== undefined"></mat-divider>
+                            <mat-list-item *ngIf="estObjectUblAdRechazadoFallido !== null && estObjectUblAdRechazadoFallido !== undefined" class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>AttachedDocument Reclamo (Rechazo)</b></div>
+                                    <div fxFlex="75">
+                                        Estado Evento:<br>
+                                        {{ estObjectUblAdRechazadoFallido.est_mensaje_resultado }}<br>
+                                        <br>
+                                        <span *ngIf="estObjectUblAdRechazadoFallido?.est_motivo_rechazo?.observacion && estObjectUblAdRechazadoFallido?.est_motivo_rechazo?.observacion !== null">
+                                            Observación:<br>
+                                            {{ estObjectUblAdRechazadoFallido?.est_motivo_rechazo?.observacion }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngIf="documento.estadoEventoAceptadoRechazado !== undefined && documento.estadoTransmisionErp === undefined && documento.estadoTransmisionOpenComex === undefined && estObjectAceptacionTacita.est_resultado === undefined">
+                        <mat-list-item *ngIf="estObject.est_resultado === 'FALLIDO' || estObject.est_resultado === 'EXITOSO'">
+                            <h2>Información de Aceptación / Reclamo (Rechazo) del Documento</h2>
+                        </mat-list-item>
+
+                        <ng-container *ngIf="estObject.est_resultado === 'FALLIDO'">
+                            <mat-divider></mat-divider>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Estado:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObject.est_estado }} {{ estObject.est_resultado }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Fecha y Hora:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObject.est_inicio_proceso }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Mensaje:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObject.est_mensaje_resultado }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+
+                        <ng-container *ngIf="estObject.est_resultado === 'EXITOSO'">
+                            <mat-divider></mat-divider>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Estado:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObject.est_estado }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Fecha y Hora Estado:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObject.est_inicio_proceso }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text" *ngIf="documento.estadoEventoAceptadoRechazado === 'aceptado'">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Aceptado Por</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">
+                                            ({{ estObject.est_informacion_adicional.usuario.identificacion }}) {{ estObject.est_informacion_adicional.usuario.nombre }}<br>
+                                            {{ estObject.est_informacion_adicional.usuario.correo }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <ng-container *ngIf="documento.estadoEventoAceptadoRechazado === 'rechazado'">
+                                <mat-list-item class="font-size-text">
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="25"><b>Rechazado Por</b></div>
+                                        <div fxFlex="75">
+                                            <span style="word-break: break-all">
+                                                ({{ estObject.est_informacion_adicional.usuario.identificacion }}) {{ estObject.est_informacion_adicional.usuario.nombre }}<br>
+                                                {{ estObject.est_informacion_adicional.usuario.correo }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+
+                                <mat-list-item class="font-size-text">
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="25"><b>Concepto de Reclamo</b></div>
+                                        <div fxFlex="75">
+                                            <span style="word-break: break-all">{{ estObject.est_motivo_rechazo?.concepto_rechazo }} - {{ estObject.est_motivo_rechazo?.descripcion_rechazo }}</span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+
+                                <mat-list-item class="font-size-text">
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="25"><b>Motivo de Reclamo</b></div>
+                                        <div fxFlex="75">
+                                            <span style="word-break: break-all">{{ estObject.est_motivo_rechazo?.motivo_rechazo }}</span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Mensaje:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObject.est_mensaje_resultado }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="documento.estadoEventoAceptadoRechazado !== undefined && documento.estadoTransmisionErp === undefined && documento.estadoTransmisionOpenComex === undefined && estObjectAceptacionTacita.est_resultado !== undefined">
+                        <mat-list-item >
+                            <h2>Información de Aceptación Tácita del Documento</h2>
+                        </mat-list-item>
+    
+                        <ng-container *ngIf="estObjectAceptacionTacita.est_resultado == 'EXITOSO' || estObjectAceptacionTacita.est_resultado == 'FALLIDO'">
+                            <mat-divider></mat-divider>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Resultado:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectAceptacionTacita.est_resultado }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text" *ngIf="estObjectAceptacionTacita.est_informacion_adicional?.codigo_evento">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Código Evento:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectAceptacionTacita.est_informacion_adicional?.codigo_evento }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text" *ngIf="estObjectAceptacionTacita.est_informacion_adicional?.descripcion_evento">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Descripción Evento:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectAceptacionTacita.est_informacion_adicional?.descripcion_evento }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+    
+                            <mat-list-item class="font-size-text" *ngIf="estObjectAceptacionTacita.est_informacion_adicional?.id_evento">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Id Evento:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectAceptacionTacita.est_informacion_adicional?.id_evento }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+    
+                            <mat-list-item class="font-size-text" *ngIf="estObjectAceptacionTacita.est_informacion_adicional?.cude_evento">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>CUDE:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectAceptacionTacita.est_informacion_adicional?.cude_evento }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+    
+                            <mat-list-item class="font-size-text" *ngIf="estObjectAceptacionTacita.est_informacion_adicional?.fecha_evento">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Fecha y Hora:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">
+                                            {{ estObjectAceptacionTacita.est_informacion_adicional?.fecha_evento }} {{ estObjectAceptacionTacita.est_informacion_adicional?.hora_evento }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+
+                            <mat-list-item class="font-size-text" *ngIf="estObjectAceptacionTacita.est_mensaje_resultado && estObjectAceptacionTacita.est_resultado == 'FALLIDO'">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Errores:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all"> {{ estObjectAceptacionTacita.est_mensaje_resultado }} </span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngIf="documento.estadoEventoAceptadoRechazado === undefined && documento.estadoTransmisionErp !== undefined && documento.estadoTransmisionOpenComex === undefined && estObjectAceptacionTacita.est_resultado === undefined">
+                        <mat-list-item>
+                            <h2>Información Transmisión ERP</h2>
+                        </mat-list-item>
+
+                        <mat-divider></mat-divider>
+
+                        <mat-list-item class="font-size-text">
+                            <div fxLayout="row" fxFlex="100">
+                                <div fxFlex="25"><b>Resultado:</b></div>
+                                <div fxFlex="75">
+                                    <span style="word-break: break-all">{{ estObjectTransmisionErp.est_resultado }}</span>
+                                </div>
+                            </div>
+                        </mat-list-item>
+
+                        <mat-list-item class="font-size-text">
+                            <div fxLayout="row" fxFlex="100">
+                                <div fxFlex="25"><b>Fecha Consumo:</b></div>
+                                <div fxFlex="75">
+                                    <span style="word-break: break-all">{{ estObjectTransmisionErp.est_inicio_proceso }}</span>
+                                </div>
+                            </div>
+                        </mat-list-item>
+
+                        <mat-list-item *ngIf="estObjectTransmisionErp.est_resultado !== 'FALLIDO'" class="font-size-text">
+                            <div fxLayout="row" fxFlex="100">
+                                <div fxFlex="25"><b>Fecha Respuesta:</b></div>
+                                <div fxFlex="75">
+                                    <span style="word-break: break-all">{{ estObjectTransmisionErp.est_informacion_adicional[0].fecha_hora_respuesta }}</span>
+                                </div>
+                            </div>
+                        </mat-list-item>
+
+                        <ng-container *ngIf="estObjectTransmisionErp.est_resultado === 'EXITOSO'">
+                            <mat-list-item class="font-size-text" *ngFor="let item of estObjectTransmisionErp.est_informacion_adicional[0].respuesta_erp | keyvalue">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25"><b>Observación</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ item.value }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+
+                        <mat-list-item *ngIf="estObjectTransmisionErp.est_resultado !== 'EXITOSO'" class="font-size-text">
+                            <div fxLayout="row" fxFlex="100">
+                                <div fxFlex="25" *ngIf="estObjectTransmisionErp.est_resultado === 'FALLIDO'"><b>Error en Transmisión:</b></div>
+                                <div fxFlex="25" *ngIf="estObjectTransmisionErp.est_resultado !== 'FALLIDO'"><b>Observación:</b></div>
+                                <div fxFlex="75">
+                                    <span style="word-break: break-all">{{ estObjectTransmisionErp.est_mensaje_resultado }}</span>
+                                </div>
+                            </div>
+                        </mat-list-item>
+                    </ng-container>
+
+                    <ng-container *ngIf="documento.estadoEventoAceptadoRechazado === undefined && documento.estadoTransmisionErp === undefined && documento.estadoTransmisionOpenComex !== undefined && estObjectAceptacionTacita.est_resultado === undefined">
+                        <mat-list-item>
+                            <h2>Información Transmisión openComex</h2>
+                        </mat-list-item>
+
+                        <mat-divider></mat-divider>
+
+                        <ng-container *ngIf="estObjectTransmisionOpenComex.est_resultado === 'EXITOSO' || estObjectTransmisionOpenComex.est_resultado === 'FALLIDO'; else transmisionOpenComexSinEstado">
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    <div fxFlex="25" *ngIf="estObjectTransmisionOpenComex.est_resultado === 'EXITOSO'"><b>Resultado:</b></div>
+                                    <div fxFlex="25" *ngIf="estObjectTransmisionOpenComex.est_resultado === 'FALLIDO'"><b>Error en Transmisión:</b></div>
+                                    <div fxFlex="75">
+                                        <span style="word-break: break-all">{{ estObjectTransmisionOpenComex.est_mensaje_resultado }}</span>
+                                    </div>
+                                </div>
+                            </mat-list-item>
+                        </ng-container>
+
+                        <ng-template #transmisionOpenComexSinEstado>
+                            <mat-list-item class="font-size-text">
+                                <div fxLayout="row" fxFlex="100">
+                                    Documento sin información de Transmisión a openComex
+                                </div>
+                            </mat-list-item>
+                        </ng-template>
+                    </ng-container>
+                </ng-container>
+
+                <ng-container *ngIf="(documento.ofe_recepcion_fnc_activo === 'SI' || documento.proceso === 'validacion-documentos') && estadosValidacion.length > 0">
+                    <mat-list-item>
+                        <h2>Estados Validación</h2>
+                    </mat-list-item>
+
+                    <ng-container *ngFor="let estado of estadosValidacion">
+                        <mat-divider></mat-divider>
+                        <mat-list-item class="font-size-text">
+                            <div fxLayout="row" fxFlex="100">
+                                <div fxFlex="25"><b>{{ estado.tituloEstado }}</b></div>
+                                <div fxFlex="75">
+                                    <div fxLayout="column" class="mb-12" *ngFor="let item of estado.informacionAdicional.campos_adicionales">
+                                        <div fxFlex="100">
+                                            <strong>{{ item?.descripcion }}</strong>: {{ item?.valor }}
+                                        </div>
+                                        <div fxLayout="row" fxFlex="100">
+                                            <div fxFlex="60"><strong>Usuario</strong>: {{ item.nombre_usuario ? item.nombre_usuario : estado.usuarioEstado }}</div>
+                                            <div fxFlex="40"><strong>Fecha</strong>: {{ item.fecha ? item.fecha : estado.fechaEstado }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-list-item>
+                    </ng-container>
+                </ng-container>
+            </ng-template>
+
+        </mat-list>
+    </ng-container>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="green-900" cdkFocusInitial
+            (click)="closeModal(false)">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

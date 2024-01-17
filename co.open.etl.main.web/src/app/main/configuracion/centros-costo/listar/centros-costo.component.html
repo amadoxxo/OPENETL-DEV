@@ -1,0 +1,46 @@
+<div id="centros" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Centros de Costo</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Centros de Costo</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-icon-button matTooltip="Recargar" (click)="getData()">
+                    <mat-icon aria-label="Reload" color="#ffffff">autorenew</mat-icon>
+                </button>
+                <span fxFlex="2">&nbsp;</span> 
+                <button *ngIf="_auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    _auth.existePermiso(aclsUsuario.permisos, 'ConfiguracionCentrosCostoNuevo')" 
+                    mat-raised-button (click)="openModalCentrosCosto('new')" color="accent">
+                    <mat-icon color="#ffffff">add</mat-icon> Nuevo
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <app-open-tracking
+        [rows]="centrosCosto"
+        [columns]="columns"
+        [trackingOpciones]="trackingOpciones"
+        [totalElements]="totalElements"
+        [totalShow]="totalShow"
+        [loadingIndicator]="loadingIndicator"
+        [permisoEditar]="'ConfiguracionCentrosCostoEditar'"
+        [permisoVer]="'ConfiguracionCentrosCostoVer'"
+        [permisoCambiarEstado]="'ConfiguracionCentrosCostoCambiarEstado'"
+        [trackingInterface]="trackingInterface">
+    </app-open-tracking>
+    <!-- / CONTENT -->
+</div>

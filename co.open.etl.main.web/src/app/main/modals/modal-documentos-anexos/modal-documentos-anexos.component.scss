@@ -1,0 +1,35 @@
+.bradius { 
+  border-radius: 5px 5px;
+}
+
+.fh {
+  font-size: 9px;
+}
+
+.fi {
+  font-size: 9px;
+  color: red;
+}
+
+#documentos {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#documentos td, #documentos th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#documentos tr:nth-child(even){background-color: #f2f2f2;}
+
+#documentos tr:hover {background-color: #ddd;}
+
+#documentos th {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  text-align: left;
+  background-color: #c7c7c7;
+  color: black;
+}

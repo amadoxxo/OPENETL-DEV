@@ -1,0 +1,237 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>{{titulo}}</h1>
+<mat-dialog-content>
+    <ng-container *ngIf="proceso === 'emision'; else containerRecepcion">
+        <ng-container>
+            <mat-list class="app-class">
+                <mat-list-item>
+                    <span class="font-size-text" style="word-break: break-all"><b>Fecha y hora:</b> {{ fechas }}</span>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>
+                    <span class="font-size-text" style="word-break: break-all"><b>Notificado a:</b> {{ correos }}</span>
+                </mat-list-item>
+                <mat-list-item *ngIf="tamanoArchivoSuperior !== null && tamanoArchivoSuperior !== ''">
+                    <span class="font-size-text" style="word-break: break-all">{{ tamanoArchivoSuperior }}</span>
+                </mat-list-item>
+            </mat-list>
+        </ng-container>
+
+        <ng-container *ngIf="mostrarEventos">
+            <mat-list class="app-class">
+                <mat-list-item>
+                    <h2>Eventos de Notificación</h2>
+                </mat-list-item>
+
+                <ng-container *ngIf="tamanoArchivoSuperior !== null && tamanoArchivoSuperior !== ''">
+                    <mat-divider></mat-divider>
+                    <mat-list-item>
+                        <span class="font-size-text" style="word-break: break-all">{{ tamanoArchivoSuperior }}</span>
+                    </mat-list-item>
+                </ng-container>
+            </mat-list>
+            
+            <mat-divider></mat-divider>
+
+            <mat-accordion multi="true">
+                <mat-expansion-panel *ngFor="let correo_eventos of eventos | keyvalue">
+                    <mat-expansion-panel-header class="right-aligned-header grey-100-bg">
+                        <mat-panel-title>
+                            <strong>{{ correo_eventos.key }}</strong>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <ng-template matExpansionPanelContent>
+                        <ng-container *ngFor="let evento of correo_eventos.value">
+                            <ng-container *ngIf="evento.evt_evento === 'send'">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con la salida del correo desde openETL">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">SEND</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.mail.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <b>Correos Destino</b>: {{ evento.evt_json.mail.destination }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            <ng-container *ngIf="evento.evt_evento === 'reject'">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con el rechazo del correo por parte del servidor de correos destino">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">REJECT</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.mail.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <b>Razón Rechazo</b>: {{ evento.evt_json.reject.reason }}<br>
+                                                <ng-container *ngFor="let recipient of evento.evt_json.mail.destination">
+                                                    <b>Correo</b>: {{ recipient }}<br>
+                                                </ng-container>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            <ng-container *ngIf="evento.evt_evento === 'delivery'">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con la entrega efectiva del correo en el servidor de correos destino">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">DELIVERY</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.delivery.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <b>SMTP Response</b>: {{ evento.evt_json.delivery.smtpResponse }}<br>
+                                                <ng-container *ngFor="let recipient of evento.evt_json.delivery.recipients">
+                                                    <b>Correo</b>: {{ recipient }}<br>
+                                                </ng-container>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            <ng-container *ngIf="evento.evt_evento === 'bounce'">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con el rebote del correo enviado">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">BOUNCE</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.bounce.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <b>Detalle del Rebote</b>:<br>
+                                                <ng-container *ngFor="let rebote of evento.evt_json.bounce.bouncedRecipients">
+                                                    <span class="ml-12"><b>Correo</b>: {{ rebote.emailAddress }}<br></span>
+                                                    <span *ngIf="rebote.action !== undefined" class="ml-12"><b>Action</b>: {{ rebote.action }}<br></span>
+                                                    <span *ngIf="rebote.status !== undefined" class="ml-12"><b>Status</b>: {{ rebote.status }}<br></span>
+                                                    <span *ngIf="rebote.diagnosticCod !== undefined" class="ml-12"><b>Diagnostic Code</b>: {{ rebote.diagnosticCod }}<br></span>
+                                                    <mat-divider></mat-divider>
+                                                </ng-container>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            <ng-container *ngIf="evento.evt_evento === 'complaint'">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con la entrega del correo en la carpeta SPAM">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">COMPLAINT</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.complaint.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <ng-container *ngFor="let complaint of evento.evt_json.complaint.complainedRecipients">
+                                                    <b>Correo</b>: {{ complaint.emailAddress }}<br>
+                                                </ng-container>
+                                                <span *ngIf="evento.evt_json.complaint.complaintFeedbackType !== undefined"><b>Feedback</b>: {{ evento.evt_json.complaint.complaintFeedbackType }}<br></span>
+                                                <span *ngIf="evento.evt_json.complaint.userAgent !== undefined"><b>User Agent</b>: {{ evento.evt_json.complaint.userAgent }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            <ng-container *ngIf="evento.evt_evento === 'open' && documento.ofe_eventos_notificacion.open === true">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con la apertura del correo por parte del usuario destino">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">OPEN</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.open.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <ng-container *ngFor="let recipient of evento.evt_json.mail.destination">
+                                                    <b>Correo</b>: {{ recipient }}<br>
+                                                </ng-container>
+                                                <span *ngIf="evento.evt_json.open.ipAddress !== undefined"><b>Dirección IP</b>: {{ evento.evt_json.open.ipAddress }}</span>
+                                                <span *ngIf="evento.evt_json.open.userAgent !== undefined"><b>User Agent</b>: {{ evento.evt_json.open.userAgent }}<br></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                            <ng-container *ngIf="evento.evt_evento === 'click' && documento.ofe_eventos_notificacion.click === true">
+                                <mat-divider></mat-divider>
+                                <mat-list-item>
+                                    <div fxLayout="row" fxFlex="100">
+                                        <div fxFlex="20">
+                                            <div mat-icon-button matTooltip="Evento relacionado con el click ejecutado por el usuario destino en el correo enviado">
+                                                <mat-icon aria-label="INFO" color="accent">info</mat-icon> <b class="text-icon">CLICK</b>
+                                            </div>
+                                        </div>
+                                        <div fxFlex="80">
+                                            <span style="word-break: break-all;">
+                                                <b>Fecha del Evento</b>: {{ moment(evento.evt_json.click.timestamp).format('YYYY-MM-DD HH:mm:ss') }}<br>
+                                                <ng-container *ngFor="let recipient of evento.evt_json.mail.destination">
+                                                    <b>Correo</b>: {{ recipient }}<br>
+                                                </ng-container>
+                                                <span *ngIf="evento.evt_json.click.ipAddress !== undefined"><b>Dirección IP</b>: {{ evento.evt_json.click.ipAddress }}<br></span>
+                                                <span *ngIf="evento.evt_json.click.userAgent !== undefined"><b>User Agent</b>: {{ evento.evt_json.click.userAgent }}<br></span>
+                                                <span *ngIf="evento.evt_json.click.link !== undefined"><b>Link</b>: {{ evento.evt_json.click.link }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </mat-list-item>
+                            </ng-container>
+                        </ng-container>
+                    </ng-template>
+                
+                </mat-expansion-panel>
+            </mat-accordion>
+        </ng-container>
+    </ng-container>
+
+    <ng-template #containerRecepcion>
+        <ng-container>
+            <mat-list class="app-class item-recepcion" *ngFor="let evento of eventosRecepcion; index as i">
+                <mat-list-item>
+                    <h2>{{evento.estado}}</h2>
+                </mat-list-item>
+
+                <mat-list-item class="list-item-recepcion">
+                    <span class="font-size-text" style="word-break: break-all"><b>Fecha y hora: </b> {{ evento.fechaCreacion }}</span>
+                </mat-list-item>
+                <mat-list-item class="list-item-recepcion" *ngIf="evento.correos && evento.correos !== null && evento.correos !== ''">
+                    <span class="font-size-text" style="word-break: break-all"><b>Notificado a: </b> {{ evento.correos }}</span>
+                </mat-list-item>
+                <mat-list-item class="list-item-recepcion" *ngIf="evento.mensajeResultado || evento.observacion">
+                    <span class="font-size-text" style="word-break: break-all"><b>Observación: </b> {{ evento.mensajeResultado }} <br *ngIf="evento.mensajeResultado"> {{ evento.observacion }}</span>
+                </mat-list-item>
+                <mat-list-item class="list-item-recepcion" *ngIf="evento.estado === 'RECLAMO (RECHAZO)' && evento.motivoRechazo">
+                    <span class="font-size-text" style="word-break: break-all"><b>Motivo rechazo: </b> {{ evento.motivoRechazo }}</span>
+                </mat-list-item>
+                <mat-divider class="divider"></mat-divider>
+            </mat-list>
+        </ng-container>
+    </ng-template>
+    
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="green-900" cdkFocusInitial
+            (click)="closeModal(false)">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

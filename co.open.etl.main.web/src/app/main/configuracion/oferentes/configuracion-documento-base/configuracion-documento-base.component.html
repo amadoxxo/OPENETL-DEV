@@ -1,0 +1,497 @@
+<div class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">OFEs</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <form [formGroup]="formulario" *ngIf="mostrarFormulario">
+                <br>
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="repGrafica">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">{{ _razon_social }} ({{ _ofe_identificacion }})</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row" class="mb-20">
+                            <mat-label class="control-label" style="margin-right: 43px">¿Hará uso de Representación Gráfica Estándar? </mat-label>
+                            <mat-radio-group [formControl]="representacion_grafica_estandar">
+                                <mat-radio-button value="SI" style="margin-right: 15px" (change)="changeOptionRepGrafica('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (change)="changeOptionRepGrafica('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+
+                        <ng-container *ngIf="representacion_grafica_estandar.value === 'SI'" class="mb-20">
+                            <div fxLayout="row" fxLayoutAlign="flex-start">
+                                <p>La imagen debe estar en formato PNG y poseer unas dimensiones máximas de 200 píxeles de ancho x 150 píxeles de alto</p>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="flex-start">
+                                <input #file type="file" accept='.png' class="input-hidden" (change)="previsualizarImagen(file.files)" [formControl]="archivoImagenRepGrafica"/>
+                                <button mat-raised-button color="accent" (click)="file.click()">
+                                    Seleccionar Logo
+                                </button>
+                                <button mat-raised-button color="warn" (click)="quitarLogo()" *ngIf="imgURL" style="margin-left: 5px;">
+                                    <mat-icon matToolTip="Quitar" color="#ffffff">delete</mat-icon>
+                                </button>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="flex-start">
+                                <div style="border: 1px solid black; display:inline-block; padding:5px; max-width:220px; max-height:160px; width:auto; height:auto; margin-top: 5px; margin-bottom: 5px;" *ngIf="imgURL">
+                                    <img #imagen [src]="imgURL" style="max-width:200px; max-height:150px; width:auto; height:auto;"/>
+                                </div>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="flex-start" class="mt-20 mb-12">
+                                <mat-form-field style="width:100%">
+                                    <mat-label class="control-label">ENCABEZADO</mat-label>
+                                    <textarea matInput [formControl]="encabezado" rows="3"></textarea>
+                                </mat-form-field>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="flex-start" class="mb-20">
+                                <mat-form-field style="width:100%">
+                                    <mat-label class="control-label">PIÉ DE PÁGINA</mat-label>
+                                    <textarea matInput [formControl]="piePagina" rows="3"></textarea>
+                                </mat-form-field>
+                                <br><br>
+                            </div>
+                        </ng-container>
+
+                        <div fxLayout="row" class="mb-20" *ngIf="tipoConfiguracion === 'DE'">
+                            <mat-label class="control-label" style="margin-right: 43px">¿Aplica para el Sector Salud? </mat-label>
+                            <mat-radio-group [formControl]="aplica_sector_salud">
+                                <mat-radio-button value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="flex-start">
+                            <span class="mat-body-2"><strong>CAMPOS OPCIONALES DOCUMENTO</strong></span>
+                        </div>
+                        <mat-divider></mat-divider>
+
+                        <div class="row mt-12 mb-12" fxLayoutAlign="start start">
+                            <div class="message-box info pt-4 pb-4 w-100-p" *ngIf="tipoConfiguracion === 'DE'">
+                                <mat-icon class="s-24 secondary-text">info</mat-icon> <span style="vertical-align:super; margin-left:12px;">Los valores enviados en las secciones RETENCIÓN SUGERIDA RETEIVA, RETENCIÓN SUGERIDA RETEICA y RETENCIÓN SUGERIDA RETEFUENTE se enviarán a la DIAN como descuentos a nivel de cabecera o ítem según su configuración.</span>
+                            </div>
+
+                            <div class="message-box info pt-4 pb-4 w-100-p" *ngIf="tipoConfiguracion === 'DS'">
+                                <mat-icon class="s-24 secondary-text">info</mat-icon> <span style="vertical-align:super; margin-left:12px;">Los valores enviados en las secciones RETENCIÓN SUGERIDA RETEIVA y RETENCIÓN SUGERIDA RETEFUENTE se enviarán a la DIAN como descuentos a nivel de cabecera o ítem según su configuración.</span>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="flex-start" class="mt-8 mb-8">
+                            <span class="mat-body-2"><strong>Campos a Nivel de Documento</strong></span>
+                        </div>
+
+                        <div
+                            fxLayout="row wrap"
+                            fxLayoutGap="30px"
+                            fxLayout.lt-sm="column"
+                            fxLayoutAlign="flex-start"
+                            class="mb-20"
+                        >
+                            <ng-container *ngFor="let valor of valores_resumen; let i = index;">
+                                <mat-checkbox *ngIf="valor.nivel === 'cabecera'"
+                                    fxFlex="33%"
+                                    fxFlex.lt-md="48%"
+                                    fxFlex.lt-sm="100%"
+                                    [checked]="valor.checked"
+                                    (change)="actualizaSelectedCampos($event, valor.id)"
+                                >{{ valor.label }}</mat-checkbox>
+                            </ng-container>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="flex-start" class="mb-8">
+                            <span class="mat-body-2"><strong>Campos a Nivel de Items</strong></span>
+                        </div>
+
+                        <div
+                            fxLayout="row wrap"
+                            fxLayoutGap="30px"
+                            fxLayout.lt-sm="column"
+                            fxLayoutAlign="flex-start"
+                            class="mb-20"
+                        >
+                            <ng-container *ngFor="let valor of valores_resumen; let i = index;">
+                                <mat-checkbox *ngIf="valor.nivel === 'item'"
+                                    fxFlex="33%"
+                                    fxFlex.lt-md="48%"
+                                    fxFlex.lt-sm="100%"
+                                    [checked]="valor.checked"
+                                    (change)="actualizaSelectedCampos($event, valor.id)"
+                                >{{ valor.label }}</mat-checkbox>
+                            </ng-container>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="flex-start" class="mt-20" *ngIf="selectedCampos.includes('cargos-a-nivel-documento') || selectedCampos.includes('cargos-a-nivel-item') || selectedCampos.includes('descuentos-a-nivel-documento') || selectedCampos.includes('descuentos-a-nivel-item')">
+                            <div class="mat-body-2"><strong>PERSONALIZACIÓN CARGOS Y DESCUENTOS CREACIÓN DOCUMENTO POR EXCEL</strong></div>
+                        </div>
+                        <mat-divider class="mb-12" *ngIf="selectedCampos.includes('cargos-a-nivel-documento') || selectedCampos.includes('cargos-a-nivel-item') || selectedCampos.includes('descuentos-a-nivel-documento') || selectedCampos.includes('descuentos-a-nivel-item')"></mat-divider>
+
+                        <div fxLayout="row" fxLayoutAlign="flex-start" *ngIf="selectedCampos.includes('cargos-a-nivel-documento') || selectedCampos.includes('cargos-a-nivel-item') || selectedCampos.includes('descuentos-a-nivel-documento') || selectedCampos.includes('descuentos-a-nivel-item')">
+                            <ul class="red-600-fg mat-caption">
+                                <li *ngIf="selectedCampos.includes('cargos-a-nivel-documento') || selectedCampos.includes('cargos-a-nivel-item')">Si va a cargar documentos desde un excel, con cargos a nivel de documento y a nivel de ítem, debe personalizar la descripción de los cargos en alguna de las dos secciones.</li>
+                                <li *ngIf="selectedCampos.includes('cargos-a-nivel-documento') || selectedCampos.includes('cargos-a-nivel-item')">Si va a editar los documentos por el módulo de facturación web, la descripción de los cargos personalizados debe ser la misma que se parametrizo en los cargos del sistema.</li>
+                                <li *ngIf="selectedCampos.includes('descuentos-a-nivel-documento') || selectedCampos.includes('descuentos-a-nivel-item')">Si va a cargar documentos desde un excel, con descuentos a nivel de documento y a nivel de ítem, debe personalizar la descripción de los descuentos en alguna de las dos secciones.</li>
+                                <li *ngIf="selectedCampos.includes('descuentos-a-nivel-documento') || selectedCampos.includes('descuentos-a-nivel-item')">Si va a editar los documentos por el módulo de facturación web, la descripción de los descuentos personalizados debe ser la misma que se parametrizo en los descuentos del sistema.</li>
+                            </ul>
+                        </div>
+
+                        <ng-container *ngIf="selectedCampos.includes('cargos-a-nivel-documento')">
+                            <mat-label class="control-label campos-personalizados-label">PERSONALIZACIÓN CARGOS CABECERA<br>(Para editar un ítem hacer doble click en el ítem correspondiente. Puede reordenar los ítems arrastrando y soltando. Solamente se permiten letras, números, espacios y guión bajo)</mat-label>
+                            <tag-input [formControl]="cargosCabeceraPersonalizados"
+                                placeholder="Cargo Cabecera"
+                                [secondaryPlaceholder]="'Cargo Cabecera'"
+                                [addOnPaste]="true"
+                                [modelAsStrings]="true"
+                                [blinkIfDupe]="true"
+                                [validators]="validatorsPersonalizados"
+                                [separatorKeyCodes]="[9,186,188]"
+                                [separatorKeys]="[';', ',', '-']"
+                                [editable]="true"
+                                [maxItems]="20"
+                                [dragZone]="'zone1'"
+                                theme="bootstrap"
+                                [(ngModel)]="selectedCargosCabeceraPersonalizados">
+                            </tag-input>
+                        </ng-container>
+
+                        <ng-container *ngIf="selectedCampos.includes('cargos-a-nivel-item')">
+                            <br>
+                            <mat-label class="control-label campos-personalizados-label">PERSONALIZACIÓN CARGOS ITEMS<br>(Para editar un ítem hacer doble click en el ítem correspondiente. Puede reordenar los ítems arrastrando y soltando. Solamente se permiten letras, números, espacios y guión bajo)</mat-label>
+                            <tag-input [formControl]="cargosItemsPersonalizados"
+                                placeholder="Cargo Item"
+                                [secondaryPlaceholder]="'Cargo Item'"
+                                [addOnPaste]="true"
+                                [modelAsStrings]="true"
+                                [blinkIfDupe]="true"
+                                [validators]="validatorsPersonalizados"
+                                [separatorKeyCodes]="[9,186,188]"
+                                [separatorKeys]="[';', ',', '-']"
+                                [editable]="true"
+                                [maxItems]="20"
+                                [dragZone]="'zone1'"
+                                theme="bootstrap"
+                                [(ngModel)]="selectedCargosItemsPersonalizados">
+                            </tag-input>
+                        </ng-container>
+
+                        <ng-container *ngIf="selectedCampos.includes('descuentos-a-nivel-documento')">
+                            <br>
+                            <mat-label class="control-label campos-personalizados-label">PERSONALIZACIÓN DESCUENTOS CABECERA<br>(Para editar un ítem hacer doble click en el ítem correspondiente. Puede reordenar los ítems arrastrando y soltando. Solamente se permiten letras, números, espacios y guión bajo)</mat-label>
+                            <tag-input [formControl]="descuentosCabeceraPersonalizados"
+                                placeholder="Descuento Cabecera"
+                                [secondaryPlaceholder]="'Descuento Cabecera'"
+                                [addOnPaste]="true"
+                                [modelAsStrings]="true"
+                                [blinkIfDupe]="true"
+                                [validators]="validatorsPersonalizados"
+                                [separatorKeyCodes]="[9,186,188]"
+                                [separatorKeys]="[';', ',', '-']"
+                                [editable]="true"
+                                [maxItems]="20"
+                                [dragZone]="'zone1'"
+                                theme="bootstrap"
+                                [(ngModel)]="selectedDescuentosCabeceraPersonalizados">
+                            </tag-input>
+                        </ng-container>
+
+                        <ng-container *ngIf="selectedCampos.includes('descuentos-a-nivel-item')">
+                            <br>
+                            <mat-label class="control-label campos-personalizados-label">PERSONALIZACIÓN DESCUENTOS ITEMS<br>(Para editar un ítem hacer doble click en el ítem correspondiente. Puede reordenar los ítems arrastrando y soltando. Solamente se permiten letras, números, espacios y guión bajo)</mat-label>
+                            <tag-input [formControl]="descuentosItemsPersonalizados"
+                                placeholder="Descuento Item"
+                                [secondaryPlaceholder]="'Descuento Item'"
+                                [addOnPaste]="true"
+                                [modelAsStrings]="true"
+                                [blinkIfDupe]="true"
+                                [validators]="validatorsPersonalizados"
+                                [separatorKeyCodes]="[9,186,188]"
+                                [separatorKeys]="[';', ',', '-']"
+                                [editable]="true"
+                                [maxItems]="20"
+                                [dragZone]="'zone1'"
+                                theme="bootstrap"
+                                [(ngModel)]="selectedDescuentosItemsPersonalizados">
+                            </tag-input>
+                        </ng-container>
+
+                        <!-- CAMPOS PERSONALIZADOS CABECERA -->
+                        <mat-divider class="mb-12"></mat-divider>
+                        <div fxLayout="row" fxLayoutAlign="flex-start" class="mt-20">
+                            <div class="mat-body-2"><strong>Campos Personalizados Cabecera</strong></div>
+                        </div>
+
+                        <div class="mt-12" fxLayout="row" fxLayoutAlign="end start">
+                            <button mat-raised-button type="button" class="btn-agregar" matTooltip="Agregar Campo Personalizado Cabecera" color="primary" (click)="agregarCampoPersonalizadoCabecera()">
+                                <mat-icon aria-label="agregarCampoPersonalizadoCabecera">add_circle</mat-icon> Agregar
+                            </button>
+                        </div>
+
+                        <ng-container *ngFor="let campoCabecera of repGrafica.get('camposPersonalizadosCabecera')['controls']; let i = index" formArrayName="camposPersonalizadosCabecera">
+                            <div
+                                [formGroupName]="i"
+                                fxLayout="row"
+                                fxLayout.lt-sm="column"
+                                fxLayout.lt-md="column"
+                                fxLayoutGap="10px"
+                                fxLayoutAlign="flex-start"
+                                class="mt-3"
+                            >
+                                <div 
+                                    fxLayout="row"
+                                    fxLayoutGap="10px"
+                                    fxLayoutAlign="flex-start"
+                                    fxFlex="94%"
+                                >
+                                    <mat-form-field
+                                        fxFlex="23%"
+                                        fxFlex.lt-md="23%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput placeholder="Campo" formControlName="campo" type="text">
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        fxFlex="23%"
+                                        fxFlex.lt-md="23%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <mat-select placeholder="Tipo Dato" formControlName="tipo_dato" (selectionChange)="changeTipoDato($event.value, i, 'camposPersonalizadosCabecera')"> 
+                                            <mat-option value="texto">TEXTO</mat-option>
+                                            <mat-option value="numerico">NUMÉRICO</mat-option>
+                                            <mat-option value="multiple">SELECCIÓN MÚLTIPLE</mat-option>
+                                            <mat-option value="por_defecto">VALOR POR DEFECTO</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'por_defecto'"
+                                        fxFlex="23%"
+                                        fxFlex.lt-md="23%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput placeholder="Valor" formControlName="valor_defecto" type="text">
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'texto' || 
+                                                           repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'numerico' ||
+                                                           repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'por_defecto'"
+                                        [fxFlex]="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'texto' ? '32%' : '17%'"
+                                        [fxFlex.lt-md]="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'texto' ? '32%' : '17%'"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput [placeholder]="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'numerico' ? 'Longitud Entera' : 'Longitud'" formControlName="longitud" type="text">
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'numerico'"
+                                        fxFlex="14%"
+                                        fxFlex.lt-md="14%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput placeholder="Longitud Decimal" formControlName="longitud_decimal" type="text">
+                                    </mat-form-field>
+
+                                    <div *ngIf="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'multiple'"
+                                        fxFlex="41%"
+                                        fxFlex.lt-md="41%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <tag-input 
+                                            formControlName="opciones"
+                                            placeholder="Opciones"
+                                            [secondaryPlaceholder]="'Opciones'"
+                                            [addOnPaste]="true"
+                                            [modelAsStrings]="true"
+                                            [blinkIfDupe]="true"
+                                            [separatorKeyCodes]="[9]"
+                                            [editable]="true"
+                                            [maxItems]="20"
+                                            [dragZone]="'zone1'"
+                                            theme="bootstrap">
+                                        </tag-input>
+                                    </div>
+        
+                                    <mat-checkbox *ngIf="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'texto' ||
+                                                         repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value === 'numerico'"
+                                        xFlex="10%"
+                                        fxFlex.lt-md="10%"
+                                        fxFlex.lt-sm="100%"
+                                        formControlName="exacta"
+                                        style="padding-top: 25px"
+                                    >Exacta</mat-checkbox>
+
+                                    <mat-checkbox *ngIf="repGrafica.get('camposPersonalizadosCabecera')['controls'][i].get('tipo_dato').value !== ''"
+                                        xFlex="10%"
+                                        fxFlex.lt-md="10%"
+                                        fxFlex.lt-sm="100%"
+                                        formControlName="obligatorio"
+                                        style="padding-top: 25px"
+                                    >Obligatorio</mat-checkbox>
+                                </div>
+                                <div fxFlex="4%">
+                                    <button mat-icon-button type="button" class="icono-eliminar" color="warn" matTooltip="Eliminar Campo Personalizado" (click)="eliminarCampoPersonalizadoCabecera(i)" style="padding-top: 15px">
+                                        <mat-icon aria-label="eliminarCampoPersonalizadoCabecera">delete</mat-icon>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </ng-container>
+                        <mat-divider class="mb-12"></mat-divider>
+
+                        <!-- CAMPOS PERSONALIZADOS ITEM -->
+                        <div fxLayout="row" fxLayoutAlign="flex-start" class="mt-20">
+                            <div class="mat-body-2"><strong>Campos Personalizados Ítem</strong></div>
+                        </div>
+
+                        <div class="mt-12" fxLayout="row" fxLayoutAlign="end start">
+                            <button mat-raised-button type="button" class="btn-agregar" matTooltip="Agregar Campo Personalizado ítem" color="primary" (click)="agregarCampoPersonalizadoItem()">
+                                <mat-icon aria-label="agregarCampoPersonalizadoItem">add_circle</mat-icon> Agregar
+                            </button>
+                        </div>
+                        <br>
+
+                        <ng-container *ngFor="let campoItem of repGrafica.get('camposPersonalizadosItem')['controls']; let i = index" formArrayName="camposPersonalizadosItem">
+                            <div
+                                [formGroupName]="i"
+                                fxLayout="row"
+                                fxLayout.lt-sm="column"
+                                fxLayout.lt-md="column"
+                                fxLayoutGap="10px"
+                                fxLayoutAlign="flex-start"
+                                class="mt-3"
+                            >
+                                <div 
+                                    fxLayout="row"
+                                    fxLayoutGap="10px"
+                                    fxLayoutAlign="flex-start"
+                                    fxFlex="94%"
+                                >
+                                    <mat-form-field
+                                        fxFlex="23%"
+                                        fxFlex.lt-md="23%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput placeholder="Campo" formControlName="campo" type="text">
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        fxFlex="23%"
+                                        fxFlex.lt-md="23%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <mat-select placeholder="Tipo Dato" formControlName="tipo_dato" (selectionChange)="changeTipoDato($event.value, i, 'camposPersonalizadosItem')"> 
+                                            <mat-option value="texto">TEXTO</mat-option>
+                                            <mat-option value="numerico">NUMÉRICO</mat-option>
+                                            <mat-option value="multiple">SELECCIÓN MÚLTIPLE</mat-option>
+                                            <mat-option value="por_defecto">VALOR POR DEFECTO</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'por_defecto'"
+                                        fxFlex="23%"
+                                        fxFlex.lt-md="23%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput placeholder="Valor" formControlName="valor_defecto" type="text">
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'texto' || 
+                                                           repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'numerico' ||
+                                                           repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'por_defecto'"
+                                        [fxFlex]="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'texto' ? '32%' : '17'"
+                                        [fxFlex.lt-md]="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'texto' ? '32%' : '17'"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput [placeholder]="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'numerico' ? 'Longitud Entera' : 'Longitud'" formControlName="longitud" type="text">
+                                    </mat-form-field>
+
+                                    <mat-form-field *ngIf="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'numerico'"
+                                        fxFlex="14%"
+                                        fxFlex.lt-md="14%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <input matInput placeholder="Longitud Decimal" formControlName="longitud_decimal" type="text">
+                                    </mat-form-field>
+
+                                    <div *ngIf="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'multiple'"
+                                        fxFlex="41%"
+                                        fxFlex.lt-md="41%"
+                                        fxFlex.lt-sm="100%"
+                                    >
+                                        <tag-input 
+                                            formControlName="opciones"
+                                            placeholder="Opciones"
+                                            [secondaryPlaceholder]="'Opciones'"
+                                            [addOnPaste]="true"
+                                            [modelAsStrings]="true"
+                                            [blinkIfDupe]="true"
+                                            [separatorKeyCodes]="[9]"
+                                            [editable]="true"
+                                            [maxItems]="20"
+                                            [dragZone]="'zone1'"
+                                            theme="bootstrap">
+                                        </tag-input>
+                                    </div>
+    
+                                    <mat-checkbox *ngIf="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'texto' ||
+                                                         repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value === 'numerico'"
+                                        xFlex="10%"
+                                        fxFlex.lt-md="10%"
+                                        fxFlex.lt-sm="100%"
+                                        formControlName="exacta"
+                                        style="padding-top: 25px"
+                                    > Exacta </mat-checkbox>
+
+                                    <mat-checkbox *ngIf="repGrafica.get('camposPersonalizadosItem')['controls'][i].get('tipo_dato').value !== ''"
+                                        xFlex="10%"
+                                        fxFlex.lt-md="10%"
+                                        fxFlex.lt-sm="100%"
+                                        formControlName="obligatorio"
+                                        style="padding-top: 25px"
+                                    >Obligatorio</mat-checkbox>
+                                </div>
+                                <div fxFlex="4%">
+                                    <button mat-icon-button type="button" class="icono-eliminar" color="warn" matTooltip="Eliminar Campo Personalizado" (click)="eliminarCampoPersonalizadoItem(i)" style="padding-top: 15px">
+                                        <mat-icon aria-label="eliminarCampoPersonalizadoItem">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                        <div fxLayout="row" fxLayoutAlign="center center" class="mt-20">
+                            <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid" (click)="guardarConfiguracionDocumentoElectronico(formulario.value)">
+                                <mat-icon color="#ffffff">check_box</mat-icon> Guardar
+                            </button>
+                        </div>
+                        <div class="mt-4"></div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </form>
+        </div>
+    </div>
+</div>

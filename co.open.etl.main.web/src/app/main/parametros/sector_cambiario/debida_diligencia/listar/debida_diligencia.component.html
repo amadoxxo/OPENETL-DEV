@@ -1,0 +1,50 @@
+<div id="medios" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Parámetros DIAN</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Sector Cambiario</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Debida Diligencia</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Debida Diligencia</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-icon-button matTooltip="Recargar" (click)="getData()">
+                    <mat-icon aria-label="Reload" color="#ffffff">autorenew</mat-icon>
+                </button>
+                <span fxFlex="1">&nbsp;</span>
+                <button mat-raised-button matTooltip="Descargar Excel" (click)="descargarExcel()" class="green-900">
+                    <mat-icon color="#ffffff">cloud_download</mat-icon> Excel
+                </button>
+                <span fxFlex="2">&nbsp;</span> 
+                <button *ngIf="auth.existeRol(aclsUsuario.roles, 'superadmin') ||
+                    auth.existePermiso(aclsUsuario.permisos, 'ParametricaSectorCambiarioDebidaDiligenciaNuevo')"
+                    mat-raised-button (click)="openmodalDebidaDiligencia('new')" color="accent">
+                    <mat-icon color="#ffffff">add</mat-icon> Nuevo
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <app-open-tracking
+        [rows]="registros"
+        [columns]="columns"
+        [trackingOpciones]="trackingOpciones"
+        [totalElements]="totalElements"
+        [totalShow]="totalShow"
+        [loadingIndicator]="loadingIndicator"
+        [permisoEditar]="'ParametricaSectorCambiarioDebidaDiligenciaEditar'"
+        [permisoVer]="'ParametricaSectorCambiarioDebidaDiligenciaVer'"
+        [permisoCambiarEstado]="'ParametricaSectorCambiarioDebidaDiligenciaCambiarEstado'"
+        [trackingInterface]="trackingInterface">
+    </app-open-tracking>
+    <!-- / CONTENT -->
+</div>

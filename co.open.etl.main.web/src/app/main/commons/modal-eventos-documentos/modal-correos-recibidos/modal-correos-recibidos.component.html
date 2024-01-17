@@ -1,0 +1,48 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Detalles del Correo</h1>
+
+<mat-dialog-content>
+    <ng-container>
+        <mat-list class="app-class item">
+            <mat-list-item>
+                <h2>{{ registro.epm_subject | titlecase }}</h2>
+            </mat-list-item>
+
+            <mat-list-item class="list-item">
+                <span class="font-size-text" style="word-break: break-all"><b>Fecha y hora: </b> {{ registro.epm_fecha_correo }}</span>
+            </mat-list-item>
+            <mat-list-item class="list-item" *ngIf="registro.pro_identificacion_nombre_completo">
+                <span class="font-size-text" style="word-break: break-all"><b>Emisor: </b> {{ registro.pro_identificacion_nombre_completo }}</span>
+            </mat-list-item>
+            <mat-list-item class="list-item" *ngIf="registro.ofe_identificacion_nombre_completo">
+                <span class="font-size-text" style="word-break: break-all"><b>Receptor: </b> {{ registro.ofe_identificacion_nombre_completo }}</span>
+            </mat-list-item>
+            <mat-list-item class="list-item">
+                <span class="font-size-text" style="word-break: break-all"><b>Procesado: </b> {{ registro.epm_procesado }}</span>
+            </mat-list-item>
+            <ng-container>
+                <mat-list class="app-class item">
+                    <mat-list-item class="list-item"><span class="font-size-text" style="word-break: break-all"><b>Observaciones: </b></span></mat-list-item>
+                    <mat-list-item class="list-item" style="margin-left:10px;" *ngFor="let observacion of epmObservaciones">
+                        <span class="font-size-text" style="word-break: break-all">{{observacion}}</span>
+                    </mat-list-item>
+                </mat-list>
+            </ng-container>
+            <mat-list-item class="list-item" *ngIf="registro.epm_procesado === 'SI'">
+                <span class="font-size-text" style="word-break: break-all"><b>Usuario Procesamiento: </b> {{ registro.get_usuario_creacion.usu_identificacion }} - {{ registro.get_usuario_creacion.usu_nombre | titlecase }}</span>
+            </mat-list-item>
+            <mat-list-item class="list-item" *ngIf="registro.epm_procesado === 'SI'">
+                <span class="font-size-text" style="word-break: break-all"><b>Fecha Procesamiento: </b> {{ registro.epm_procesado_fecha }}</span>
+            </mat-list-item>
+            <mat-divider class="divider mb-2"></mat-divider>
+            <div [innerHTML]='formatearTexto(registro.epm_cuerpo_correo)' class="cuerpo-correo"></div>
+        </mat-list>
+    </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="green-900" cdkFocusInitial
+            (click)="closeModal(false)">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

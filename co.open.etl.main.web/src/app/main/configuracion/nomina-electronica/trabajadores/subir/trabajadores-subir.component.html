@@ -1,0 +1,35 @@
+<div id="forms" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Documento Soporte de Pago de Nómina Electrónica</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Subir Trabajadores</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Subir Trabajadores</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-raised-button type="button" color="accent" [routerLink]="['/configuracion/nomina-electronica/trabajadores']">
+                    <mat-icon color="primary">keyboard_arrow_left</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24">
+        <div class="mat-white-bg mat-elevation-z4 p-24 mb-24">
+            <app-cargas-masivas [tipo]="'TRA'"></app-cargas-masivas>
+            <app-log-errores [tipoLog]="'TRA'"></app-log-errores>
+        </div>
+    </div>
+    <!-- / CONTENT -->
+</div>

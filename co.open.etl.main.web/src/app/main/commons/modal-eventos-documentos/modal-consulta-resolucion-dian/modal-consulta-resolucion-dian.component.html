@@ -1,0 +1,19 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Consulta Resolución DIAN</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form" id="formConsultarResolucionesDian">
+
+        <app-selector-ofe-precargado [ofe_id]="ofe_identificacion" [oferentes]="ofes" [label]="'OFE'"></app-selector-ofe-precargado>
+        
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="consultarResolucionDian()">
+        <mat-icon color="#ffffff">search</mat-icon> Consultar
+    </button>
+    <button mat-raised-button color="warn" (click)="closeModal()">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+</mat-dialog-actions>
+<br>

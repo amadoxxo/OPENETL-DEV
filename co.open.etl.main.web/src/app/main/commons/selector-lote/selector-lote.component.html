@@ -1,0 +1,56 @@
+<!-- <mat-label #labelLote>Lote: </mat-label> -->
+<ng-container *ngIf="!nomina_electronica else templateDocNomina">
+    <ng-select [items]="documentos$ | async" style="padding-bottom:0px;"
+        #selectAdqs
+        bindValue="cdo_lote"
+        bindLabel="cdo_lote"
+        [loading]="documentosLoading"
+        placeholder="Lote"
+        typeToSearchText="Ingrese una cadena para buscar por Lote"
+        [closeOnSelect]="true"
+        appendTo="ng-select"
+        notFoundText="No hay coincidencias"
+        loadingText="..."
+        [typeahead]="documentosInput$"
+        [formControl]="cdo_lote"
+        [(ngModel)]="selectedDocId">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.cdo_lote}}</strong> - Cantidad de Documentos: <strong>{{item.cantidad_documentos}}</strong> - Consecutivo Inicial: <strong>{{item.consecutivo_inicial}}</strong> - Final: <strong>{{item.consecutivo_final}}</strong> 
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+    </ng-select>
+</ng-container>
+<!-- Aplica para el tipo de Nómina Electrónica -->
+<ng-template #templateDocNomina>
+    <ng-select [items]="documentosNominaElectronica$ | async" style="padding-bottom:0px;"
+        #selectAdqs
+        bindValue="cdn_lote"
+        bindLabel="cdn_lote"
+        [loading]="documentosLoading"
+        placeholder="Lote"
+        typeToSearchText="Ingrese una cadena para buscar por Lote"
+        [closeOnSelect]="true"
+        appendTo="ng-select"
+        notFoundText="No hay coincidencias"
+        loadingText="..."
+        [typeahead]="documentosInput$"
+        [formControl]="cdn_lote"
+        [(ngModel)]="selectedDocId">
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>{{item.cdn_lote}}</strong> - Cantidad de Documentos: <strong>{{item.cantidad_documentos}}</strong> - Consecutivo Inicial: <strong>{{item.consecutivo_inicial}}</strong> - Final: <strong>{{item.consecutivo_final}}</strong> 
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+    </ng-select>
+</ng-template>
+
+

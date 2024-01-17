@@ -1,0 +1,86 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Usuarios Portales</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="formUsuariosPortales" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="60" >
+                <input matInput placeholder="{{ tituloEmisor }}" formControlName="emisor" [readonly]="true">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+            </mat-form-field>
+            <span fxFlex="2">&nbsp;</span>
+            <mat-form-field fxFlex="48">
+                <input matInput placeholder="{{ tituloReceptor }}" formControlName="receptor" [readonly]="true">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="end start">
+            <button mat-icon-button matTooltip="Agregar Usuario" (click)="agregarUsuario()">
+                <mat-icon aria-label="AgregarUsuario" class="green-icon">add_circle</mat-icon>
+            </button>
+        </div>
+        
+        <div *ngFor="let usuarioNuevo of formUsuariosPortales.get('usuariosNuevos')['controls']; let i = index" formArrayName="usuariosNuevos">
+            <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" [formGroupName] ="i">
+                <mat-form-field fxFlex="26" >
+                    <input matInput placeholder="Identificación" formControlName="identificacion">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <mat-form-field fxFlex="26">
+                    <input matInput placeholder="Nombre" formControlName="nombre">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <mat-form-field fxFlex="26">
+                    <input matInput placeholder="Correo" formControlName="email">
+                    <mat-icon matSuffix class="fi">star rate</mat-icon>
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <button mat-raised-button color="warn" matTooltip="Eliminar Campos" (click)="eliminarUsuario(i)">
+                    Eliminar
+                </button>
+            </div>
+            <span fxFlex="2">&nbsp;</span>
+        </div>
+
+        <div *ngFor="let usuario of formUsuariosPortales.get('usuariosExistentes')['controls']; let i = index" formArrayName="usuariosExistentes">
+            <div fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="1 0 auto"
+                [formGroupName] ="i"
+                [ngClass]="{'warn-50': usuario.get('estado').value === 'INACTIVO'}" 
+            >
+                <mat-form-field fxFlex="26" >
+                    <input matInput placeholder="Identificación" formControlName="identificacion" [readonly]="true">
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <mat-form-field fxFlex="26">
+                    <input matInput placeholder="Nombre" formControlName="nombre" [readonly]="true">
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <mat-form-field fxFlex="26">
+                    <input matInput placeholder="Correo" formControlName="email" [readonly]="true">
+                </mat-form-field>
+                <span fxFlex="2">&nbsp;</span>
+                <button mat-raised-button 
+                    [ngClass]="{'warn-600': usuario.get('estado').value === 'ACTIVO', 'green-600': usuario.get('estado').value === 'INACTIVO'}" 
+                    (click)="cambiarEstadoUsuario(usuario)"
+                >
+                    <ng-container *ngIf="usuario.get('estado').value === 'ACTIVO'; else txtActivar">Inactivar</ng-container>
+                    <ng-template #txtActivar>Activar</ng-template>
+                </button>
+            </div>
+            <span fxFlex="2">&nbsp;</span>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!formUsuariosPortales.valid" (click)="guardarUsuarios(formUsuariosPortales.value)">
+        <mat-icon color="#ffffff">check_box</mat-icon> Guardar
+    </button>
+</mat-dialog-actions>
+<br>

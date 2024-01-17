@@ -1,0 +1,76 @@
+<div fxFlex="row" fxFlex="100" fxLayoutGap="15px">
+    <div fxFlex="column" fxFlex="50">
+        <ng-select class="custom" [items]="oferentes" style="padding-bottom:0px;"
+            #selectOfes
+            bindValue="ofe_id"
+            bindLabel="ofe_identificacion_ofe_razon_social"
+            placeholder="Receptor "
+            [searchFn]="customSearchFnOfe"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            appendTo="body"
+            [formControl]="ofe_id"
+            [(ngModel)]="selectedOfeId"
+            (clear)="clear()"
+            (change)="onOfeSeleccionado($event)"
+            (clear)="onOfeSeleccionado($event)"
+            [readonly]="disabled_controls"
+        >
+        <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+            <div style="margin: 5px 0;" class="card">
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>({{item.ofe_identificacion}})</strong> - {{item.ofe_razon_social}}
+                    </p>
+                </div>
+            </div>
+        </ng-template>
+        </ng-select>
+        <mat-error *ngIf="!ofe_id.valid && ofe_id.touched" style="color:red;" class="fh">
+            Seleccione el Emisor!
+        </mat-error>
+    </div>
+
+    <div fxFlex="column" fxFlex="50">
+        <ng-select [items]="proveedores$ | async" style="padding-bottom:0px;"
+            #selectProveedores
+            [bindValue]="campoSelectId"
+            [bindLabel]="campoSelectValue"
+            [loading]="proveedoresLoading"
+            labelForId="labelEmisor"
+            placeholder="Emisor"
+            typeToSearchText="Puede ingresar la razón social o identificación"
+            [closeOnSelect]="!selector_multiple_receptor"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [typeahead]="proveedoresInput$"
+            [formControl]="pro_id"
+            appendTo="body"
+            [(ngModel)]="selectedProId"
+            [multiple]="selector_multiple_receptor"
+            [readonly]="disabled_controls"
+            (change)="onProSeleccionado($event)"
+            (clear)="onProSeleccionado($event)"
+        >
+            <ng-template ng-header-tmp *ngIf="arrProvBusqueda.length > 0 && selector_multiple_receptor">
+                <div>
+                    <button style="color:#4b4b4b;border:none;background:none;cursor:pointer;margin: 5px 0;padding-right: 40px;" (click)="onSeleccionarTodosEmisor()">Seleccionar Todos</button>
+                    <button style="color:#4b4b4b;border:none;background:none;cursor:pointer;margin: 5px 0;" (click)="onLimpiarEmisorReg()">Limpiar Todos</button>
+                </div>
+            </ng-template>
+
+            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                <div style="margin: 5px 0;" class="card">
+                    <div class="card-body">
+                        <p class="card-text" *ngIf="origen !== 'gestion-documentos'">
+                            <strong>({{item.pro_identificacion}})</strong> - {{item.pro_razon_social}}
+                        </p>
+                        <p class="card-text" *ngIf="origen === 'gestion-documentos'">
+                            <strong>({{item.identificacion}})</strong> - {{item.nombre_completo}}
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-select>
+    </div>
+</div>

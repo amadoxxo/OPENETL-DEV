@@ -1,0 +1,64 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'new'">Agregar Variable del Sistema</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'edit'">Actualizar Variable del Sistema</h1>
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title *ngIf="action === 'view'">Ver Variable del Sistema</h1>
+
+<mat-dialog-content>
+    <form class="ng-pristine ng-invalid ng-touched" fxLayout="column" [formGroup]="form" name="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <input matInput #inputNombre placeholder="Nombre" formControlName="vsi_nombre" readonly>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputNombre.value?.length || 0}}/255</mat-hint>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <mat-label class="control-label">Valor
+                    <mat-icon matSuffix class="fi" *ngIf="action !== 'view'">star rate</mat-icon>
+                </mat-label>
+                <textarea matInput #inputValor [formControl]="vsi_valor" rows="3"></textarea>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputValor.value?.length || 0}}</mat-hint>
+                <mat-error *ngIf="hasError('vsi_valor', 'required')">
+                    El valor es requerido!
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <mat-label class="control-label">Descripción</mat-label>
+                <textarea matInput #inputDesc [formControl]="vsi_descripcion" rows="3" readonly></textarea>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputDesc.value?.length || 0}}</mat-hint>
+            </mat-form-field>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto">
+            <mat-form-field fxFlex="100">
+                <mat-label class="control-label">Ejemplo</mat-label>
+                <textarea matInput #inputEjemplo [formControl]="vsi_ejemplo" rows="3" readonly></textarea>
+                <mat-hint *ngIf="action !== 'view'" align="end" class="fh">{{inputEjemplo.value?.length || 0}}</mat-hint>
+            </mat-form-field>
+        </div>
+
+        <span fxFlex="2" *ngIf="action === 'edit'">&nbsp;</span>
+        <app-magic-fields [object]="objMagic" [usuario]="usuario" [modal]="true"></app-magic-fields>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal(false)" *ngIf="action !== 'view'">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveVariableSistema(form.value)" *ngIf="action === 'edit'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Actualizar
+    </button>
+    <button mat-raised-button color="accent" cdkFocusInitial [disabled]="!form.valid"
+        (click)="saveVariableSistema(form.value)" *ngIf="action === 'new'">
+        <mat-icon color="#ffffff">add_box</mat-icon> Agregar
+    </button>
+    <button mat-raised-button class="green-900" cdkFocusInitial
+        (click)="closeModal(false)" *ngIf="action === 'view'">
+        <mat-icon color="#ffffff">check_box</mat-icon> Aceptar
+    </button>
+</mat-dialog-actions>
+<br>

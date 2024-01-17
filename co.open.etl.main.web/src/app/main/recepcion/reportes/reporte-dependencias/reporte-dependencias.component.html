@@ -1,0 +1,164 @@
+<div id="forms" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Reportes</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Reporte Dependencias</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Reporte Dependencias</div> 
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24">
+        <div class="mat-white-bg mat-elevation-z4">
+            <div fxLayout="column" fxLayoutGap="15px" class="px-24 pt-24">
+                <form fxLayout="column" name="form" [formGroup]="form">
+                    <app-selector-par-receptor-emisor [ofe_id]="ofe_id" [pro_id]="pro_id" [oferentes]="ofes" [selector_multiple_receptor]="true" (ofeSeleccionado)="ofeHasChanged($event)"></app-selector-par-receptor-emisor>
+
+                    <span fxFlex="2">&nbsp;</span>
+                    <div fxLayout="row">
+                        <div fxLayout="column" fxFlex="23">
+                            <ng-select [items]="arrOrigen"
+                                bindLabel="name"
+                                bindValue="id"
+                                placeholder="Origen"
+                                notFoundText="No hay coincidencias"
+                                loadingText="..."
+                                [formControl]="cdo_origen">
+                            </ng-select>
+                        </div>
+                        <span fxFlex="2">&nbsp;</span>
+                        <div fxLayout="column" fxFlex="23">
+                            <ng-select [items]="arrTipoDoc"
+                                bindLabel="name"
+                                bindValue="id"
+                                placeholder="Tipo de Documento"
+                                notFoundText="No hay coincidencias"
+                                loadingText="..."
+                                [formControl]="cdo_clasificacion">
+                            </ng-select>
+                        </div>
+                        <span fxFlex="2">&nbsp;</span>
+                        <mat-form-field fxFlex="20" style="padding-top: 6px;" [floatLabel]="'always'">
+                            <input matInput placeholder="Prefijo" maxlength="5" formControlName="rfa_prefijo">
+                        </mat-form-field>
+                        <span fxFlex="2">&nbsp;</span>
+                        <mat-form-field fxFlex="28" style="padding-top: 6px;" [floatLabel]="'always'">
+                            <input matInput placeholder="Consecutivo" maxlength="20" formControlName="cdo_consecutivo">
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                        <app-selector-par-fechas fxFlex="48" style="padding-top: 6px;"
+                            [labelDesde]="'Fecha Documento (Desde)'"
+                            [labelHasta]="'Fecha Documento (Hasta)'"
+                            [fecha_desde]="cdo_fecha_desde"
+                            [fecha_hasta]="cdo_fecha_hasta"
+                            [req]="true">
+                        </app-selector-par-fechas>
+                    </div>
+                    <div xLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+
+                        <ng-container *ngIf="ofeRecepcionFncActivo == 'SI'">
+                            <div fxLayout="column" fxFlex="23">
+                                <ng-select [items]="arrFiltrosGruposTrabajo"
+                                    bindLabel="name"
+                                    bindValue="id"
+                                    [labelForId]="_grupo_trabajo"
+                                    [placeholder]="_grupo_trabajo"
+                                    appendTo="body"
+                                    [formControl]="filtro_grupos_trabajo"
+                                    notFoundText="No hay coincidencias"
+                                    loadingText="...">
+                                </ng-select>
+                            </div>
+                        </ng-container>
+
+                        <div fxLayout="column" fxFlex="23" *ngIf="ofeRecepcionFncActivo == 'SI'">
+                            <ng-select [items]="arrEstadoValidacion"
+                                bindLabel="name"
+                                bindValue="id"
+                                placeholder="Estado Validación"
+                                notFoundText="No hay coincidencias"
+                                loadingText="..."
+                                [formControl]="estado_validacion"
+                                [multiple]="true">
+                            </ng-select>
+                        </div>
+
+                        <div fxLayout="column" fxFlex="25" *ngIf="ofeRecepcionFncActivo == 'SI'">
+                            <ng-select [items]="arrCamposValidacion"
+                                bindLabel="nombreCampo"
+                                bindValue="campo"
+                                placeholder="Filtro Campos Validación"
+                                notFoundText="No hay coincidencias"
+                                loadingText="..."
+                                [formControl]="campo_validacion"
+                                [multiple]="false"
+                                (change)="cambioFiltroCamposValidacion($event)"
+                            >
+                            </ng-select>
+                        </div>
+
+                        <mat-form-field fxFlex="25" style="padding-top: 6px;" [floatLabel]="'always'" *ngIf="ofeRecepcionFncActivo == 'SI' && !mostrarValorValidacion">
+                            <input matInput placeholder="Valor a Buscar" formControlName="valor_campo_validacion">
+                        </mat-form-field>
+
+                        <div fxLayout="column" fxFlex="25" *ngIf="ofeRecepcionFncActivo == 'SI' && mostrarValorValidacion">
+                            <ng-select [items]="arrValoresCamposValidacion"
+                                placeholder="Valor a Buscar"
+                                notFoundText="No hay coincidencias"
+                                loadingText="..."
+                                [formControl]="valor_campo_validacion"
+                                [multiple]="false">
+                            </ng-select>
+                        </div>
+
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="start end">
+                        <div fxFlex="100" fxLayout="row" fxLayoutAlign="end center" >
+                            <button mat-raised-button  class="green-900" type="button" color="accent" [disabled]="!validarCamposMinimos()" matTooltip="Generar Excel" (click)="generarExcel()">
+                                <mat-icon color="#ffffff">cloud_download</mat-icon> Generar Excel
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="page-layout simple fullwidth" fxLayout="column">
+                <span fxFlex="4">&nbsp;</span>
+                <mat-divider></mat-divider>
+                <span fxFlex="4">&nbsp;</span>
+                <div fxFlex="34" fxLayout="row" fxLayoutAlign="space-around center" >
+                    <button mat-raised-button  class="green-900" type="button" color="sucess" matTooltip="Actualizar Listado" (click)="consultarReportesDescargar()">
+                        <mat-icon color="#ffffff">autorenew</mat-icon> Actualizar Listado
+                    </button>
+                </div>
+                <app-open-tracking
+                    [rows]="data"
+                    [columns]="columns"
+                    [trackingOpciones]="trackingOpciones"
+                    [accionesLote]=""
+                    [totalElements]="totalElements"
+                    [totalShow]="totalShow"
+                    [multiSelect]="false"
+                    [loadingIndicator]="loadingIndicator"
+                    [trackingInterface]="trackingInterface"
+                    [permisoAccionesBloque]="false"
+                    >
+                </app-open-tracking>
+            </div>
+        </div>
+    </div>
+    <!-- / CONTENT -->
+</div>

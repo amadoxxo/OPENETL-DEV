@@ -1,0 +1,17 @@
+.bradius {
+  border-radius: 5px 5px;
+}
+
+.fh {
+  font-size: 9px;
+}
+
+.fi {
+  font-size: 9px;
+  color: red;
+}
+
+.ng-select.custom ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    line-height: 0.5em !important;
+    min-height: 0.5em !important;
+}

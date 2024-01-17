@@ -1,0 +1,71 @@
+.fh {
+    font-size: 12px;
+  }
+  
+.fi {
+  font-size: 9px;
+  color: red;
+}
+
+#documentos {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#documentos td, #documentos th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#documentos tr:nth-child(even){background-color: #f2f2f2;}
+
+#documentos tr:hover {background-color: #ddd;}
+
+#documentos th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #0091EA;
+  color: white;
+}
+
+.square-rounded-corner {
+  border: 1px solid #e9e9e9;
+  padding: 20px 10px 0px 10px;
+  border-radius: 8px;
+}
+
+.vcenter {
+  display: inline-block;
+  vertical-align: middle;
+  float: none;
+}
+
+table {
+  width: 100%;
+}
+
+.drag-drop-control,
+.upload-files {
+  margin-top: 5rem;
+}
+
+.input-hidden {
+  display: none;
+}
+
+
+input.transparent-input { 
+  border:none !important
+}
+
+.transparent-input {
+  background-color: rgba(0, 0, 0, 0);
+  border:none;
+}
+
+input.transparent-input{
+    background-color:rgba(0,0,0,0) !important;
+    border:none !important;
+}

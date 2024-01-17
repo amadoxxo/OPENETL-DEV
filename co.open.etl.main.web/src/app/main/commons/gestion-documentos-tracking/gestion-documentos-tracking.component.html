@@ -1,0 +1,166 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="px-24 pt-4 pb-12" fxLayoutGap="10px">
+    <div fxFlex="20">
+        <ng-select [items]="paginationSize"
+            [readonly]="rows.length === 0"
+            bindLabel="label"
+            bindValue="value"
+            [clearable]="false"
+            placeholder="Registros a mostrar"
+            (change)="paginar($event.value)"
+            >
+        </ng-select>
+    </div>
+    <div fxFlex="50" class="box-excel">
+        <button mat-raised-button type="button" class="green-900" matTooltip="Descargar Excel"
+            (click)="descargarExcel()">
+            <mat-icon color="#ffffff">cloud_download</mat-icon> <span class="pl-4">Descargar Excel</span>
+        </button>
+    </div>
+
+    <div fxFlex="30">
+        <ng-select #selectAcciones 
+            *ngIf="accionesLote.length > 0" 
+            [items]="accionesLote"
+            [readonly]="rows.length === 0"
+            class="selectAccionesLote"
+            bindLabel="nombre"
+            bindValue="id"
+            placeholder="Acciones en Bloque"
+            notFoundText="No hay coincidencias"
+            loadingText="..."
+            [(ngModel)]="selectedOption"
+            (change)="accionesBloque($event)"
+            >
+        </ng-select>
+    </div>
+</div>
+
+<ngx-datatable
+    #tracking
+    class="material striped"
+    [loadingIndicator]="loadingIndicator"
+    [rows]="rows"
+    [count]="rows.length"
+    [offset]="page"
+    [limit]="totalShow"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    [columnMode]="'force'"
+    [rowHeight]="50"
+    [externalSorting]="true"
+    [externalPaging]="true"
+    [reorderable]="reorderable"
+    [selected]="selected"
+    [selectionType]="'checkbox'"
+    [messages]="messageDT"
+    (page)='onPage($event)'
+    (sort)="onSort($event)"
+    (select)='onSelect($event)'
+    [scrollbarH]="true"
+>
+    <ngx-datatable-column [width]="10" [canAutoResize]="false" [sortable]="false" *ngIf="multiSelect">
+        <ng-template ngx-datatable-header-template let-value="value" let-allRowsSelected="allRowsSelected" let-selectFn="selectFn">
+            <mat-checkbox [checked]="allRowsSelected" (change)="selectFn(!allRowsSelected)" [disabled]="rows.length === 0"></mat-checkbox>
+        </ng-template>
+        <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <mat-checkbox [checked]="isSelected" (change)="onCheckboxChangeFn($event)"></mat-checkbox>
+        </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column [sortable]="false" [width]="120">
+        <div mat-row fxFlex="100">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                <button mat-icon-button [matMenuTriggerFor]="menuTresPuntos" aria-label="Menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menuTresPuntos="matMenu">
+                    <button mat-menu-item (click)="openModalVerDetalle(row)">
+                        <mat-icon  color="#ffffff">remove_red_eye</mat-icon>
+                        <span>Ver Detalle</span>
+                    </button>
+                    <button mat-menu-item (click)="onGestionarFeDs(row)" *ngIf="permisoGestionarEtapa != '' && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || (_auth.existePermiso(aclsUsuario.permisos, permisoGestionarEtapa)))">
+                        <mat-icon  color="#ffffff">offline_pin</mat-icon>
+                        <span>Gestionar FE/DS</span>
+                    </button>
+                    <!-- Opciones de menú personalizadas tracking Etapa 1 -->
+                    <button mat-menu-item (click)="onAsignarCentroOperacion(row)" *ngIf="etapa === 1 && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || (_auth.existePermiso(aclsUsuario.permisos, 'RecepcionGestionDocumentosEtapa1CentroOperaciones')))">
+                        <mat-icon  color="#ffffff">apps</mat-icon>
+                        <span>Centro Operaciones</span>
+                    </button>
+                    <!-- Opciones de menú personalizadas tracking Etapa 2 -->
+                    <button mat-menu-item (click)="onAsignarCentroCosto(row)" *ngIf="etapa === 2 && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || (_auth.existePermiso(aclsUsuario.permisos, 'RecepcionGestionDocumentosEtapa2CentroCosto')))">
+                        <mat-icon  color="#ffffff">my_location</mat-icon>
+                        <span>Centro Costo</span>
+                    </button>
+                    <!-- Opciones de menú personalizadas tracking Etapa 4 -->
+                    <button mat-menu-item (click)="onAsignarDatosContabilizado(row)" *ngIf="etapa === 4 && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || (_auth.existePermiso(aclsUsuario.permisos, 'RecepcionGestionDocumentosEtapa4DatosContabilizado')))">
+                        <mat-icon  color="#ffffff">dns</mat-icon>
+                        <span>Datos Contabilizado</span>
+                    </button>
+
+                    <button mat-menu-item (click)="onSiguienteEtapa(row)" *ngIf="permisoSiguienteEtapa != '' && (_auth.existeRol(aclsUsuario.roles, 'superadmin') || (_auth.existePermiso(aclsUsuario.permisos, permisoSiguienteEtapa)))">
+                        <mat-icon  color="#ffffff">arrow_forward_ios</mat-icon>
+                        <span>Siguiente Etapa</span>
+                    </button>
+                </mat-menu>
+
+                <button mat-icon-button matTooltip="Sin Gestión" *ngIf="checkEstadoSinGestion(row)">
+                    <mat-icon class="gray-color">help_outline</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="{{ descripcionAprobado }}" *ngIf="checkEstadoAprobado(row)">
+                    <mat-icon class="green-icon">assignment_turned_in</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="{{descripcionNoAprobado}}" *ngIf="checkEstadoNoAprobado(row)">
+                    <mat-icon class="blue-2-icon">error_outline</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Rechazado" *ngIf="etapa !== 6 && checkEstadoRechazado(row)">
+                    <mat-icon class="red-icon">highlight_off</mat-icon>
+                </button>
+            </ng-template>
+        </div>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column *ngFor="let item of columns" name="{{item.name}}" prop="{{item.prop}}" [sortable]="item.sorteable" [width]="item.width">
+        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+            <span *ngIf="item.derecha" fxFlex="100" fxLayout="row" fxLayoutAlign="end center" style="width: 100px;font-size: 9pt !important">
+                {{ getValue(row, item.prop) }}
+            </span>
+
+            <span *ngIf="!item.derecha" style="font-size: 9pt !important">
+                {{ getValue(row, item.prop) }}
+            </span>
+        </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-footer>
+        <ng-template ngx-datatable-footer-template 
+            let-rowCount="rowCount"
+            let-pageSize="pageSize"
+            let-selectedCount="selectedCount"
+            let-curPage="curPage"
+            let-offset="offset"
+            let-isVisible="isVisible"
+        >
+            <div class="datatable-footer-inner selected-count">
+                <div class="page-count" *ngIf="selectedCount">
+                    <span> {{ selectedCount }} / </span> {{ rowCount }} {{ messageDT.selectedMessage }}
+                </div>
+                <div class="datatable-pager" *ngIf="rowCount">
+                    <ul class="pager" fxLayoutGap="15px">
+                        <li class="pages active" role="button" aria-label="Anterior">
+                            <button mat-raised-button type="button" color="accent" [disabled]="!linkAnterior" matTooltip="Pag. Ant" (click)="onPage('anterior')">
+                                <mat-icon color="#ffffff">navigate_before</mat-icon> Anterior
+                            </button>
+                        </li>
+
+                        <li class="pages active" role="button" aria-label="Siguiente">
+                            <button mat-raised-button type="button" color="accent" [disabled]="!linkSiguiente" matTooltip="Pag. Sgte" (click)="onPage('siguiente')">
+                                Siguiente <mat-icon color="#ffffff">navigate_next</mat-icon>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </ng-template>
+    </ngx-datatable-footer>
+</ngx-datatable>

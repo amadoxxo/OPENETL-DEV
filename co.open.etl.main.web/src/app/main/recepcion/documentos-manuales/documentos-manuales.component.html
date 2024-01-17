@@ -1,0 +1,195 @@
+<div id="documentos-manuales" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción - Documentos Manuales</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">Recepción - Documentos Manuales</div> 
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button  *ngIf="correoId" 
+                    color="accent" (click)="regresar()">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24">
+        <div class="mat-white-bg mat-elevation-z4 fondo-blanco">
+            <div fxLayout="column" fxLayoutGap="15px" class="px-24 pt-24">
+                <div fxFlex="100%" fxLayoutAlign="space-between">
+                    <mat-form-field fxFlex="100%">
+                        <mat-select placeholder="Receptor (OFE)" [(ngModel)]="oferente">
+                            <mat-option *ngFor="let ofe of ofes;" [value]="ofe.ofe_identificacion">
+                                {{ofe.ofe_identificacion}} - {{ofe.ofe_razon_social}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <mat-label style="padding-top: 10px;" #labelAcciones>Seleccione una Acción: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                    <ng-select fxFlex="35" [items]="arrAcciones"
+                        bindLabel="nombre"
+                        bindValue="id"
+                        labelForId="labelAcciones"
+                        placeholder="Seleccione"
+                        notFoundText="No hay coincidencias"
+                        loadingText="..."
+                        [formControl]="tipoAccion"
+                        [(ngModel)]="selectedOption"
+                        (change)="changeAccion($event)"
+                        (clear)="clear()">
+                    </ng-select>
+                    <mat-form-field fxFlex="30" *ngIf="subir">
+                        <input matInput readonly class="form-control margin-file-field"
+                                [placeholder]="placeholderInputFile"
+                                [value]="removeFakePath(documentoExcelEvento.value)"
+                                (click)="fileToUpload.click()"
+                                [formControl]="nombreArchivoExcelEvento">
+                        <input (change)="fileChangeSubirEvento($event)"
+                                type="file"
+                                #fileToUpload
+                                style="display:none;"
+                                [formControl]="documentoExcelEvento"
+                                [accept]="tiposArchivosAceptados">
+                    </mat-form-field>
+                    <button *ngIf="texto" mat-raised-button type="button" color="accent"
+                        (click)="uploadExcel()" [innerHTML]="texto">
+                    </button>
+                </div>
+
+                <div class="row mt-12 mb-12" fxLayoutAlign="start start">
+                    <div class="message-box info pt-4 pb-4 w-100-p" *ngIf="selectedOption === 'subir_registro_eventos'">
+                        <mat-icon class="s-24 secondary-text">info</mat-icon> <span style="vertical-align:super; margin-left:12px;">Puede registrar el evento diligenciando las columnas de dos posibles maneras: <br>
+                            <ul> 
+                                <li> NIT OFE, NIT PROVEEDOR, TIPO OPERACION, PREFIJO, CONSECUTIVO, FECHA </li>
+                                <li> CUFE, FECHA </li>
+                            </ul>
+                            La columna OBSERVACION no es obligatoria. <br>
+                            La columna CONCEPTO RECLAMO solo aplica para el evento Rechazo o Reclamo.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <ng-container *ngIf="selectedOption == 'subir_documentos_manuales'">
+                <div fxLayout="column" fxLayoutGap="15px" class="px-24 pb-24">
+                    <ng-container *ngIf="documentoExiste">
+                        <!-- <ng-container> -->
+                        <div>
+                            <form [formGroup]="formDocumentos">
+                                <div fxLayout="row">
+                                    <div fxFlex="100%">
+                                        <p>Para cargar los documentos puede seleccionar en su equipo los archivos y
+                                            arrastrarlos al área indicada abajo, o puede cargar los archivos
+                                            dando click en el botón 'Agregar Documentos', en cualquiera de los dos
+                                            casos, podrá cargar archivos XML y sus correspondientes representaciones
+                                            gráficas en archivos PDF,debe tener en cuenta que el total de archivos no debe superar los 25Mb
+                                            y que los nombres de los archivos (XML y PDF) de cada documento deben ser
+                                            iguales</p>
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row">
+                                    <div fxFlex="100%" fxLayoutAlign="start center">
+                                        <div fxFlex="58%">
+                                            <ngx-file-drop dropZoneLabel="ARRASTRE LOS ARCHIVOS AQUÍ"
+                                                (onFileDrop)="dropped($event)"
+                                                dropZoneLabel="Arrastre los archivos a esta zona"
+                                            >
+                                                <mat-icon color="primary">get_app</mat-icon>
+                                            </ngx-file-drop>
+                                        </div>
+                                        <span fxFlex="4">&nbsp;</span>
+                                        <div fxFlex="38%">
+                                            <input #fileInput [hidden]="true" (change)="loadDocumentoButton($event)"
+                                                type="file" accept=".pdf,.xml" multiple>
+                                            <button mat-raised-button color="accent" (click)="fileInput.click()">
+                                                <mat-icon color="primary">playlist_add</mat-icon>
+                                                Agregar Documentos
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-24 pb-24">
+                                    <div fxLayout="row">
+                                        <table fxFlex="100">
+                                            <thead>
+                                            <tr>
+                                                <th>DOCUMENTO ELECTRÓNICO</th>
+                                                <th>XML</th>
+                                                <th>PDF</th>
+                                                <th>ELIMINAR</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody formArrayName="camposDocumentos">
+                                            <tr *ngFor="let documento of documentos; let i = index " [class.orphan]="!documento.xml || !documento.pdf"
+                                                formGroupName="{{i}}">
+                                                <td>{{documento.nombre}}</td>
+                                                <td>
+                                                    <mat-icon aria-label="XML" matTooltip="XML" color="primary" *ngIf="documento.xml">check
+                                                    </mat-icon>
+                                                </td>
+                                                <td>
+                                                    <mat-icon aria-label="PDF" matTooltip="PDF" color="primary"
+                                                            *ngIf="documento.pdf">check
+                                                    </mat-icon>
+                                                </td>
+                                                <td>
+                                                    <button mat-icon-button color="accent" (click)="eliminarDocumento(i)">
+                                                        <mat-icon>delete</mat-icon>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div fxLayout="row">
+                                        <div fxFlex="100%">
+                                            <small>El tamaño máximo de un fichero es de 1Mb. Extensiones de archivo
+                                                aceptadas: .xml y .pdf"
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-24 pb-24" fxLayout="row">
+                                    <div fxFlex="100%" fxLayoutAlign="space-evenly">
+                                        <div>
+                                            <button mat-raised-button color="primary" (click)="procesar()"
+                                                    [disabled]="!hasCompletePairs">
+                                                <mat-icon color="accent">playlist_add</mat-icon>
+                                                Procesar Documentos
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button mat-raised-button color="primary" (click)="limpiarTodos()"
+                                                    [disabled]="arrDocumentos.length == 0">
+                                                <mat-icon color="warn">delete_sweep</mat-icon>
+                                                Limpiar Todos
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+            <mat-divider></mat-divider>
+            <app-log-errores [tipoLog]="'RECEPCION'" [ofeIdentificacion]="oferente"></app-log-errores>
+        </div>
+    </div>
+</div>

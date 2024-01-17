@@ -1,0 +1,35 @@
+<div fxLayout="row">
+    <form  fxLayout="column" fxLayoutAlign="start" fxFlex="100%"
+          name="form" [formGroup]="form">
+        <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+            <mat-form-field fxFlex="50">
+                <mat-select placeholder="Seleccione una acción" formControlName="form_accion" (selectionChange)="accionDownUp($event.value)" required>
+                    <mat-option [value]="">Seleccione</mat-option>
+                    <mat-option *ngFor="let accion of arrAcciones" [value]="accion.id">
+                        {{ accion.nombre }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="40" *ngIf="subir">
+                <input matInput readonly class="form-control"
+                    fxFlex="100"
+                    placeholder="Ubique el archivo de excel..."
+                    [value]="removeFakePath(documentoManualExcel.value)"
+                    (click)="fileToUpload.click()"
+                    formControlName="nombreArchivoExcel">
+                <input (change)="fileChangeEvent($event)"
+                    type="file"
+                    #fileToUpload
+                    style="display:none;"
+                    formControlName="documentoManualExcel"
+                    accept=".xls, .xlsx">
+            </mat-form-field>
+            <button *ngIf="texto" mat-raised-button type="button" color="accent" [disabled]="!form.valid"
+                (click)="uploadExcel(form.value)" [innerHTML]="texto">
+            </button>
+        </div>
+        <div class="pt-24" fxLayout="row" fxLayoutAlign="end center">
+
+        </div>
+    </form>
+</div>

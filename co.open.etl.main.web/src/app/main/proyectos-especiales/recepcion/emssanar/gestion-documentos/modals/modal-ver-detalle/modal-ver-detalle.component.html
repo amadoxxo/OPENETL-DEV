@@ -1,0 +1,158 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Detalle Etapas</h1>
+
+<mat-dialog-content class="contenido">
+    <!-- Información de cabecera del documento -->
+    <div fxLayout="column" class="cab-documentos">
+        <div fxLayout="row" fxFlex="100" class="mt-8">
+            <span fxFlex="100"><b>Documento:</b> {{informacionEtapas.documento}}</span><br>
+        </div>
+        <div fxLayout="row" fxFlex="100" class="mt-8">
+            <span fxFlex="100"><b>Emisor:</b> {{informacionEtapas.emisor}}</span><br>
+        </div>
+        <div fxLayout="row" fxFlex="100" class="mt-8">
+            <span fxFlex="50"><b>Fecha Emisión:</b> {{informacionEtapas.fecha_emision}}</span><br>
+            <span fxFlex="50"><b>Vencimiento:</b> {{informacionEtapas.fecha_vencimiento}}</span><br>
+        </div>
+        <mat-divider class="bot-space"></mat-divider>
+
+        <div fxFlex="100">
+            <!-- Información detallada de todas las etapas -->
+            <mat-accordion multi="true" #acordion="matAccordion" *ngIf="!mostrarEtapaEspecifica">
+                <mat-expansion-panel *ngFor="let infoEtapa of informacionEtapas.etapas" [expanded]="infoEtapa.etapa === etapa">
+                    <mat-expansion-panel-header class="right-aligned-header expansion-color">
+                        <mat-panel-title>
+                            <strong style="font-size: large">Etapa {{infoEtapa.etapa}}: {{infoEtapa.nombre_etapa}}</strong>
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <button mat-icon-button
+                                    (click)="mostrarDetalleEtapa(infoEtapa.etapa, infoEtapa.nombre_etapa)">
+                                    <mat-icon class="gray-color">zoom_out_map</mat-icon>
+                            </button>
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div fxLayout="column" fxFlex="100">
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.centro_operacion && infoEtapa.centro_operacion != ''">
+                            <span fxFlex="30"><b>Centro de Operación:</b></span>
+                            <span fxFlex="70">{{infoEtapa.centro_operacion}}
+                            </span>
+                        </div>
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.centro_costo && infoEtapa.centro_costo != ''">
+                            <span fxFlex="30"><b>Centro de Costo:</b></span>
+                            <span fxFlex="70">{{infoEtapa.centro_costo}}
+                            </span>
+                        </div>
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.tipo_documento && infoEtapa.tipo_documento != ''">
+                            <span fxFlex="30"><b>Tipo de Documento:</b></span>
+                            <span fxFlex="70">{{infoEtapa.tipo_documento}}
+                            </span>
+                        </div>
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.numero_documento && infoEtapa.numero_documento != ''">
+                            <span fxFlex="30"><b>Número de Documento:</b></span>
+                            <span fxFlex="70">{{infoEtapa.numero_documento}}
+                            </span>
+                        </div>
+
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.estado_gestion && infoEtapa.estado_gestion != ''">
+                            <span fxFlex="30"><b>Estado Gestión:</b></span>
+                            <span fxFlex="70">{{infoEtapa.estado_gestion}}
+                            </span>
+                        </div>
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.causal_devolucion && infoEtapa.causal_devolucion != ''">
+                            <span fxFlex="30"><b>Causal Devolución:</b></span>
+                            <span fxFlex="70">{{infoEtapa.causal_devolucion}}
+                            </span>
+                        </div>
+                        <div fxLayout="row" class="margin-etapa" *ngIf="infoEtapa.observacion && infoEtapa.observacion != ''">
+                            <span fxFlex="30"><b>Observación:</b></span>
+                            <span fxFlex="70">{{infoEtapa.observacion}}
+                            </span>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <!-- Información detallada de una etapa específica -->
+            <ng-container *ngIf="mostrarEtapaEspecifica">
+                <mat-accordion>
+                    <mat-expansion-panel [expanded]="true">
+                        <mat-expansion-panel-header class="right-aligned-header expansion-color">
+                            <mat-panel-title>
+                                <strong style="font-size: large">Etapa {{numeroEtapaEspecifica}}: {{nombreEtapaEspecifica}}</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div fxLayout="column">
+                            <div fxFlex="100" *ngFor="let historico of historicoEtapa">
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.accion && historico.accion != ''">
+                                    <span fxFlex="30"><b>Acción:</b></span>
+                                    <span fxFlex="70">{{historico.accion}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.estado && historico.estado != ''">
+                                    <span fxFlex="30"><b>Estado Gestión:</b></span>
+                                    <span fxFlex="70">{{historico.estado}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.causal_devolucion && historico.causal_devolucion != ''">
+                                    <span fxFlex="30"><b>Causal Devolución:</b></span>
+                                    <span fxFlex="70">{{historico.causal_devolucion}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.observacion && historico.observacion != ''">
+                                    <span fxFlex="30"><b>Observación:</b></span>
+                                    <span fxFlex="70">{{historico.observacion}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.centro_operacion && historico.centro_operacion != ''">
+                                    <span fxFlex="30"><b>Centro Operación:</b></span>
+                                    <span fxFlex="70">{{historico.centro_operacion}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.codigo_centro_costo && historico.codigo_centro_costo != ''">
+                                    <span fxFlex="30"><b>Centro Costo:</b></span>
+                                    <span fxFlex="70">{{historico.codigo_centro_costo}} - {{historico.descripcion_centro_costo}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.tipo_documento && historico.tipo_documento != ''">
+                                    <span fxFlex="30"><b>Tipo Documento:</b></span>
+                                    <span fxFlex="70">{{historico.tipo_documento}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa" *ngIf="historico.numero_documento && historico.numero_documento != ''">
+                                    <span fxFlex="30"><b>Número Documento:</b></span>
+                                    <span fxFlex="70">{{historico.numero_documento}}
+                                    </span>
+                                </div>
+                                <div fxLayout="row" class="margin-etapa">
+                                    <div fxFlex="10">
+                                        <mat-icon class="gray-color">person_pin</mat-icon>
+                                    </div>
+                                    <div fxFlex="40">
+                                        <span>{{historico.usu_nombre}}</span>
+                                    </div>
+                                    <div fxFlex="10">
+                                        <mat-icon class="gray-color">calendar_today</mat-icon>
+                                    </div>
+                                    <div fxFlex="40">
+                                        <span>{{historico.fecha}} {{historico.hora}}</span>
+                                    </div>
+                                </div>
+
+                                <mat-divider class="bot-space"></mat-divider>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </ng-container>
+        </div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="closeModal()" class="button-close" *ngIf="!mostrarEtapaEspecifica">
+        <mat-icon color="#ffffff">close</mat-icon> Cerrar
+    </button>
+    <button mat-raised-button color="accent" (click)="regresar()" class="button-close" *ngIf="mostrarEtapaEspecifica">
+        <mat-icon color="#ffffff">arrow_back</mat-icon> Regresar
+    </button>
+</mat-dialog-actions>

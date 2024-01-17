@@ -1,0 +1,36 @@
+<h1 class="header bradius fuse-navy-900 p-12" mat-dialog-title>Datos Contabilizado</h1>
+
+<mat-dialog-content>
+    <div class="cab-documentos">
+        <b>Documento(s): {{ arrDocumentos.join(', ') }}</b>
+    </div>
+    <mat-divider class="bot-space"></mat-divider>
+    <form fxLayout="column" name="form" [formGroup]="form">
+        <!-- Tipo de Documento -->
+        <div fxLayout="row" fxFlex="100" class="box-combo">
+            <mat-form-field fxFlex="100">
+                <input matInput placeholder="Tipo de Documento" [formControl]="tipo_documento">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-error>Debe diligenciar el Tipo de Documento</mat-error>
+            </mat-form-field>
+        </div>
+        <!-- Número de Documento -->
+        <div fxLayout="row" fxFlex="100" class="box-combo">
+            <mat-form-field fxFlex="100">
+                <input matInput placeholder="Número de Documento" [formControl]="numero_documento">
+                <mat-icon matSuffix class="fi">star rate</mat-icon>
+                <mat-error>Debe diligenciar el Número de Documento</mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button cdkFocusInitial mat-raised-button color="accent" (click)="saveModal()" class="button-save" [disabled]="form.invalid">
+        <mat-icon color="#ffffff">save</mat-icon> Guardar
+    </button>
+    <button mat-raised-button color="warn" (click)="closeModal()" class="button-close">
+        <mat-icon color="#ffffff">cancel</mat-icon> Cerrar
+    </button>
+</mat-dialog-actions>

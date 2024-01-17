@@ -1,0 +1,204 @@
+<div id="spt" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Comunes</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Software Proveedor Tecnológico</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <br>
+            <form [formGroup]="form" fxLayout="column" name="form">
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <input type="hidden" formControlName="sft_id">
+                    <mat-form-field fxFlex="40">
+                        <input matInput #inputId placeholder="Identificador" [readonly]="ver" formControlName="sft_identificador">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                        <mat-hint *ngIf="!ver" align="end" class="fh">{{inputId.value?.length || 0}}/255</mat-hint>
+                        <mat-error *ngIf="hasError('sft_identificador', 'required')">
+                            {{formErrors.sft_identificador.required}}
+                        </mat-error>
+                        <mat-error *ngIf="hasError('sft_identificador', 'maxlength')">
+                            {{formErrors.sft_identificador.maxLength}}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlex="40">
+                        <input matInput #inputNombre placeholder="Nombre" [readonly]="ver" formControlName="sft_nombre">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                        <mat-hint *ngIf="!ver" align="end" class="fh">{{inputNombre.value?.length || 0}}/255</mat-hint>
+                        <mat-error *ngIf="hasError('sft_nombre', 'required')">
+                            {{formErrors.sft_nombre.required}}
+                        </mat-error>
+                        <mat-error *ngIf="hasError('sft_nombre', 'maxlength')">
+                            {{formErrors.sft_nombre.maxLength}}
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field fxFlex="20">
+                        <input matInput #inputPin placeholder="Pin" [readonly]="ver" formControlName="sft_pin">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-hint *ngIf="!ver" class="fh">Máx 100 caracteres</mat-hint>
+                        <mat-hint *ngIf="!ver" align="end" class="fh">{{inputPin.value?.length || 0}}/100</mat-hint>
+                        <mat-error *ngIf="hasError('sft_pin', 'required')">
+                            {{formErrors.sft_pin.required}}
+                        </mat-error>
+                        <mat-error *ngIf="hasError('sft_pin', 'maxlength')">
+                            {{formErrors.sft_pin.maxLength}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <mat-form-field fxFlex="30">
+                        <input matInput [matDatepicker]="cdoFR"
+                            placeholder="Fecha de Registro"
+                            formControlName="sft_fecha_registro" 
+                            (click)="cdoFR.open()" [max]="maxDate">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-datepicker-toggle matSuffix [for]="cdoFR"></mat-datepicker-toggle>
+                        <mat-datepicker #cdoFR></mat-datepicker>
+                        <mat-error *ngIf="!ver && !sft_fecha_registro.valid">
+                            {{formErrors.sft_fecha_registro.required}}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlex="35">
+                        <input matInput #inputNIT placeholder="NIT Proveedor Tecnológico" [readonly]="ver" formControlName="sft_nit_proveedor_tecnologico">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                        <mat-hint *ngIf="!ver" align="end" class="fh">{{inputNIT.value?.length || 0}}/20</mat-hint>
+                        <mat-error *ngIf="hasError('sft_nit_proveedor_tecnologico', 'required')">
+                            {{formErrors.sft_nit_proveedor_tecnologico.required}}
+                        </mat-error>
+                        <mat-error *ngIf="hasError('sft_nit_proveedor_tecnologico', 'maxlength')">
+                            {{formErrors.sft_nit_proveedor_tecnologico.maxLength}}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field fxFlex="35">
+                        <input matInput #inputRazonSocial placeholder="Razon Social Proveedor Tecnológico" [readonly]="ver" formControlName="sft_razon_social_proveedor_tecnologico">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                        <mat-hint *ngIf="!ver" align="end" class="fh">{{inputRazonSocial.value?.length || 0}}/255</mat-hint>
+                        <mat-error *ngIf="hasError('sft_razon_social_proveedor_tecnologico', 'required')">
+                            {{formErrors.sft_razon_social_proveedor_tecnologico.required}}
+                        </mat-error>
+                        <mat-error *ngIf="hasError('sft_razon_social_proveedor_tecnologico', 'maxlength')">
+                            {{formErrors.sft_razon_social_proveedor_tecnologico.maxLength}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" style="margin-top: 5px !important;">
+                    <div fxFlex="99">
+                        <ng-select 
+                            [items]="sftAplicaParaItems"
+                            bindValue="sft_aplica_para"
+                            bindLabel="sft_aplica_para_descripcion"
+                            [(ngModel)]="sftAplicaParaSeleccionado"
+                            placeholder="Aplica Para"
+                            [multiple]="true"
+                            notFoundText="No hay coincidencias"
+                            loadingText="..."
+                            [closeOnSelect]="false"
+                            formControlName="sft_aplica_para"
+                            [dropdownPosition]="'down'"
+                        >
+                        </ng-select>
+                        <mat-error *ngIf="hasError('sft_aplica_para', 'required') && sft_aplica_para.touched" style="font-size: 12px !important;margin-top: -10px !important;">
+                            {{formErrors.sft_aplica_para.required}}
+                        </mat-error>
+                    </div>
+                    <div fxFlex="1">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" style="margin-top: 5px !important;">
+                    <div fxFlex="99">
+                        <ng-select #AmbienteId 
+                            [items]="ambientes"
+                            bindLabel="add_codigo_descripcion"
+                            bindValue="add_id"
+                            placeholder="Ambiente Destino del Documento"
+                            notFoundText="No hay coincidencias"
+                            loadingText="..."
+                            appendTo="body"
+                            formControlName="add_id"
+                            (change)="cambioAmbiente($event)"
+                            [(ngModel)]="ambienteSeleccionado" >
+                            <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
+                                <div style="margin: 5px 0;" class="card">
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            <strong>{{item.add_codigo}}</strong> - {{item.add_descripcion}} - {{item.add_url}} 
+                                        </p>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                    <div fxFlex="1">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                    </div>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <mat-form-field fxFlex="100" *ngIf="ambienteDestinoSeleccionado === 'SendTestSetAsync'">
+                        <input matInput #inputTestSetId placeholder="Identificador del set de pruebas (TestSetId)" [readonly]="ver" formControlName="sft_testsetid">
+                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                        <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                        <mat-hint *ngIf="!ver" align="end" class="fh">{{inputTestSetId.value?.length || 0}}/255</mat-hint>
+                        <mat-error *ngIf="hasError('sft_testsetid', 'required')">
+                            {{formErrors.sft_testsetid.required}}
+                        </mat-error>
+                        <mat-error *ngIf="hasError('sft_testsetid', 'maxlength')">
+                            {{formErrors.sft_testsetid.maxLength}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <span fxFlex="1" *ngIf="editar">&nbsp;</span>
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <ng-container *ngIf="editar">
+                        <mat-label class="control-label">Estado: <mat-icon matSuffix class="fi">star rate</mat-icon></mat-label>
+                        <mat-radio-group formControlName="estado" style="margin-left: 10px">
+                            <mat-radio-button value="ACTIVO" style="margin-right: 15px"> Activo </mat-radio-button>
+                            <mat-radio-button value="INACTIVO"> Inactivo </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+                </div>
+                <br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" *ngIf="!ver" [disabled]="!form.valid"
+                            (click)="resourceSpt(form.value)">
+                        <mat-icon color="#ffffff">check_box</mat-icon>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>

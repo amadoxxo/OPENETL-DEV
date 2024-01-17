@@ -1,0 +1,157 @@
+<div id="rol" class="page-layout simple fullwidth" fxLayout="column">
+
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row" >
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Sistema</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Roles</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ textoSeccion }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="50" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ textoSeccion }}</div> 
+            </div>
+            <div fxLayout="row" fxFlex="50" fxLayoutAlign="end center">
+                <button mat-raised-button type="button" color="accent" [routerLink]="['/sistema/roles']">
+                    <mat-icon color="primary">keyboard_arrow_left</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- CONTENT -->
+    <div class="content p-24 pb-6">
+        <div class="entry">
+            <h2>Información Básica del Rol</h2>
+            <p>Ingrese la información solicitada en cada uno de los campos, tenga en cuenta que todos los campos son
+                obligatorios:</p>
+            <div fxLayout="row">
+                <form class="mat-white-bg" fxLayout="column" fxLayoutAlign="start" fxFlex="100%"
+                    name="formNuevoRol" [formGroup]="formNuevoRol">
+                    <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+
+                        <mat-form-field fxFlex="20">
+                            <input matInput #inputCod placeholder="Código del Rol" [formControl]="rol_codigo" [readonly]="ver"
+                                maxlength="20">
+                            <mat-icon matSuffix class="fi">star rate</mat-icon>
+                            <mat-hint *ngIf="!ver" class="fh">Máx 20 caracteres</mat-hint>
+                            <mat-hint align="end" *ngIf="!ver" class="fh">{{inputCod.value?.length || 0}}/20</mat-hint>
+                            <mat-error *ngIf="hasError('rol_codigo', 'required')">
+                                {{formErrors.rol_codigo.required}}
+                            </mat-error>
+                            <mat-error *ngIf="hasError('rol_codigo', 'maxlength')">
+                                {{formErrors.rol_codigo.maxLength}}
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field fxFlex="80">
+                            <input matInput #inputDesc placeholder="Descripción del Rol" [formControl]="rol_descripcion" maxlength="255" [readonly]="ver">
+                            <mat-icon matSuffix class="fi">star rate</mat-icon>
+                            <mat-hint *ngIf="!ver" class="fh">Máx 255 caracteres</mat-hint>
+                            <mat-hint align="end" *ngIf="!ver" class="fh">{{inputDesc.value?.length || 0}}/255</mat-hint>
+                            <mat-error *ngIf="hasError('rol_descripcion', 'required')">
+                                {{formErrors.rol_descripcion.required}}
+                            </mat-error>
+                            <mat-error *ngIf="hasError('rol_descripcion', 'maxlength')">
+                                {{formErrors.rol_descripcion.maxLength}}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <br>
+                    <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+
+                    <div class="pt-24" fxLayout="row" fxLayoutAlign="end center" *ngIf="!ver">
+                        <button mat-raised-button type="button" color="accent" [disabled]="!formNuevoRol.valid"
+                                (click)="resourceRol(formNuevoRol.value)">
+                            <mat-icon color="#ffffff">check_box</mat-icon>
+                            {{ textoSeccion }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <br>
+            <hr>
+            <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxFlex="1 0 auto" fxLayoutGap="15px">
+                    <div fxFlex="50">
+                        <h2>Permisos de Acceso del Rol</h2>
+                        <p>Seleccione los permisos a los cuales tendrá acceso el rol:</p>
+                    </div>
+                    <div fxFlex="25">
+                        <button mat-raised-button type="button" color="primary" (click)="filtrarAsignados();" [disabled]="ver || rol_id === 0">
+                            <mat-icon color="accent">filter_list</mat-icon>
+                            <strong> {{ textoAsignados }}</strong>
+                        </button>
+                    </div>
+                    <div fxFlex="25">
+                        <button mat-raised-button type="button" color="warn" (click)="actDesTodos();" [disabled]="ver || rol_id === 0">
+                            <mat-icon color="primary">check</mat-icon>
+                            <strong> {{ textoActDesTodos }}</strong>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end center">
+                <div fxFlex="50%">
+                    <mat-form-field fxFlex="50%">
+                        <mat-select placeholder="Número de registros a mostrar"
+                                    (selectionChange)="paginar($event.value)" name="num_registros" [disabled]="ver">
+                            <mat-option *ngFor="let item of paginationSize" [value]="item.value">
+                                {{item.label}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div fxFlex="50" fxLayoutAlign="end">
+                    <mat-form-field fxFlex="50">
+                        <input class="search" matInput [size]="100" type="text"
+                                placeholder="Búsqueda rápida" [(ngModel)]="buscar" (keyup.enter)="searchinline()" [readonly]="ver">
+                    </mat-form-field>
+                </div>
+            </div>
+            <ngx-datatable
+                class="material striped"
+                [loadingIndicator]="loadingIndicator"
+                [rows]="rows"
+                [columnMode]="'force'"
+                [headerHeight]="50"
+                [footerHeight]="50"
+                [rowHeight]="50"
+                [externalSorting]="true"
+                [externalPaging]="true"
+                [reorderable]="reorderable"
+                [selected]="selected"
+                [selectionType]="'checkbox'"
+                [messages]="messageDT"
+                [count]="totalElements"
+                [offset]="page"
+                [limit]="totalShow"
+                (page)='onPage($event)'
+                (sort)="onSort($event)"
+                (select)='onSelect($event)'
+                [scrollbarH]="true">
+    
+                <ngx-datatable-column name="Act/Des" [canAutoResize]="false" [sortable]="false" [width]="80">
+                    <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                        <mat-slide-toggle matTooltip="Activar/Desactivar" (change)="permisosRol($event, row.rec_id)"
+                                            [checked]="estaAsignado(row)" [disabled]="ver || rol_id === 0"></mat-slide-toggle>
+                    </ng-template>
+                </ngx-datatable-column>
+    
+                <ngx-datatable-column name="Alias" prop="rec_alias" [width]="100"></ngx-datatable-column>
+                <ngx-datatable-column name="Módulo" prop="rec_modulo_descripcion" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column name="Descripción" prop="rec_descripcion" [width]="300"></ngx-datatable-column>
+    
+            </ngx-datatable>
+        </div>     
+    </div>
+    <!-- / CONTENT -->
+</div>
+
+

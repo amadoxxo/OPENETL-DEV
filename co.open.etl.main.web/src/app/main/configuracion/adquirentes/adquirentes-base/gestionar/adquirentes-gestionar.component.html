@@ -1,0 +1,204 @@
+<div id="adquirente" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Emision</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Adquirentes</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <form [formGroup]="formulario">
+                <br>
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-datos-generales-registro #datosGeneralesControl [tdo_id]="tdo_id" [toj_id]="toj_id"
+                            [identificacion]="adq_identificacion" [nombre_comercial]="adq_nombre_comercial"
+                            [razon_social]="adq_razon_social" [primer_apellido]="adq_primer_apellido"
+                            [segundo_apellido]="adq_segundo_apellido" [primer_nombre]="adq_primer_nombre"
+                            [otros_nombres]="adq_otros_nombres" [sololectura]="_adq_id"
+                            [tiposOrganizacion]="tipoOrganizaciones" [tiposDocumento]="tipoDocumentos" [DV]="DV"
+                            [tipoDocumentoSelect]="tipoDocumentoSelect" [tipoOrganizacionSelect]="tipoOrganizacionSelect"
+                            [ver]="ver" [parent]="gestor" [editar]="editar" [tipoAdquirente]="tipoAdquirente" [tipo]="'ADQ'"
+                            [initOrganizacion]="initOrganizacion" [adq_id_personalizado]="adq_id_personalizado"
+                            [initDV]="initDV" [ofe_identificacion]="ofe_id.value" [maxlengthIdentificacion]="maxlengthIdentificacion" [regexIdentificacion]="regexIdentificacion"
+                            (tdoSeleccionado)="tdoHasChange($event)">
+                        </app-datos-generales-registro>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ofeSelector">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">OFE</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ofeSelector.valid && !ver">
+                                <span style="color: red">El OFE es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-selector-ofe-precargado [ofe_id]="ofe_id" [oferentes]="ofes" [ver]="ver" (ofeSeleccionado)="ofeHasChange($event)"></app-selector-ofe-precargado>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ubicacion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DOMICILIO DE CORRESPONDENCIA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ubicacion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open [pai_id]="pai_id" [dep_id]="dep_id" [mun_id]="mun_id"
+                                            [direccion]="adq_direccion" [codigo_postal]="cpo_id"
+                                            [sololectura]="_adq_id" [ver]="ver" [tipoUbicacion]="'normal'"
+                                            [tipo]="'ADQ'" >
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ubicacionFiscal">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DOMICILIO FISCAL</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ubicacionFiscal.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open [pai_id]="pai_id_domicilio_fiscal" [dep_id]="dep_id_domicilio_fiscal" [mun_id]="mun_id_domicilio_fiscal"
+                                            [direccion]="adq_direccion_domicilio_fiscal"
+                                            [codigo_postal]="cpo_id_domicilio_fiscal" [sololectura]="_adq_id" [ver]="ver"
+                                            [tipoUbicacion]="'fiscal'" [tipo]="'ADQ'">
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosTributarios">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN TRIBUTARIA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosTributarios.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-datos-tributarios [tipoRegimen]="tipoRegimen" [rfi_id]="rfi_id" [ref_id]="ref_id" 
+                                               [ipv_id]="ipv_id" [responsabilidadesFiscales]="responsabilidadesFiscales" [tributos]="tributos" [tipoProcedenciaVendedor]="tipoProcedenciaVendedor"
+                                               [tributosSelect]="tributosSelect" [regimenFiscalSelect]="regimenFiscalSelect" [responsabilidadesFiscalesSelect]="responsabilidadesFiscalesSelect"  
+                                               [tributosControl]="responsable_tributos" [procedenciaVendedorSelect]="procedenciaVendedorSelect" [ver]="ver" [tipo]="'ADQ'">
+                        </app-datos-tributarios>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionAdicional">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN ADICIONAL</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!informacionAdicional.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-informacion-adicional [nombreContacto]="adq_nombre_contacto" [telefono]="adq_telefono" [longitudTelefonoFax]="50" [fax]="adq_fax" [correo]="adq_correo" [matricula]="adq_matricula_mercantil" [notas]="adq_notas" [ver]="ver" [tipo]="'ADQ'"></app-informacion-adicional>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="contactos" *ngIf="tipoAdquirente === 'adquirente'">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONTACTOS</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!contactos.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-contact-form-group-control [formGroup]="accountingContact" [titleGroup]="'Contabilidad'" [ver]="ver"></app-contact-form-group-control>
+                        <app-contact-form-group-control [formGroup]="deliveryContact" [titleGroup]="'Entrega'" [ver]="ver"></app-contact-form-group-control>
+                        <app-contact-form-group-control [formGroup]="buyerContact" [titleGroup]="'Comprador'" [ver]="ver"></app-contact-form-group-control>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionPersonalizada" *ngIf="camposInfoPersonalizada.length > 0">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACION PERSONALIZADA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!informacionPersonalizada.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div formArrayName="arrInfoPersonalizada" 
+                            *ngFor="let campoInfoPersonalizada of camposInfoPersonalizada; let i=index">
+                            <div fxLayout="row">
+                                <mat-form-field fxFlex="100">
+                                    <mat-label class="control-label">{{ campoInfoPersonalizada.title }}: </mat-label>
+                                    <input matInput type="text" [formControlName]="i" [readonly]="ver">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="correosNotificacion" *ngIf="tipoAdquirente === 'adquirente' || tipoAdquirente === 'vendedor'">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">NOTIFICACIONES</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <app-notificaciones [correos]="adq_correos_notificacion" [ver]="ver" [tipo]="'ADQ'" [etiqueta]="'Enviar Notificación a: '"></app-notificaciones>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="reglaAceptacionTacita" *ngIf="tipoAdquirente === 'adquirente'">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">ACEPTACIÓN TÁCITA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!reglaAceptacionTacita.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-aceptacion-tacita [tat_id]="tat_id" [tiemposAceptacionTacita]="tiemposAceptacionTacita" [ver]="ver"></app-aceptacion-tacita>
+                    </mat-expansion-panel>
+
+                </mat-accordion>
+                <br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid" *ngIf="!ver"
+                            (click)="resourceAdquirente(formulario.value)">
+                        <mat-icon color="#ffffff">check_box</mat-icon>
+                        Guardar
+                    </button>
+
+                    <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid" (click)="regresar()" *ngIf="ver">
+                        <mat-icon color="#ffffff">arrow_back_ios</mat-icon> Regresar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>

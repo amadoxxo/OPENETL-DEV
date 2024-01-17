@@ -1,0 +1,15 @@
+<div fxFlex="100">
+    <mat-label class="control-label">{{etiqueta}}</mat-label>
+    <tag-input [formControl]="correos"
+        placeholder="Correo electrónico"
+        [secondaryPlaceholder]="'Correo electrónico'"
+        [addOnPaste]="true"
+        [modelAsStrings]="true"
+        [maxItems]="10"
+        [validators]="validators"
+        [blinkIfDupe]="true"
+        [separatorKeyCodes]="[8,9,32,188]"
+        theme="bootstrap"
+        [disable]="ver">
+    </tag-input>
+</div>

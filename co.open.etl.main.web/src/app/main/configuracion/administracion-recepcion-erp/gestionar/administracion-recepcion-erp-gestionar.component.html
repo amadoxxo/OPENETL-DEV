@@ -1,0 +1,252 @@
+<div id="administracion" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Recepción</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Administración Recepción ERP</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <br>
+            <form [formGroup]="form">
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row">
+                                <div fxFlex="60%" style="margin-right: 10px;">
+                                    <app-selector-ofe-precargado [ofe_id]="ofe_identificacion" [oferentes]="ofes" [ver]="ver" [label]="'OFE - Receptor'" (ofeSeleccionado)="ofeAplicaHasChange($event)"></app-selector-ofe-precargado>
+                                </div>
+                                <div fxFlex="40%" fxLayout="column">
+                                    <ng-select [items]="erp"
+                                        bindLabel="name" 
+                                        bindValue="id"
+                                        placeholder="ERP" 
+                                        notFoundText="No hay coincidencias"
+                                        loadingText="..."
+                                        formControlName="ate_erp"
+                                        appendTo="body"
+                                        fxFlex="100"
+                                        [readonly]="ver">
+                                    </ng-select>
+                                    <mat-error *ngIf="!ate_erp.valid && ate_erp.touched" class="error">
+                                        {{formErrors.ate_erp.required}}
+                                    </mat-error>
+                                </div>
+                            </div>
+    
+                            <div fxLayout="row" style="margin-bottom: 15px;">
+                                <div fxFlex="60%" fxLayout="column">
+                                    <mat-form-field style="margin-right: 10px;">
+                                        <mat-label>Descripción Regla</mat-label>
+                                        <input matInput type="text" formControlName="ate_descripcion" #DescripcionRegla maxlength="255" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{DescripcionRegla.value?.length || 0}}/255</mat-hint>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="!ate_descripcion.valid && ate_descripcion.touched" class="error">
+                                        {{formErrors.ate_descripcion.required}}
+                                    </mat-error>
+                                </div>
+    
+                                <div fxFlex="40%" fxLayout="column">
+                                    <ng-select [items]="itemsAplica"
+                                        bindLabel="name" 
+                                        bindValue="id"
+                                        placeholder="Tipo de Documento" 
+                                        notFoundText="No hay coincidencias"
+                                        loadingText="..."
+                                        formControlName="ate_aplica_para"
+                                        (change)="ofeAplicaHasChange($event)"
+                                        appendTo="body"
+                                        fxFlex="100"
+                                        [readonly]="ver"
+                                        [multiple]="true">
+                                    </ng-select>
+                                    <mat-error *ngIf="!ate_aplica_para.valid && ate_aplica_para.touched" class="error">
+                                        {{formErrors.ate_aplica_para.required}}
+                                    </mat-error>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosRegla">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">REGLAS</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosRegla.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row" fxLayoutAlign="end end">
+                                <button *ngIf="!ver" mat-raised-button type="button" class="btn-agregar" matTooltip="Agregar Condicion" (click)="agregarCamposCondicionGlobal()" color="primary">
+                                    <mat-icon aria-label="agregarCamposCondicionGlobal">add_circle</mat-icon> Agregar Condición
+                                </button>
+                            </div>
+        
+                            <div fxLayout="row">
+                                <div fxFlex="32%" fxLayout="column">
+                                    <ng-select [items]="itemsDebenAplicar"
+                                        bindLabel="name" 
+                                        bindValue="id"
+                                        placeholder="Deben Aplicar" 
+                                        notFoundText="No hay coincidencias"
+                                        loadingText="..."
+                                        formControlName="ate_deben_aplica"
+                                        appendTo="body"
+                                        fxFlex="100"
+                                        [readonly]="ver">
+                                    </ng-select>
+                                    <mat-error *ngIf="!ate_deben_aplica.valid && ate_deben_aplica.touched" class="error" style="margin-bottom: 10px;">
+                                        {{formErrors.ate_deben_aplica.required}}
+                                    </mat-error>
+                                </div>
+                            </div>
+                            
+                            <div *ngFor="let condicion of datosRegla.get('condicionesGlobales')['controls']; let i = index" formArrayName="condicionesGlobales">
+                                <div [formGroupName] ="i" fxLayout="row">
+                                    <input type="hidden" formControlName="ate_id">
+                                    <input type="hidden" formControlName="origen">
+                                    <input type="hidden" formControlName="xde_id">
+                                    <mat-form-field fxFlex="32%" style="margin-right: 10px;">
+                                        <input matInput type="text" placeholder="Prefijo" [matAutocomplete]="prefijo" formControlName='xde_descripcion' (change)="agregarRequeridosCondicionGlobal(i)" [readonly]="ver || !ate_aplica_para.valid" style="margin-top: 5px;">
+                                    </mat-form-field>
+                                    <mat-autocomplete #prefijo="matAutocomplete">
+                                        <ng-container *ngIf="!isLoading">
+                                            <mat-option *ngFor="let resultado of resultadosAutocomplete['condiciones']" [value]="resultado" (click)="setValorCondicion(i, resultado, 'condicionesGlobales')">
+                                                <span>{{ resultado.xde_descripcion }}</span>
+                                            </mat-option>
+                                            <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                                        </ng-container>
+                                    </mat-autocomplete>
+                                
+                                    <ng-select [items]="itemsCondicion"
+                                        bindLabel="name" 
+                                        bindValue="id"
+                                        placeholder="Condición" 
+                                        notFoundText="No hay coincidencias"
+                                        loadingText="..."
+                                        formControlName="ate_condicion"
+                                        appendTo="body"
+                                        fxFlex="32%"
+                                        style="margin-right: 10px;"
+                                        [readonly]="ver">
+                                    </ng-select>
+        
+                                    <mat-form-field fxFlex="32%">
+                                        <mat-label>Valor</mat-label>
+                                        <input matInput type="text" formControlName="ate_valor" #Valor maxlength="255" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{Valor.value?.length || 0}}/255</mat-hint>
+                                    </mat-form-field>
+        
+                                    <button mat-icon-button type="button" class="icono-eliminar" color="warn" matTooltip="Eliminar Condición" (click)="eliminarCondicionGlobal(i, condicion.value.ate_id)" *ngIf="!ver"  style="margin-top: 5px;">
+                                        <mat-icon aria-label="eliminarCondicionGlobal">delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosAccion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">ACCIÓN A REALIZAR</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosAccion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column" fxFlex="100">
+                            <div fxLayout="row">
+                                <div fxFlex="32%" fxLayout="column">
+                                    <ng-select [items]="itemsAccion"
+                                        bindLabel="name" 
+                                        bindValue="id"
+                                        placeholder="Acción" 
+                                        notFoundText="No hay coincidencias"
+                                        loadingText="..."
+                                        formControlName="ate_accion"
+                                        appendTo="body"
+                                        style="margin-right: 10px;"
+                                        (change)="agregarDescripcionXpath($event)"
+                                        [readonly]="ver">
+                                    </ng-select>
+                                    <mat-error *ngIf="!ate_accion.valid && ate_accion.touched" class="error">
+                                        {{formErrors.ate_accion.required}}
+                                    </mat-error>
+                                </div>
+        
+                                <div fxFlex="32%" fxLayout="column">
+                                    <mat-form-field *ngIf="ate_accion.value == 'NOTIFICAR'" style="margin-right: 10px;">
+                                        <mat-label>Título</mat-label>
+                                        <input matInput type="text" formControlName="ate_accion_titulo" #Titulo maxlength="255" [readonly]="ver">
+                                        <mat-icon matSuffix class="fi">star rate</mat-icon>
+                                        <mat-hint align="end" *ngIf="!ver" class="fh">{{Titulo.value?.length || 0}}/255</mat-hint>
+                                    </mat-form-field>
+                                    <mat-error *ngIf="!ate_accion_titulo.valid && ate_accion_titulo.touched && ate_accion.value == 'NOTIFICAR'" class="error">
+                                        {{formErrors.ate_accion_titulo.required}}
+                                    </mat-error>
+                                </div>
+        
+                                <mat-form-field *ngIf="ate_accion.value == 'NOTIFICAR'" fxFlex="34%">
+                                    <input type="hidden" formControlName="accion_origen">
+                                    <input type="hidden" formControlName="xde_accion_id">
+                                    <input matInput type="text" placeholder="Descripción Xpath" [matAutocomplete]="descripcionXpath" formControlName='xde_accion_descripcion' [readonly]="ver || !ate_aplica_para.valid" style="margin-top: 5px;">
+                                </mat-form-field>
+                                <mat-autocomplete #descripcionXpath="matAutocomplete">
+                                    <ng-container *ngIf="!isLoading">
+                                        <mat-option *ngFor="let resultado of resultadosAutocomplete['accion']" [value]="resultado" (click)="setValorAccion(resultado)">
+                                            <span>{{ resultado.xde_accion_descripcion }}</span>
+                                        </mat-option>
+                                        <mat-option *ngIf="noCoincidences" disabled><small>No se encontraron coincidencias...</small></mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" *ngIf="!ver" [disabled]="!form.valid" (click)="resourceAdministracionRecepcionErp(form.value)">
+                        <mat-icon color="#ffffff">check_box</mat-icon> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>

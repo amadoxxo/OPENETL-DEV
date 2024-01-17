@@ -1,0 +1,390 @@
+<div id="ofe" class="page-layout simple fullwidth" fxLayout="column">
+    <!-- HEADER -->
+    <div class="header fuse-navy-900 p-24 h-100" fxLayout="column">
+        <div class="black-fg" fxLayout="row">
+            <mat-icon class="secondary-text s-18">home</mat-icon>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Configuración</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">Comunes</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">OFEs</span>
+            <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+            <span class="secondary-text">{{ titulo }}</span>
+        </div>
+        <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between start">
+            <div fxFlex="80" fxLayoutAlign="start">
+                <div class="h1 mt-8">{{ titulo }}</div>
+            </div>
+            <div fxLayout="row" fxFlex="20" fxLayoutAlign="end center">
+                <button mat-raised-button (click)="regresar()" color="accent">
+                    <mat-icon color="#ffffff">arrow_back_ios</mat-icon>
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- / HEADER -->
+
+    <!-- Content -->
+    <div class="p-24">
+        <div class="entry">
+            <form [formGroup]="formulario">
+                <br>
+                <mat-accordion multi="true" #acordion="matAccordion">
+                    <mat-expansion-panel [formGroup]="datosGenerales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DATOS GENERALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosGenerales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-datos-generales-registro [tdo_id]="tdo_id" [toj_id]="toj_id"
+                            [identificacion]="ofe_identificacion" [nombre_comercial]="ofe_nombre_comercial"
+                            [razon_social]="ofe_razon_social" [primer_apellido]="ofe_primer_apellido"
+                            [segundo_apellido]="ofe_segundo_apellido" [primer_nombre]="ofe_primer_nombre"
+                            [otros_nombres]="ofe_otros_nombres" [sololectura]="_ofe_id"
+                            [tiposOrganizacion]="tipoOrganizaciones" [tiposDocumento]="tipoDocumentos" [DV]="DV"
+                            [tipoDocumentoSelect]="tipoDocumentoSelect" [tipoOrganizacionSelect]="tipoOrganizacionSelect"
+                            [ver]="ver" [parent]="gestor" [editar]="editar" [tipo]="'OFE'"
+                            [initOrganizacion]="initOrganizacion"
+                            [initDV]="initDV" [maxlengthIdentificacion]="maxlengthIdentificacion" [regexIdentificacion]="regexIdentificacion">
+                        </app-datos-generales-registro>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ubicacion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DOMICILIO DE CORRESPONDENCIA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ubicacion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open #domicilioCorrespondencia [pai_id]="pai_id" [dep_id]="dep_id" [mun_id]="mun_id"
+                                            [direccion]="ofe_direccion" [longitudTelefono]="255" [codigo_postal]="cpo_id"
+                                            [sololectura]="_ofe_id" [ver]="ver" [tipoUbicacion]="'normal'" [tipo]="'OFE'">
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="ubicacionFiscal">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">DOMICILIO FISCAL</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!ubicacionFiscal.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-ubicacion-open #direccionFiscal [pai_id]="pai_id_domicilio_fiscal" [dep_id]="dep_id_domicilio_fiscal" [mun_id]="mun_id_domicilio_fiscal"
+                            [direccion]="ofe_direccion_domicilio_fiscal" [codigo_postal]="cpo_id_domicilio_fiscal" [sololectura]="_ofe_id" [ver]="ver"
+                            [tipoUbicacion]="'fiscal'" [tipo]="'OFE'">
+                        </app-ubicacion-open>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="redesSociales">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">REDES SOCIALES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!redesSociales.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-redes-sociales [sitio_web]="ofe_web" [twitter]="ofe_twitter" [facebook]="ofe_facebook" [ver]="ver" [tipo]="'OFE'">
+                        </app-redes-sociales>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="datosTributarios">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN TRIBUTARIA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!datosTributarios.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-datos-tributarios [tipoRegimen]="tipoRegimen" [rfi_id]="rfi_id"
+                            [ref_id]="ref_id" [responsabilidadesFiscales]="responsabilidadesFiscales" [tributos]="tributos" [tributosSelect]="tributosSelect" 
+                            [regimenFiscalSelect]="regimenFiscalSelect" [responsabilidadesFiscalesSelect]="responsabilidadesFiscalesSelect" 
+                            [tributosControl]="responsable_tributos" [ver]="ver" [tipo]="'OFE'">
+                        </app-datos-tributarios>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="informacionAdicional">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">INFORMACIÓN ADICIONAL</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!informacionAdicional.valid && !ver">
+                                <span style="color: red">El correo electrónico es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-informacion-adicional [nombreContacto]="ofe_nombre_contacto" [telefono]="ofe_telefono" [longitudTelefonoFax]="50" [fax]="ofe_fax" [notas]="ofe_notas"
+                            [correo]="ofe_correo" [matricula]="ofe_matricula_mercantil" [actividadEconomica]="ofe_actividad_economica" [ver]="ver" [editar]="editar" [tipo]="'OFE'">
+                        </app-informacion-adicional>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="sftSelector">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">SOFTWARE PROVEEDOR TECNOLÓGICO</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!sft_id.value && !sft_id_ds.value && !ver">
+                                <span style="color: red">El Proveedor de Software Tecnológico es requerido!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-selector-sft [sft_id]="sft_id" [ver]="ver" [tipo]="'DE'"></app-selector-sft>
+                        <app-selector-sft [sft_id]="sft_id_ds" [ver]="ver" [tipo]="'DS'"></app-selector-sft>
+                    </mat-expansion-panel>
+
+                    <!--<mat-expansion-panel [formGroup]="observacionesColeccion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">OBSERVACIONES ADICIONALES EN FACTURAS</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!observacionesColeccion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxFlex="100" fxLayout="column">
+                            <br>
+                            <div fxLayout="row" fxLayoutAlign="end center" >
+                                <button mat-raised-button color="primary" (click)="agregarObservacion()" [disabled]="ver">
+                                    <mat-icon>playlist_add</mat-icon>
+                                    <strong>Agregar</strong>
+                                </button>
+                            </div>
+                            <div formArrayName="observaciones">
+                                <div *ngFor="let item of formulario['controls'].observacionesColeccion['controls'].observaciones['controls']; let i = index;" formGroupName="{{i}}">
+                                    <div fxLayout="row" fxFlex="100">
+                                        <mat-form-field fxFlex="82">
+                                            <mat-label class="control-label">Observación: </mat-label>
+                                            <input matInput type="text" formControlName="ogf_observacion" [readonly]="ver">
+                                        </mat-form-field>
+                                        <div fxFlex="2"></div>
+                                        <div fxFlex="10">
+                                            <button mat-icon-button *ngIf="formulario['controls'].observacionesColeccion['controls'].observaciones['controls'].length > 1" (click)="eliminarObservacion(i)">
+                                                <mat-icon class="red-icon">delete_sweep</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>-->
+
+                    <mat-expansion-panel [formGroup]="contactos">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONTACTOS</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!contactos.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-contact-form-group-control [formGroup]="despatchContact" [titleGroup]="'Despacho'" [ver]="ver"></app-contact-form-group-control>
+                        <app-contact-form-group-control [formGroup]="accountingContact" [titleGroup]="'Contabilidad'" [ver]="ver"></app-contact-form-group-control>
+                        <app-contact-form-group-control [formGroup]="sellerContact" [titleGroup]="'Comercial'" [ver]="ver"></app-contact-form-group-control>
+                    </mat-expansion-panel>
+
+                    <!--<mat-expansion-panel [formGroup]="motivosColeccion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">MOTIVOS DE RECHAZO DE DOCUMENTOS</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!motivosColeccion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxFlex="100" fxLayout="column">
+                            <br>
+                            <div fxLayout="row" fxLayoutAlign="end center" >
+                                <button mat-raised-button color="primary" (click)="agregarMotivoRechazo()" [disabled]="ver">
+                                    <mat-icon>playlist_add</mat-icon>
+                                    <strong>Agregar</strong>
+                                </button>
+                            </div>
+                            <div formArrayName="motivos">
+                                <div *ngFor="let item of formulario['controls'].motivosColeccion['controls'].motivos['controls']; let i = index;" formGroupName="{{i}}">
+                                    <div fxLayout="row" fxFlex="100">
+                                        <mat-form-field fxFlex="15">
+                                            <mat-label class="control-label">Código: </mat-label>
+                                            <input matInput type="text" formControlName="motivo_codigo" [readonly]="ver">
+                                        </mat-form-field>
+                                        <div fxFlex="2"></div>
+                                        <mat-form-field fxFlex="65">
+                                            <mat-label class="control-label">Descripción: </mat-label>
+                                            <input matInput type="text" formControlName="motivo_descripcion" [readonly]="ver">
+                                        </mat-form-field>
+                                        <div fxFlex="2"></div>
+                                        <div fxFlex="10">
+                                            <button mat-icon-button *ngIf="formulario['controls'].motivosColeccion['controls'].motivos['controls'].length > 1" (click)="eliminarMotivoRechazo(i)">
+                                                <mat-icon class="red-icon">delete_sweep</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                    -->
+
+                    <mat-expansion-panel [formGroup]="correosNotificacion">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CORREOS DE NOTIFICACIÓN</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!correosNotificacion.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <!-- <div fxLayout="column">
+                            <mat-radio-group name="ofe_mostrar_seccion_correos_notificacion" [formControl]="ofe_mostrar_seccion_correos_notificacion">
+                                <mat-radio-button value="SI" style="margin-right: 15px" (change)="changeCorreosNotificacion('SI')"> SI </mat-radio-button>
+                                <mat-radio-button value="NO" (change)="changeCorreosNotificacion('NO')"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <br> -->
+                        
+                        <app-notificaciones [correos]="ofe_correos_notificacion" [ver]="ver" [tipo]="'OFE'" [etiqueta]="'Ingrese los correos a los cuales se requiere enviar las notificaciones de documentos electrónicos: '"></app-notificaciones>
+                        <br>
+                        <div fxLayout="column">
+                            <mat-label class="control-label">Notificación con un solo correo:</mat-label>
+                            <mat-radio-group [formControl]="ofe_notificacion_un_solo_correo">
+                                <mat-radio-button value="SI" style="margin-right: 15px"> SI </mat-radio-button>
+                                <mat-radio-button value="NO"> NO </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="correosAutorespuesta">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CORREOS AUTORESPUESTA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!correosAutorespuesta.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-notificaciones [correos]="ofe_correos_autorespuesta" [ver]="ver" [tipo]="'OFE'" [etiqueta]="'Ingrese los correos a los cuales los adquirentes enviarán los eventos asociados al documento electrónico: '"></app-notificaciones>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="asuntoCorreos">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">PERSONALIZACIÓN DEL ASUNTO EN LOS CORREOS ENVIADOS A LOS ADQUIRENTES</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!asuntoCorreos.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="column">
+                            <mat-form-field fxFlex="100">
+                                <mat-label class="control-label">Información adicional adjunta al asunto del correo:</mat-label>
+                                <input matInput type="text" maxlength="255" [formControl]="ofe_asunto_correos" [readonly]="ver" #AsuntoCorreos>
+                                <mat-hint align="end" *ngIf="!ver" class="fh">{{AsuntoCorreos.value?.length || 0}}/255</mat-hint>
+                            </mat-form-field>
+                        </div>
+                    </mat-expansion-panel>
+
+                    <!-- <mat-expansion-panel [formGroup]="filtrosPersonalizados" *ngIf="editar">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">FILTROS PERSONALIZADOS</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxFlex="100" fxLayout="column">
+                            <div fxLayout="row" fxLayoutAlign="start" >
+                                <button mat-raised-button color="primary" (click)="agregarFiltro()" [disabled]="ver">
+                                    <mat-icon>playlist_add</mat-icon>
+                                    <strong>Agregar</strong>
+                                </button>
+                            </div>
+                            <div fxFlex="2"></div>
+                            <div formArrayName="filtros">
+                                <div *ngFor="let item of formulario['controls'].filtrosPersonalizados['controls'].filtros['controls']; let i = index;" formGroupName="{{i}}">
+                                    <div fxLayout="row" fxFlex="100">
+                                        <mat-form-field fxFlex="15">
+                                            <mat-label class="control-label">Nombre de Columna o Filtro: </mat-label>
+                                            <input matInput type="text" formControlName="nombre_filtro" [readonly]="ver">
+                                        </mat-form-field>
+                                        <div fxFlex="2"></div>
+                                        <div fxFlex="10">
+                                            <button mat-icon-button *ngIf="formulario['controls'].filtrosPersonalizados['controls'].filtros['controls'].length > 0" (click)="eliminarFiltro(i)">
+                                                <mat-icon class="red-icon">delete_sweep</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel> -->
+
+                    <mat-expansion-panel [formGroup]="reglaAceptacionTacita">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">ACEPTACIÓN TÁCITA</strong>
+                            </mat-panel-title>
+                            <mat-panel-description *ngIf="!reglaAceptacionTacita.valid && !ver">
+                                <span style="color: red">Existen datos requeridos por completar!</span>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-aceptacion-tacita [tat_id]="tat_id" [tiemposAceptacionTacita]="tiemposAceptacionTacita" [ver]="ver"></app-aceptacion-tacita>
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel [formGroup]="configuracionesPersonalizadas" *ngIf="(_auth.existeRol(aclsUsuario.roles, 'superadmin') || _auth.existeRol(aclsUsuario.roles, 'usuarioma'))">
+                        <mat-expansion-panel-header class="right-aligned-header">
+                            <mat-panel-title>
+                                <strong style="font-size: large">CONFIGURACIONES PERSONALIZADAS</strong>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <div fxLayout="row"> 
+                            <mat-label class="control-label text-bold" style="margin-right: 43px">Identificador Único del Adquirente: </mat-label>
+                            <mat-checkbox #adqIdentificacion (change)="setIdentificadorUnicoAdquirente($event.checked, 'adq_identificacion')" style="margin-right: 15px"> Identificación </mat-checkbox>
+                            <mat-checkbox #adqIdPersonalizado (change)="setIdentificadorUnicoAdquirente($event.checked, 'adq_id_personalizado')"> Identificador Personalizado </mat-checkbox>
+                        </div>
+                        <div fxLayout="row" class="mt-20">
+                            <div fxFlex="100">
+                                <mat-label class="control-label">
+                                    <span class="text-bold">Información Personalizada del Adquirente</span><br>
+                                    (Para editar un item hacer doble click en el item correspondiente. Puede reordenar los items arrastrando y soltando. Solamente se permiten letras, números, espacio y guión bajo)
+                                </mat-label>
+                                <tag-input [formControl]="ofe_informacion_personalizada_adquirente"
+                                    placeholder="Campo personalizado"
+                                    [secondaryPlaceholder]="'Campo personalizado'"
+                                    [addOnPaste]="true"
+                                    [modelAsStrings]="true"
+                                    [blinkIfDupe]="true"
+                                    [separatorKeyCodes]="[9,186,188]"
+                                    [separatorKeys]="[';', ',', '-']"
+                                    [editable]="true"
+                                    [maxItems]="20"
+                                    [dragZone]="'zone1'"
+                                    theme="bootstrap"
+                                    [(ngModel)]="selectedInfoPersonalizadaAdq">
+                                </tag-input>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <br>
+                <app-magic-fields [object]="objMagic" [usuario]="usuario" *ngIf="editar || ver" [modal]="false"></app-magic-fields>
+                <br>
+                <div fxLayout="row" fxLayoutAlign="end center">
+                    <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid || (!sft_id.value && !sft_id_ds.value)" (click)="resourceOfe(formulario.value)" *ngIf="!ver">
+                        <mat-icon color="#ffffff">check_box</mat-icon> Guardar
+                    </button>
+
+                    <button mat-raised-button type="button" color="accent" [disabled]="!formulario.valid" (click)="regresar()" *ngIf="ver">
+                        <mat-icon color="#ffffff">arrow_back_ios</mat-icon> Regresar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / Content -->
+</div>
